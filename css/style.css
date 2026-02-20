@@ -219,31 +219,33 @@ body::before {
 .menu-btn-quiz { border-color: #FF9800; background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 50%, #FFD54F 100%); }
 .menu-btn-matching { border-color: #4CAF50; background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%); }
 
-/* Fullscreen button */
+/* Fullscreen button (global, fixed position, SVG icon) */
 .fullscreen-btn {
-  position: absolute;
-  bottom: max(28px, env(safe-area-inset-bottom, 16px));
-  right: 16px;
-  width: 48px;
-  height: 48px;
-  border: 2px solid rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.2);
+  position: fixed;
+  bottom: max(16px, env(safe-area-inset-bottom, 12px));
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.25);
   backdrop-filter: blur(8px);
   border-radius: 50%;
-  font-size: 1.5rem;
   cursor: pointer;
   touch-action: manipulation;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s, background 0.15s;
-  z-index: 10;
+  transition: transform 0.15s, background 0.15s, opacity 0.15s;
+  z-index: 100;
+  opacity: 0.7;
+  padding: 0;
 }
 
 .fullscreen-btn:active {
   transform: scale(0.88);
-  background: rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.45);
+  opacity: 1;
 }
 
 /* Hide fullscreen button when already in fullscreen */
