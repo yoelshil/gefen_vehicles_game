@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#667eea">
+  <title>משחק המכוניות של גפן</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- ========== MENU SCREEN ========== -->
+    <div id="screen-menu" class="screen active">
+      <div class="menu-container">
+        <h1 class="menu-title">
+          <span class="title-emoji">🚗</span>
+          משחק המכוניות של גפן
+          <span class="title-emoji">🚙</span>
+        </h1>
+        <div class="menu-buttons">
+          <button class="menu-btn menu-btn-learning" data-screen="screen-learning">
+            <span class="menu-btn-icon">📖</span>
+            <span class="menu-btn-text">למידה</span>
+            <span class="menu-btn-desc">הכר סוגי רכבים</span>
+          </button>
+          <button class="menu-btn menu-btn-brands" data-screen="screen-brands">
+            <span class="menu-btn-icon">🏷️</span>
+            <span class="menu-btn-text">חברות רכב</span>
+            <span class="menu-btn-desc">הכר לוגואים ומותגים</span>
+          </button>
+          <button class="menu-btn menu-btn-quiz" data-screen="screen-quiz">
+            <span class="menu-btn-icon">❓</span>
+            <span class="menu-btn-text">חידון</span>
+            <span class="menu-btn-desc">בדוק את הידע שלך</span>
+          </button>
+          <button class="menu-btn menu-btn-matching" data-screen="screen-matching">
+            <span class="menu-btn-icon">🃏</span>
+            <span class="menu-btn-text">התאמה</span>
+            <span class="menu-btn-desc">משחק זיכרון</span>
+          </button>
+          <button class="menu-btn menu-btn-sound-quiz" data-screen="screen-sound-quiz">
+            <span class="menu-btn-icon">🔊</span>
+            <span class="menu-btn-text">חידון שמע</span>
+            <span class="menu-btn-desc">הקשב וזהה</span>
+          </button>
+          <button class="menu-btn menu-btn-odd" data-screen="screen-odd-one-out">
+            <span class="menu-btn-icon">🤔</span>
+            <span class="menu-btn-text">מי לא שייך?</span>
+            <span class="menu-btn-desc">מצא את השונה</span>
+          </button>
+          <button class="menu-btn menu-btn-car-parts" data-screen="screen-car-parts">
+            <span class="menu-btn-icon">🔧</span>
+            <span class="menu-btn-text">חלקי רכב</span>
+            <span class="menu-btn-desc">הכר חלקים של מכונית</span>
+          </button>
+          <button class="menu-btn menu-btn-puzzle" data-screen="screen-puzzle">
+            <span class="menu-btn-icon">🧩</span>
+            <span class="menu-btn-text">פאזל</span>
+            <span class="menu-btn-desc">הרכב תמונת רכב</span>
+          </button>
+        </div>
+        <button id="fullscreen-btn" class="fullscreen-btn" aria-label="מסך מלא">⛶</button>
+        <button id="settings-btn" class="settings-btn" aria-label="הגדרות">⚙️</button>
+      </div>
+    </div>
+
+    <!-- ========== LEARNING SCREEN ========== -->
+    <div id="screen-learning" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">מצב למידה</h2>
+        <span id="learning-progress" class="progress-text">1/25</span>
+      </div>
+      <div class="learning-container">
+        <div class="learning-content">
+          <div class="car-image-wrapper">
+            <img id="learning-car-image" class="car-image" src="" alt="">
+            <div id="learning-car-fallback" class="car-image-fallback" style="display:none;"></div>
+            <button id="learning-speak-btn" class="speak-btn" aria-label="השמע שם">🔊</button>
+          </div>
+          <div class="car-info">
+            <h3 id="learning-car-name" class="car-name"></h3>
+            <div id="learning-fun-fact" class="fun-fact"></div>
+            <div id="learning-category" class="category-badge"></div>
+          </div>
+        </div>
+        <div class="learning-nav">
+          <button id="learning-prev" class="nav-arrow nav-arrow-right" aria-label="הקודם">▶</button>
+          <div id="learning-dots" class="progress-dots"></div>
+          <button id="learning-next" class="nav-arrow nav-arrow-left" aria-label="הבא">◀</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== BRANDS SCREEN ========== -->
+    <div id="screen-brands" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">חברות רכב</h2>
+        <span id="brands-progress" class="progress-text">1/10</span>
+      </div>
+
+      <!-- Brands sub-screens -->
+      <div id="brands-menu" class="brands-sub active">
+        <div class="brands-menu-buttons">
+          <button class="menu-btn menu-btn-brands-learn" id="brands-learn-btn">
+            <span class="menu-btn-icon">📖</span>
+            <span class="menu-btn-text">הכר חברות</span>
+            <span class="menu-btn-desc">לוגואים ועובדות</span>
+          </button>
+          <button class="menu-btn menu-btn-brands-quiz" id="brands-quiz-btn">
+            <span class="menu-btn-icon">❓</span>
+            <span class="menu-btn-text">חידון לוגואים</span>
+            <span class="menu-btn-desc">זהה את הלוגו</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="brands-learning" class="brands-sub">
+        <div class="learning-content brands-learning-content">
+          <div class="brand-logo-wrapper">
+            <img id="brands-logo" class="brand-logo" src="" alt="">
+            <div id="brands-logo-fallback" class="brand-logo-fallback" style="display:none;"></div>
+          </div>
+          <div class="brand-info">
+            <h3 id="brands-name" class="car-name">
+              <span id="brands-flag" class="brand-flag"></span>
+              <span id="brands-name-text"></span>
+            </h3>
+            <button id="brands-speak-btn" class="speak-btn speak-btn-inline" aria-label="השמע שם">🔊</button>
+            <div id="brands-country" class="brand-country"></div>
+            <div id="brands-fun-fact" class="fun-fact"></div>
+          </div>
+          <div class="brand-example">
+            <img id="brands-example-car" class="brand-example-img" src="" alt="">
+            <div id="brands-example-fallback" class="car-image-fallback small" style="display:none;">🚗</div>
+          </div>
+        </div>
+        <div class="learning-nav">
+          <button id="brands-prev" class="nav-arrow nav-arrow-right" aria-label="הקודם">▶</button>
+          <div id="brands-dots" class="progress-dots"></div>
+          <button id="brands-next" class="nav-arrow nav-arrow-left" aria-label="הבא">◀</button>
+        </div>
+        <button id="brands-back-to-menu" class="secondary-btn">חזרה לתפריט חברות</button>
+      </div>
+
+      <div id="brands-quiz-screen" class="brands-sub">
+        <div class="quiz-container">
+          <div class="quiz-stars" id="brands-quiz-stars"></div>
+          <div class="quiz-image-wrapper">
+            <img id="brands-quiz-logo" class="brand-logo quiz-logo" src="" alt="">
+            <div id="brands-quiz-logo-fallback" class="brand-logo-fallback" style="display:none;"></div>
+          </div>
+          <h3 class="quiz-question">איזו חברה זו?</h3>
+          <div id="brands-quiz-answers" class="quiz-answers"></div>
+          <div id="brands-quiz-progress-text" class="quiz-progress-text"></div>
+        </div>
+        <button id="brands-quiz-back" class="secondary-btn">חזרה לתפריט חברות</button>
+      </div>
+    </div>
+
+    <!-- ========== QUIZ SCREEN ========== -->
+    <div id="screen-quiz" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">מצב חידון</h2>
+        <div id="quiz-stars" class="quiz-stars"></div>
+      </div>
+      <div class="quiz-container">
+        <div class="quiz-image-wrapper">
+          <img id="quiz-car-image" class="car-image quiz-car-image" src="" alt="">
+          <div id="quiz-car-fallback" class="car-image-fallback" style="display:none;"></div>
+        </div>
+        <h3 class="quiz-question">מה שם הרכב?</h3>
+        <div id="quiz-answers" class="quiz-answers"></div>
+        <div id="quiz-progress-text" class="quiz-progress-text"></div>
+      </div>
+
+      <!-- Quiz results overlay -->
+      <div id="quiz-results" class="results-overlay" style="display:none;">
+        <div class="results-content">
+          <h2 class="results-title">!סיימת את החידון</h2>
+          <div id="results-stars" class="results-stars"></div>
+          <p id="results-text" class="results-text"></p>
+          <div class="results-buttons">
+            <button id="quiz-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+            <button id="quiz-home" class="menu-btn results-btn" data-screen="screen-menu">🏠 דף הבית</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MATCHING SCREEN ========== -->
+    <div id="screen-matching" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">משחק התאמה</h2>
+        <div class="matching-stats">
+          <span id="matching-moves">מהלכים: 0</span>
+          <span id="matching-timer">זמן: 0:00</span>
+        </div>
+      </div>
+
+      <!-- Difficulty picker -->
+      <div id="matching-difficulty" class="matching-difficulty">
+        <h3>בחר רמת קושי</h3>
+        <div class="matching-mode-toggle">
+          <button id="matching-mode-classic" class="mode-btn active">📝 רגיל</button>
+          <button id="matching-mode-images" class="mode-btn">🖼️ תמונות</button>
+          <button id="matching-mode-audio" class="mode-btn">🔊 שמע</button>
+        </div>
+        <div class="difficulty-buttons">
+          <button class="menu-btn difficulty-btn" data-pairs="4">
+            <span class="menu-btn-icon">😊</span>
+            <span class="menu-btn-text">קל</span>
+            <span class="menu-btn-desc">4 זוגות</span>
+          </button>
+          <button class="menu-btn difficulty-btn" data-pairs="6">
+            <span class="menu-btn-icon">🤔</span>
+            <span class="menu-btn-text">בינוני</span>
+            <span class="menu-btn-desc">6 זוגות</span>
+          </button>
+          <button class="menu-btn difficulty-btn" data-pairs="8">
+            <span class="menu-btn-icon">💪</span>
+            <span class="menu-btn-text">קשה</span>
+            <span class="menu-btn-desc">8 זוגות</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card grid -->
+      <div id="matching-grid" class="matching-grid" style="display:none;"></div>
+
+      <!-- Matching results overlay -->
+      <div id="matching-results" class="results-overlay" style="display:none;">
+        <div class="results-content">
+          <h2 class="results-title">!כל הכבוד</h2>
+          <p id="matching-results-text" class="results-text"></p>
+          <div class="results-buttons">
+            <button id="matching-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+            <button id="matching-home" class="menu-btn results-btn" data-screen="screen-menu">🏠 דף הבית</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SOUND QUIZ SCREEN ========== -->
+    <div id="screen-sound-quiz" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">חידון שמע</h2>
+        <div id="sound-quiz-stars" class="quiz-stars"></div>
+      </div>
+      <div class="quiz-container sound-quiz-container">
+        <div class="sound-quiz-prompt">
+          <h3 class="quiz-question">מי לא שייך לקבוצה?</h3>
+          <button id="sound-quiz-replay" class="speak-btn speak-btn-large" aria-label="השמע שוב">🔊</button>
+        </div>
+        <div id="sound-quiz-answers" class="sound-quiz-answers"></div>
+        <div id="sound-quiz-progress-text" class="quiz-progress-text"></div>
+      </div>
+
+      <!-- Sound Quiz results overlay -->
+      <div id="sound-quiz-results" class="results-overlay" style="display:none;">
+        <div class="results-content">
+          <h2 class="results-title">!סיימת את חידון השמע</h2>
+          <div id="sound-quiz-results-stars" class="results-stars"></div>
+          <p id="sound-quiz-results-text" class="results-text"></p>
+          <div class="results-buttons">
+            <button id="sound-quiz-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+            <button class="menu-btn results-btn" data-screen="screen-menu">🏠 דף הבית</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ODD ONE OUT SCREEN ========== -->
+    <div id="screen-odd-one-out" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">מי לא שייך?</h2>
+        <div id="odd-stars" class="quiz-stars"></div>
+      </div>
+      <div class="quiz-container">
+        <div id="odd-hint" class="odd-category-hint"></div>
+        <div id="odd-grid" class="odd-grid"></div>
+        <div id="odd-progress-text" class="quiz-progress-text"></div>
+      </div>
+
+      <!-- Odd One Out results overlay -->
+      <div id="odd-results" class="results-overlay" style="display:none;">
+        <div class="results-content">
+          <h2 class="results-title">!סיימת</h2>
+          <div id="odd-results-stars" class="results-stars"></div>
+          <p id="odd-results-text" class="results-text"></p>
+          <div class="results-buttons">
+            <button id="odd-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+            <button class="menu-btn results-btn" data-screen="screen-menu">🏠 דף הבית</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CAR PARTS SCREEN ========== -->
+    <div id="screen-car-parts" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">חלקי רכב</h2>
+        <span id="car-parts-progress" class="progress-text">1/20</span>
+      </div>
+
+      <!-- Car Parts sub-screens -->
+      <div id="car-parts-menu" class="car-parts-sub active">
+        <div class="brands-menu-buttons">
+          <button class="menu-btn menu-btn-parts-learn" id="car-parts-learn-btn">
+            <span class="menu-btn-icon">📖</span>
+            <span class="menu-btn-text">הכר חלקים</span>
+            <span class="menu-btn-desc">תמונות ועובדות</span>
+          </button>
+          <button class="menu-btn menu-btn-parts-quiz" id="car-parts-quiz-btn">
+            <span class="menu-btn-icon">❓</span>
+            <span class="menu-btn-text">חידון חלקים</span>
+            <span class="menu-btn-desc">זהה את החלק</span>
+          </button>
+          <button class="menu-btn menu-btn-parts-matching" id="car-parts-matching-btn">
+            <span class="menu-btn-icon">🃏</span>
+            <span class="menu-btn-text">התאמת חלקים</span>
+            <span class="menu-btn-desc">משחק זיכרון</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Learning sub-screen -->
+      <div id="car-parts-learning" class="car-parts-sub">
+        <div class="learning-content">
+          <div class="car-image-wrapper">
+            <img id="car-parts-image" class="car-image" src="" alt="">
+            <div id="car-parts-fallback" class="car-image-fallback" style="display:none;"></div>
+            <button id="car-parts-speak-btn" class="speak-btn" aria-label="השמע שם">🔊</button>
+          </div>
+          <div class="car-info">
+            <h3 id="car-parts-name" class="car-name"></h3>
+            <div id="car-parts-fun-fact" class="fun-fact"></div>
+          </div>
+        </div>
+        <div class="learning-nav">
+          <button id="car-parts-prev" class="nav-arrow nav-arrow-right" aria-label="הקודם">▶</button>
+          <div id="car-parts-dots" class="progress-dots"></div>
+          <button id="car-parts-next" class="nav-arrow nav-arrow-left" aria-label="הבא">◀</button>
+        </div>
+        <button id="car-parts-back-to-menu" class="secondary-btn">חזרה לתפריט חלקים</button>
+      </div>
+
+      <!-- Quiz sub-screen -->
+      <div id="car-parts-quiz-screen" class="car-parts-sub">
+        <div class="quiz-container">
+          <div class="quiz-stars" id="car-parts-quiz-stars"></div>
+          <div class="quiz-image-wrapper">
+            <img id="car-parts-quiz-image" class="car-image quiz-car-image" src="" alt="">
+            <div id="car-parts-quiz-fallback" class="car-image-fallback" style="display:none;"></div>
+          </div>
+          <h3 class="quiz-question">מה שם החלק?</h3>
+          <div id="car-parts-quiz-answers" class="quiz-answers"></div>
+          <div id="car-parts-quiz-progress-text" class="quiz-progress-text"></div>
+        </div>
+
+        <!-- Quiz results overlay -->
+        <div id="car-parts-quiz-results" class="results-overlay" style="display:none;">
+          <div class="results-content">
+            <h2 class="results-title">!סיימת את חידון החלקים</h2>
+            <div id="car-parts-quiz-results-stars" class="results-stars"></div>
+            <p id="car-parts-quiz-results-text" class="results-text"></p>
+            <div class="results-buttons">
+              <button id="car-parts-quiz-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+              <button id="car-parts-quiz-back" class="menu-btn results-btn">🏠 חזרה</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matching sub-screen -->
+      <div id="car-parts-matching-screen" class="car-parts-sub">
+        <div class="car-parts-matching-stats" style="display:none;">
+          <span id="car-parts-matching-moves">מהלכים: 0</span>
+          <span id="car-parts-matching-timer">זמן: 0:00</span>
+        </div>
+
+        <!-- Difficulty picker -->
+        <div id="car-parts-matching-difficulty" class="matching-difficulty">
+          <h3>בחר רמת קושי</h3>
+          <div class="difficulty-buttons">
+            <button class="menu-btn difficulty-btn car-parts-difficulty-btn" data-pairs="4">
+              <span class="menu-btn-icon">😊</span>
+              <span class="menu-btn-text">קל</span>
+              <span class="menu-btn-desc">4 זוגות</span>
+            </button>
+            <button class="menu-btn difficulty-btn car-parts-difficulty-btn" data-pairs="6">
+              <span class="menu-btn-icon">🤔</span>
+              <span class="menu-btn-text">בינוני</span>
+              <span class="menu-btn-desc">6 זוגות</span>
+            </button>
+            <button class="menu-btn difficulty-btn car-parts-difficulty-btn" data-pairs="8">
+              <span class="menu-btn-icon">💪</span>
+              <span class="menu-btn-text">קשה</span>
+              <span class="menu-btn-desc">8 זוגות</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card grid -->
+        <div id="car-parts-matching-grid" class="matching-grid" style="display:none;"></div>
+
+        <!-- Matching results overlay -->
+        <div id="car-parts-matching-results" class="results-overlay" style="display:none;">
+          <div class="results-content">
+            <h2 class="results-title">!כל הכבוד</h2>
+            <p id="car-parts-matching-results-text" class="results-text"></p>
+            <div class="results-buttons">
+              <button id="car-parts-matching-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+              <button id="car-parts-matching-back" class="menu-btn results-btn">🏠 חזרה</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PUZZLE SCREEN ========== -->
+    <div id="screen-puzzle" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">פאזל</h2>
+        <div class="puzzle-stats">
+          <span id="puzzle-moves">מהלכים: 0</span>
+          <span id="puzzle-timer">זמן: 0:00</span>
+        </div>
+      </div>
+
+      <!-- Difficulty picker -->
+      <div id="puzzle-difficulty" class="matching-difficulty">
+        <h3>בחר רמת קושי</h3>
+        <div class="difficulty-buttons">
+          <button class="menu-btn difficulty-btn puzzle-difficulty-btn" data-cols="2" data-rows="2">
+            <span class="menu-btn-icon">😊</span>
+            <span class="menu-btn-text">קל</span>
+            <span class="menu-btn-desc">4 חלקים</span>
+          </button>
+          <button class="menu-btn difficulty-btn puzzle-difficulty-btn" data-cols="3" data-rows="3">
+            <span class="menu-btn-icon">🤔</span>
+            <span class="menu-btn-text">בינוני</span>
+            <span class="menu-btn-desc">9 חלקים</span>
+          </button>
+          <button class="menu-btn difficulty-btn puzzle-difficulty-btn" data-cols="4" data-rows="4">
+            <span class="menu-btn-icon">💪</span>
+            <span class="menu-btn-text">קשה</span>
+            <span class="menu-btn-desc">16 חלקים</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game area -->
+      <div id="puzzle-game-area" class="puzzle-game-area" style="display:none;">
+        <div id="puzzle-car-label" class="puzzle-car-label"></div>
+        <div class="puzzle-layout">
+          <div id="puzzle-grid" class="puzzle-grid"></div>
+          <div id="puzzle-tray" class="puzzle-tray"></div>
+        </div>
+      </div>
+
+      <!-- Results overlay -->
+      <div id="puzzle-results" class="results-overlay" style="display:none;">
+        <div class="results-content">
+          <h2 class="results-title">!כל הכבוד</h2>
+          <div id="puzzle-results-car" class="puzzle-results-car"></div>
+          <p id="puzzle-results-text" class="results-text"></p>
+          <div class="results-buttons">
+            <button id="puzzle-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+            <button id="puzzle-home" class="menu-btn results-btn" data-screen="screen-menu">🏠 דף הבית</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SETTINGS MODAL ========== -->
+    <div id="settings-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>הגדרות (להורים)</h3>
+        <button id="reset-progress" class="menu-btn danger-btn">🗑️ איפוס כל ההתקדמות</button>
+        <button id="settings-close" class="menu-btn">✖ סגור</button>
+      </div>
+    </div>
+
+    <!-- ========== TTS WARNING ========== -->
+    <div id="tts-warning" class="tts-warning" style="display:none;">
+      ⚠️ הקראה בעברית לא זמינה. התקן חבילת שפה עברית בהגדרות המכשיר.
+    </div>
+
+  </div>
+
+  <!-- Scripts (order matters) -->
+  <script src="js/cars-data.js"></script>
+  <script src="js/brands-data.js"></script>
+  <script src="js/car-parts-data.js"></script>
+  <script src="js/speech.js"></script>
+  <script src="js/sounds.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/learning.js"></script>
+  <script src="js/brands.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/matching.js"></script>
+  <script src="js/sound-quiz.js"></script>
+  <script src="js/odd-one-out.js"></script>
+  <script src="js/car-parts.js"></script>
+  <script src="js/puzzle.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
