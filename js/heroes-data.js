@@ -272,6 +272,54 @@ const HEROES_DATA = [
       wrong: ['!דראקס אומר נסה שוב', '!עוד פעם'],
       intro: 'דראקס צריך את עזרתך'
     }
+  },
+  {
+    id: 'doom',
+    name_he: 'דוקטור דום',
+    emoji: '👑',
+    color: '#2E7D32',
+    colorLight: '#C8E6C9',
+    gradient: 'linear-gradient(135deg, #2E7D32, #1B5E20)',
+    powerEmoji: '⚡',
+    powerName_he: 'קסמים',
+    image: 'images/heroes/doom.png',
+    phrases: {
+      correct: ['!דוקטור דום מרוצה', '!כוח מוחלט', '!מושלם'],
+      wrong: ['!דוקטור דום אומר נסה שוב', '!עוד פעם'],
+      intro: 'דוקטור דום צריך את עזרתך'
+    }
+  },
+  {
+    id: 'juggernaut',
+    name_he: 'ג\'אגרנאוט',
+    emoji: '🔴',
+    color: '#B71C1C',
+    colorLight: '#FFCDD2',
+    gradient: 'linear-gradient(135deg, #C62828, #7F0000)',
+    powerEmoji: '💥',
+    powerName_he: 'מהלומות',
+    image: 'images/heroes/juggernaut.png',
+    phrases: {
+      correct: ['!ג\'אגרנאוט מרוצה', '!כוח בלתי ניתן לעצירה', '!חזק'],
+      wrong: ['!ג\'אגרנאוט אומר נסה שוב', '!עוד פעם'],
+      intro: 'ג\'אגרנאוט צריך את עזרתך'
+    }
+  },
+  {
+    id: 'thanos',
+    name_he: 'תאנוס',
+    emoji: '🟣',
+    color: '#4A148C',
+    colorLight: '#E1BEE7',
+    gradient: 'linear-gradient(135deg, #6A1B9A, #4A148C)',
+    powerEmoji: '💎',
+    powerName_he: 'אבני אינסוף',
+    image: 'images/heroes/thanos.png',
+    phrases: {
+      correct: ['!תאנוס מרוצה', '!כוח בלתי נתפס', '!בלתי ניתן לעצירה'],
+      wrong: ['!תאנוס אומר נסה שוב', '!עוד פעם'],
+      intro: 'תאנוס צריך את עזרתך'
+    }
   }
 ];
 
