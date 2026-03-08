@@ -320,6 +320,38 @@ const HEROES_DATA = [
       wrong: ['!תאנוס אומר נסה שוב', '!עוד פעם'],
       intro: 'תאנוס צריך את עזרתך'
     }
+  },
+  {
+    id: 'octopus',
+    name_he: 'דוקטור אוקטופוס',
+    emoji: '🐙',
+    color: '#388E3C',
+    colorLight: '#C8E6C9',
+    gradient: 'linear-gradient(135deg, #43A047, #1B5E20)',
+    powerEmoji: '🦾',
+    powerName_he: 'זרועות',
+    image: 'images/heroes/octopus.png',
+    phrases: {
+      correct: ['!דוקטור אוקטופוס מרוצה', '!שמונה זרועות של הצלחה', '!מבריק'],
+      wrong: ['!דוקטור אוקטופוס אומר נסה שוב', '!עוד פעם'],
+      intro: 'דוקטור אוקטופוס צריך את עזרתך'
+    }
+  },
+  {
+    id: 'wasp',
+    name_he: 'הצרעה',
+    emoji: '🐝',
+    color: '#F9A825',
+    colorLight: '#FFF9C4',
+    gradient: 'linear-gradient(135deg, #FBC02D, #F57F17)',
+    powerEmoji: '✨',
+    powerName_he: 'עקיצות',
+    image: 'images/heroes/wasp.png',
+    phrases: {
+      correct: ['!הצרעה מתרשמת', '!עקיצה מושלמת', '!קטנה אבל חזקה'],
+      wrong: ['!הצרעה אומרת נסי שוב', '!כמעט'],
+      intro: 'הצרעה צריכה את עזרתך'
+    }
   }
 ];
 
