@@ -113,6 +113,69 @@ const Sounds = {
     });
   },
 
+  // Power up - heroic ascending fanfare with punch
+  powerUp() {
+    const ctx = this._ensureContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Quick ascending power chord
+    const notes = [
+      { freq: 440, start: 0, dur: 0.12 },
+      { freq: 554, start: 0.08, dur: 0.12 },
+      { freq: 659, start: 0.14, dur: 0.15 },
+      { freq: 880, start: 0.22, dur: 0.3 },
+      { freq: 1047, start: 0.25, dur: 0.35 }
+    ];
+
+    notes.forEach(note => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = note.freq;
+      osc.type = 'sawtooth';
+      const t = now + note.start;
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + note.dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + note.dur);
+    });
+  },
+
+  // Hero attack - quick whoosh punch
+  heroAttack() {
+    const ctx = this._ensureContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Whoosh
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.setValueAtTime(200, now);
+    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+    osc.type = 'sawtooth';
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.2);
+
+    // Impact
+    const noise = ctx.createOscillator();
+    const nGain = ctx.createGain();
+    noise.frequency.value = 100;
+    noise.type = 'square';
+    nGain.gain.setValueAtTime(0.12, now + 0.07);
+    nGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    noise.connect(nGain);
+    nGain.connect(ctx.destination);
+    noise.start(now + 0.07);
+    noise.stop(now + 0.15);
+  },
+
   // Celebration - joyful ascending fanfare
   celebration() {
     const ctx = this._ensureContext();

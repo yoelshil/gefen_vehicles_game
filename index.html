@@ -62,6 +62,11 @@
             <span class="menu-btn-text">פאזל</span>
             <span class="menu-btn-desc">הרכב תמונת רכב</span>
           </button>
+          <button class="menu-btn menu-btn-hero-math" data-screen="screen-hero-math">
+            <span class="menu-btn-icon">🦸</span>
+            <span class="menu-btn-text">גיבורי על</span>
+            <span class="menu-btn-desc">חשבון וספירה</span>
+          </button>
         </div>
         <button id="settings-btn" class="settings-btn" aria-label="הגדרות">⚙️</button>
       </div>
@@ -483,6 +488,56 @@
       </div>
     </div>
 
+    <!-- ========== HERO MATH SCREEN ========== -->
+    <div id="screen-hero-math" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-screen="screen-menu">🏠</button>
+        <h2 class="screen-title">גיבורי על - חשבון</h2>
+        <span id="hero-math-total-stars" class="progress-text">⭐ 0</span>
+      </div>
+
+      <!-- Sub-menu -->
+      <div id="hero-math-menu" class="hero-math-menu" style="display:flex;">
+        <div id="hero-math-collection" class="hero-math-collection"></div>
+        <div class="hero-math-mode-buttons">
+          <button class="menu-btn menu-btn-hero-counting" id="hero-math-counting-btn">
+            <span class="menu-btn-icon">🔢</span>
+            <span class="menu-btn-text">ספירת כוח</span>
+            <span class="menu-btn-desc">ספור את הכוחות</span>
+          </button>
+          <button class="menu-btn menu-btn-hero-mission" id="hero-math-mission-btn">
+            <span class="menu-btn-icon">💥</span>
+            <span class="menu-btn-text">משימת גיבורים</span>
+            <span class="menu-btn-desc">חיבור וחיסור</span>
+          </button>
+          <button class="menu-btn menu-btn-hero-battle" id="hero-math-battle-btn">
+            <span class="menu-btn-icon">⚔️</span>
+            <span class="menu-btn-text">קרב מספרים</span>
+            <span class="menu-btn-desc">מי יותר גדול?</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game area -->
+      <div id="hero-math-game" class="hero-math-game" style="display:none;">
+        <button class="hero-math-back-btn" id="hero-math-game-back">🏠</button>
+        <div id="hero-math-power-meter" class="hero-math-power-meter"></div>
+        <span id="hero-math-progress" class="hero-math-progress">1/8</span>
+        <div id="hero-math-hero-area" class="hero-math-hero-area"></div>
+        <div id="hero-math-question-area" class="hero-math-question-area"></div>
+        <div id="hero-math-answers" class="hero-math-answers"></div>
+      </div>
+
+      <!-- Results overlay -->
+      <div id="hero-math-results" class="results-overlay" style="display:none;">
+        <div class="results-content" id="hero-math-results-content"></div>
+        <div class="results-buttons">
+          <button id="hero-math-results-retry" class="menu-btn results-btn">🔄 שחק שוב</button>
+          <button id="hero-math-results-menu" class="menu-btn results-btn">🏠 תפריט גיבורים</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ========== SETTINGS MODAL ========== -->
     <div id="settings-modal" class="modal" style="display:none;">
       <div class="modal-content">
@@ -513,9 +568,11 @@
   <script src="js/cars-data.js"></script>
   <script src="js/brands-data.js"></script>
   <script src="js/car-parts-data.js"></script>
+  <script src="js/heroes-data.js"></script>
   <script src="js/speech.js"></script>
   <script src="js/sounds.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/hero-math-adaptive.js"></script>
   <script src="js/learning.js"></script>
   <script src="js/brands.js"></script>
   <script src="js/quiz.js"></script>
@@ -524,6 +581,7 @@
   <script src="js/odd-one-out.js"></script>
   <script src="js/car-parts.js"></script>
   <script src="js/puzzle.js"></script>
+  <script src="js/hero-math.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

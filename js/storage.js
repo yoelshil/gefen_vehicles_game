@@ -162,6 +162,15 @@ const Storage = {
     return this._get('puzzle_best_' + pieces);
   },
 
+  // Hero Math - Adaptive state
+  saveHeroMathAdaptive(data) {
+    this._set('hero_math_adaptive', data);
+  },
+
+  getHeroMathAdaptive() {
+    return this._get('hero_math_adaptive');
+  },
+
   // Reset all
   resetAll() {
     const keys = [];
