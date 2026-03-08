@@ -96,6 +96,182 @@ const HEROES_DATA = [
       wrong: ['!הפנתר אומר נסה שוב', '!קרוב מאוד'],
       intro: 'הפנתר השחור צריך את עזרתך'
     }
+  },
+  {
+    id: 'venom',
+    name_he: 'ונום',
+    emoji: '👅',
+    color: '#212121',
+    colorLight: '#E0E0E0',
+    gradient: 'linear-gradient(135deg, #424242, #000000)',
+    powerEmoji: '🖤',
+    powerName_he: 'סימביוטים',
+    image: 'images/heroes/venom.png',
+    phrases: {
+      correct: ['!ונום אוהב את זה', '!כוח חושך', '!מפחיד וחכם'],
+      wrong: ['!ונום אומר נסה שוב', '!עוד פעם'],
+      intro: 'ונום צריך את עזרתך'
+    }
+  },
+  {
+    id: 'vision',
+    name_he: 'ויז\'ן',
+    emoji: '🔮',
+    color: '#880E4F',
+    colorLight: '#F8BBD0',
+    gradient: 'linear-gradient(135deg, #AD1457, #880E4F)',
+    powerEmoji: '💎',
+    powerName_he: 'קרניים',
+    image: 'images/heroes/vision.png',
+    phrases: {
+      correct: ['!ויז\'ן מחשב נכון', '!חישוב מושלם', '!מוח על'],
+      wrong: ['!ויז\'ן אומר נסה שוב', '!קרוב'],
+      intro: 'ויז\'ן צריך את עזרתך'
+    }
+  },
+  {
+    id: 'wolverine',
+    name_he: 'וולברין',
+    emoji: '🐺',
+    color: '#F9A825',
+    colorLight: '#FFF9C4',
+    gradient: 'linear-gradient(135deg, #F9A825, #F57F17)',
+    powerEmoji: '🔪',
+    powerName_he: 'טפרים',
+    image: 'images/heroes/wolverine.png',
+    phrases: {
+      correct: ['!וולברין מרוצה', '!טפרים חדות', '!חזק'],
+      wrong: ['!וולברין אומר נסה שוב', '!עוד פעם'],
+      intro: 'וולברין צריך את עזרתך'
+    }
+  },
+  {
+    id: 'strange',
+    name_he: 'דוקטור סטריינג\'',
+    emoji: '🪄',
+    color: '#C62828',
+    colorLight: '#FFCDD2',
+    gradient: 'linear-gradient(135deg, #D32F2F, #4A148C)',
+    powerEmoji: '🌀',
+    powerName_he: 'כישופים',
+    image: 'images/heroes/strange.png',
+    phrases: {
+      correct: ['!קסם מושלם', '!דוקטור סטריינג\' מתרשם', '!כוח קסום'],
+      wrong: ['!דוקטור סטריינג\' אומר נסה שוב', '!כמעט'],
+      intro: 'דוקטור סטריינג\' צריך את עזרתך'
+    }
+  },
+  {
+    id: 'thing',
+    name_he: 'הדבר',
+    emoji: '🪨',
+    color: '#E65100',
+    colorLight: '#FFE0B2',
+    gradient: 'linear-gradient(135deg, #E65100, #BF360C)',
+    powerEmoji: '🧱',
+    powerName_he: 'סלעים',
+    image: 'images/heroes/thing.png',
+    phrases: {
+      correct: ['!הגיע הזמן לריסוק', '!הדבר מרוצה', '!חזק כמו סלע'],
+      wrong: ['!הדבר אומר נסה שוב', '!עוד פעם'],
+      intro: 'הדבר צריך את עזרתך'
+    }
+  },
+  {
+    id: 'colossus',
+    name_he: 'קולוסוס',
+    emoji: '🦾',
+    color: '#B71C1C',
+    colorLight: '#FFCDD2',
+    gradient: 'linear-gradient(135deg, #C62828, #880E4F)',
+    powerEmoji: '🛡️',
+    powerName_he: 'מגנים',
+    image: 'images/heroes/colossus.png',
+    phrases: {
+      correct: ['!קולוסוס מתרשם', '!כוח פלדה', '!חזק'],
+      wrong: ['!קולוסוס אומר נסה שוב', '!עוד פעם'],
+      intro: 'קולוסוס צריך את עזרתך'
+    }
+  },
+  {
+    id: 'antman',
+    name_he: 'אנט-מן',
+    emoji: '🐜',
+    color: '#D32F2F',
+    colorLight: '#FFCDD2',
+    gradient: 'linear-gradient(135deg, #D32F2F, #616161)',
+    powerEmoji: '🐜',
+    powerName_he: 'נמלים',
+    image: 'images/heroes/antman.png',
+    phrases: {
+      correct: ['!אנט-מן מתרשם', '!קטן אבל חזק', '!גודל לא משנה'],
+      wrong: ['!אנט-מן אומר נסה שוב', '!קרוב'],
+      intro: 'אנט-מן צריך את עזרתך'
+    }
+  },
+  {
+    id: 'blackwidow',
+    name_he: 'האלמנה השחורה',
+    emoji: '🕷️',
+    color: '#263238',
+    colorLight: '#CFD8DC',
+    gradient: 'linear-gradient(135deg, #37474F, #263238)',
+    powerEmoji: '🎯',
+    powerName_he: 'מטרות',
+    image: 'images/heroes/blackwidow.png',
+    phrases: {
+      correct: ['!האלמנה השחורה גאה', '!דיוק מושלם', '!מעולה'],
+      wrong: ['!האלמנה אומרת נסי שוב', '!קרוב'],
+      intro: 'האלמנה השחורה צריכה את עזרתך'
+    }
+  },
+  {
+    id: 'marvel',
+    name_he: 'קפטן מארוול',
+    emoji: '🌟',
+    color: '#E65100',
+    colorLight: '#FFE0B2',
+    gradient: 'linear-gradient(135deg, #FF6F00, #E65100)',
+    powerEmoji: '☄️',
+    powerName_he: 'כדורי אש',
+    image: 'images/heroes/marvel.png',
+    phrases: {
+      correct: ['!קפטן מארוול מתרשמת', '!כוח קוסמי', '!מדהים'],
+      wrong: ['!קפטן מארוול אומרת נסי שוב', '!כמעט'],
+      intro: 'קפטן מארוול צריכה את עזרתך'
+    }
+  },
+  {
+    id: 'deadpool',
+    name_he: 'דדפול',
+    emoji: '😜',
+    color: '#C62828',
+    colorLight: '#FFCDD2',
+    gradient: 'linear-gradient(135deg, #C62828, #B71C1C)',
+    powerEmoji: '⚔️',
+    powerName_he: 'חרבות',
+    image: 'images/heroes/deadpool.png',
+    phrases: {
+      correct: ['!דדפול אוהב את זה', '!מגניב', '!וואו באמת'],
+      wrong: ['!דדפול אומר נסה שוב', '!אופס'],
+      intro: 'דדפול צריך את עזרתך'
+    }
+  },
+  {
+    id: 'drax',
+    name_he: 'דראקס',
+    emoji: '🗡️',
+    color: '#607D8B',
+    colorLight: '#CFD8DC',
+    gradient: 'linear-gradient(135deg, #78909C, #455A64)',
+    powerEmoji: '🗡️',
+    powerName_he: 'סכינים',
+    image: 'images/heroes/drax.png',
+    phrases: {
+      correct: ['!דראקס ההורס מרוצה', '!כוח ענק', '!חזק'],
+      wrong: ['!דראקס אומר נסה שוב', '!עוד פעם'],
+      intro: 'דראקס צריך את עזרתך'
+    }
   }
 ];
 
