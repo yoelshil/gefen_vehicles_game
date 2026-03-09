@@ -406,16 +406,17 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 }
 /* ===== PUZZLE MODE ===== */
 .puzzle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:320px;
-  position:relative;z-index:2}
-.puzzle-piece{aspect-ratio:1;border:4px solid #000;border-radius:10px;cursor:pointer;
+  position:relative;z-index:2;direction:ltr}
+.puzzle-piece{aspect-ratio:1;border:4px solid #000;border-radius:4px;cursor:pointer;
   touch-action:manipulation;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,#1a1a4e,#0D47A1);box-shadow:4px 4px 0 #000;
+  background:linear-gradient(135deg,#1a1a4e,#0D47A1);box-shadow:3px 3px 0 #000;
   transition:all 0.4s ease;display:flex;align-items:center;justify-content:center}
 .puzzle-piece.revealed{cursor:default;border-color:#FFD700;
   box-shadow:0 0 15px rgba(255,215,0,0.4),4px 4px 0 #000}
 .puzzle-piece.revealed .puzzle-img{opacity:1;transform:scale(1)}
-.puzzle-piece .puzzle-img{width:100%;height:100%;object-fit:cover;opacity:0;
-  transform:scale(0.5);transition:all 0.5s ease;position:absolute;top:0;left:0}
+.puzzle-piece .puzzle-img{width:100%;height:100%;opacity:0;
+  transform:scale(0.5);transition:all 0.5s ease;position:absolute;top:0;left:0;
+  border-radius:2px}
 .puzzle-piece.active{border-color:#FFD700;animation:puzzleGlow 1s ease-in-out infinite}
 @keyframes puzzleGlow{0%,100%{box-shadow:0 0 10px rgba(255,215,0,0.3),4px 4px 0 #000}
   50%{box-shadow:0 0 25px rgba(255,215,0,0.7),4px 4px 0 #000}}
@@ -1062,10 +1063,19 @@ const Adaptive = {
     if(Math.random()<0.5)[numA,numB]=[numB,numA];
     return {numA,numB,answer:Math.max(numA,numB),level:lv}},
 
-  // PUZZLE: generates same type of questions as current mode mix
-  generatePuzzleQuestion(){
-    const al=this.getLevel('addition');const cl=this.getLevel('counting');
-    if(cl<=2||Math.random()<0.4) return {...this.generateCounting(),mode:'counting'};
+  // PUZZLE: gradual difficulty - first 3 counting, then mix, then harder
+  generatePuzzleQuestion(pieceIndex){
+    const idx=pieceIndex||0;
+    if(idx<3) return {...this.generateCounting(),mode:'counting'};
+    if(idx<6){
+      if(Math.random()<0.5) return {...this.generateCounting(),mode:'counting'};
+      return {...this.generateAddition(),mode:'addition'};
+    }
+    const r=Math.random();
+    if(r<0.3) return {...this.generateCounting(),mode:'counting'};
+    if(r<0.7) return {...this.generateAddition(),mode:'addition'};
+    const sl=this.getLevel('subtraction');
+    if(sl>=2) return {...this.generateSubtraction(),mode:'addition'};
     return {...this.generateAddition(),mode:'addition'};
   },
 
@@ -1290,7 +1300,7 @@ const Game = {
         if(sl>=2&&Math.random()<0.4) this.state.questions.push(Adaptive.generateSubtraction());
         else this.state.questions.push(Adaptive.generateAddition());
       } else if(mode==='battle') this.state.questions.push(Adaptive.generateComparison());
-      else if(mode==='puzzle') this.state.questions.push(Adaptive.generatePuzzleQuestion());
+      else if(mode==='puzzle') this.state.questions.push(Adaptive.generatePuzzleQuestion(i));
       else if(mode==='order') this.state.questions.push(Adaptive.generateOrdinalQuestion());
     }
 
@@ -1528,7 +1538,7 @@ const Game = {
         if(sl>=2&&Math.random()<0.4) this.state.questions[idx]=Adaptive.generateSubtraction();
         else this.state.questions[idx]=Adaptive.generateAddition();
       } else if(this.currentMode==='battle') this.state.questions[idx]=Adaptive.generateComparison();
-      else if(this.currentMode==='puzzle') this.state.questions[idx]=Adaptive.generatePuzzleQuestion();
+      else if(this.currentMode==='puzzle') this.state.questions[idx]=Adaptive.generatePuzzleQuestion(idx);
       else if(this.currentMode==='order') this.state.questions[idx]=Adaptive.generateOrdinalQuestion();
     }
     this._showQuestion();
@@ -1612,13 +1622,18 @@ const Game = {
     if(!this.state.puzzleRevealed) this.state.puzzleRevealed=[];
     const pieceIdx=this.state.questionIndex;
     // Show the puzzle grid
-    let gridHtml='<div class="puzzle-grid">';
+    let gridHtml='<div class="puzzle-grid" style="position:relative">';
     for(let i=0;i<9;i++){
       const isRevealed=this.state.puzzleRevealed.includes(i);
       const row=Math.floor(i/3);const col=i%3;
-      const bgPos=`${col*50}% ${row*50}%`;
-      gridHtml+=`<div class="puzzle-piece ${isRevealed?'revealed':''} ${i===pieceIdx?'active':''}" data-idx="${i}">
-        <div class="puzzle-img" style="background:url('${hero.image}') no-repeat;background-size:300%;background-position:${bgPos}"></div>
+      // Each piece shows its portion of the hero image
+      // Use 260% zoom (slightly less than 300%) so the face fills more of the grid
+      // and hero color as fallback for transparent edges
+      const bpX=col===0?'0%':col===1?'50%':'100%';
+      const bpY=row===0?'10%':row===1?'50%':'90%';
+      gridHtml+=`<div class="puzzle-piece ${isRevealed?'revealed':''} ${i===pieceIdx?'active':''}" data-idx="${i}"
+        style="${isRevealed?'background:'+hero.color:''}">
+        <div class="puzzle-img" style="background:${hero.color} url('${hero.image}') no-repeat;background-size:260% auto;background-position:${bpX} ${bpY}"></div>
         ${isRevealed?'':`<span class="puzzle-num">${i+1}</span>`}
       </div>`;
     }
