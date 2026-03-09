@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>גיבורי על - משחק חשבון</title>
+<style>
+/* ===== RESET & BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:#0a0a2e;color:#fff;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+
+/* ===== ANIMATED SPACE BACKGROUND ===== */
+body::before{content:'';position:fixed;top:0;left:0;width:200%;height:200%;
+  background:radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+  radial-gradient(2px 2px at 40px 70px,rgba(255,255,200,0.8),transparent),
+  radial-gradient(3px 3px at 90px 40px,#fff,transparent),
+  radial-gradient(2px 2px at 130px 80px,rgba(200,200,255,0.9),transparent),
+  radial-gradient(2px 2px at 160px 30px,#fff,transparent),
+  radial-gradient(3px 3px at 50px 160px,rgba(255,200,200,0.8),transparent),
+  radial-gradient(2px 2px at 100px 120px,#fff,transparent),
+  radial-gradient(2px 2px at 180px 150px,rgba(200,255,200,0.7),transparent);
+  background-size:200px 200px;animation:starsMove 120s linear infinite;z-index:0;pointer-events:none}
+@keyframes starsMove{0%{transform:translate(0,0)}100%{transform:translate(-200px,-200px)}}
+
+body::after{content:'';position:fixed;bottom:0;left:0;width:100%;height:180px;
+  background:linear-gradient(transparent,rgba(10,10,46,0.9)),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 120'%3E%3Crect x='10' y='40' width='60' height='80' fill='%23111' rx='3'/%3E%3Crect x='15' y='50' width='12' height='12' fill='%23FFD700' opacity='0.6'/%3E%3Crect x='35' y='45' width='12' height='12' fill='%2300BFFF' opacity='0.5'/%3E%3Crect x='100' y='20' width='80' height='100' fill='%23151535' rx='3'/%3E%3Crect x='110' y='30' width='10' height='10' fill='%23FF6347' opacity='0.5'/%3E%3Crect x='130' y='25' width='10' height='10' fill='%23FFD700' opacity='0.6'/%3E%3Crect x='150' y='35' width='10' height='10' fill='%2300BFFF' opacity='0.4'/%3E%3Crect x='230' y='50' width='50' height='70' fill='%23111' rx='3'/%3E%3Crect x='240' y='60' width='8' height='8' fill='%23FFD700' opacity='0.5'/%3E%3Crect x='320' y='30' width='90' height='90' fill='%23151535' rx='3'/%3E%3Crect x='330' y='40' width='10' height='10' fill='%2300BFFF' opacity='0.6'/%3E%3Crect x='355' y='35' width='10' height='10' fill='%23FF6347' opacity='0.4'/%3E%3Crect x='370' y='50' width='10' height='10' fill='%23FFD700' opacity='0.5'/%3E%3Crect x='450' y='45' width='70' height='75' fill='%23111' rx='3'/%3E%3Crect x='460' y='55' width='10' height='10' fill='%23FFD700' opacity='0.5'/%3E%3Crect x='550' y='25' width='85' height='95' fill='%23151535' rx='3'/%3E%3Crect x='560' y='35' width='10' height='10' fill='%2300BFFF' opacity='0.5'/%3E%3Crect x='580' y='30' width='10' height='10' fill='%23FF6347' opacity='0.5'/%3E%3Crect x='670' y='40' width='60' height='80' fill='%23111' rx='3'/%3E%3Crect x='680' y='50' width='10' height='10' fill='%23FFD700' opacity='0.6'/%3E%3Crect x='750' y='50' width='50' height='70' fill='%23151535' rx='3'/%3E%3C/svg%3E") bottom/800px 120px repeat-x;
+  z-index:0;pointer-events:none}
+
+/* ===== SCREENS ===== */
+.screen{position:fixed;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;
+  align-items:center;z-index:1;overflow:hidden}
+.screen.active{display:flex}
+
+/* ===== CANVAS PARTICLES ===== */
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;pointer-events:none}
+
+/* ===== ACTION WORD OVERLAY ===== */
+#action-word{position:fixed;z-index:200;pointer-events:none;display:none;
+  font-size:5rem;font-weight:900;color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,100,0,0.6),4px 4px 0 #C62828;
+  transform:rotate(-15deg) scale(0);animation:actionPop 0.8s ease forwards;
+  font-style:italic;letter-spacing:-3px}
+@keyframes actionPop{0%{transform:rotate(-15deg) scale(0);opacity:0}
+  30%{transform:rotate(-10deg) scale(1.4);opacity:1}
+  60%{transform:rotate(-12deg) scale(1.1);opacity:1}
+  100%{transform:rotate(-12deg) scale(1.3);opacity:0}}
+
+/* ===== COUNTDOWN OVERLAY ===== */
+#countdown-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:300;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)}
+#countdown-number{font-size:12rem;font-weight:900;color:#FFD700;
+  text-shadow:0 0 40px rgba(255,215,0,0.8),0 0 80px rgba(255,100,0,0.4);
+  animation:countZoom 0.7s ease}
+@keyframes countZoom{0%{transform:scale(3);opacity:0}50%{transform:scale(0.9);opacity:1}100%{transform:scale(1);opacity:1}}
+
+/* ===== SCREEN FLASH ===== */
+#screen-flash{position:fixed;top:0;left:0;width:100%;height:100%;z-index:150;
+  pointer-events:none;opacity:0;transition:opacity 0.1s}
+
+/* ===== MENU SCREEN ===== */
+.menu-title{font-size:2.8rem;font-weight:900;text-align:center;margin-top:20px;
+  background:linear-gradient(135deg,#FFD700,#FF6347,#FF1493,#00BFFF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5));animation:titleGlow 3s ease-in-out infinite}
+@keyframes titleGlow{0%,100%{filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5))}
+  50%{filter:drop-shadow(0 4px 20px rgba(255,215,0,0.6))}}
+
+.menu-subtitle{font-size:1.2rem;color:rgba(255,255,255,0.7);text-align:center;margin:4px 0 12px}
+
+/* Hero Showcase Carousel */
+.hero-showcase{width:100%;overflow:hidden;padding:16px 0;position:relative}
+.hero-showcase-track{display:flex;gap:20px;animation:carouselScroll 25s linear infinite;
+  width:max-content;padding:0 20px}
+.hero-showcase-card{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px;border-radius:20px;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);
+  backdrop-filter:blur(6px);transition:transform 0.3s,box-shadow 0.3s;min-width:130px}
+.hero-showcase-card:hover,.hero-showcase-card:active{transform:scale(1.08);
+  box-shadow:0 0 30px rgba(255,215,0,0.4)}
+.hero-showcase-card img{width:120px;height:120px;border-radius:50%;object-fit:cover;
+  border:4px solid rgba(255,255,255,0.5);box-shadow:0 8px 30px rgba(0,0,0,0.4);
+  animation:heroFloat 4s ease-in-out infinite}
+.hero-showcase-card .hero-name{font-size:1rem;font-weight:800;color:#fff;text-align:center;
+  text-shadow:0 2px 6px rgba(0,0,0,0.5)}
+@keyframes carouselScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* Star Counter */
+.star-counter{font-size:1.5rem;font-weight:900;color:#FFD700;text-shadow:0 2px 8px rgba(255,215,0,0.4);
+  display:flex;align-items:center;gap:6px;padding:8px 16px;
+  background:rgba(255,215,0,0.1);border-radius:30px;border:2px solid rgba(255,215,0,0.3)}
+
+/* Mode Buttons */
+.mode-buttons{display:flex;flex-direction:column;gap:14px;width:100%;max-width:380px;padding:0 20px}
+.mode-btn{display:flex;align-items:center;gap:14px;padding:18px 22px;border:none;border-radius:18px;
+  cursor:pointer;touch-action:manipulation;font-size:1.3rem;font-weight:800;color:#fff;
+  position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;
+  box-shadow:0 6px 20px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2)}
+.mode-btn:active{transform:scale(0.96) !important}
+.mode-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,transparent 60%);pointer-events:none}
+.mode-btn::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 60%);
+  animation:btnShine 4s ease-in-out infinite;pointer-events:none}
+@keyframes btnShine{0%,100%{transform:translate(-30%,-30%)}50%{transform:translate(30%,30%)}}
+.mode-btn-icon{font-size:2.2rem;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3))}
+.mode-btn-text{display:flex;flex-direction:column;text-align:right}
+.mode-btn-title{font-size:1.3rem}
+.mode-btn-desc{font-size:0.8rem;font-weight:400;opacity:0.8}
+.mode-btn-counting{background:linear-gradient(135deg,#7B1FA2,#4A148C)}
+.mode-btn-mission{background:linear-gradient(135deg,#C62828,#B71C1C)}
+.mode-btn-battle{background:linear-gradient(135deg,#E65100,#BF360C)}
+
+/* Hero Collection */
+.collection-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:8px 16px;max-width:500px}
+.collection-badge{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:3px solid rgba(255,255,255,0.4);box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:transform 0.2s}
+.collection-badge.unlocked{animation:badgePulse 3s ease-in-out infinite}
+.collection-badge.locked{background:rgba(255,255,255,0.08);filter:grayscale(0.8);opacity:0.4}
+.collection-badge img{width:36px;height:36px;border-radius:50%;object-fit:cover}
+.collection-badge .lock-icon{font-size:1.2rem}
+@keyframes badgePulse{0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+  50%{transform:scale(1.1);box-shadow:0 4px 20px rgba(255,215,0,0.4)}}
+
+/* ===== GAME SCREEN ===== */
+.game-screen{background:linear-gradient(135deg,#1a1a4e,#0a0a2e);padding:8px 12px;gap:6px}
+.game-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 4px}
+.back-btn{width:48px;height:48px;border-radius:50%;border:3px solid rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.1);font-size:1.5rem;cursor:pointer;touch-action:manipulation;
+  backdrop-filter:blur(6px);color:#fff;display:flex;align-items:center;justify-content:center;
+  transition:transform 0.2s}
+.back-btn:active{transform:scale(0.9)}
+.progress-text{font-size:1.1rem;font-weight:800;color:rgba(255,255,255,0.9);
+  text-shadow:0 2px 6px rgba(0,0,0,0.4)}
+
+/* Power Meter */
+.power-meter{display:flex;gap:8px;justify-content:center;padding:6px 0}
+.power-orb{width:36px;height:36px;border-radius:50%;border:3px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:rgba(255,255,255,0.4);transition:all 0.4s ease;position:relative}
+.power-orb.filled{border-color:rgba(255,255,255,0.9);transform:scale(1.15);
+  animation:orbFillBig 0.6s ease;font-size:1.1rem;
+  box-shadow:0 0 15px rgba(255,215,0,0.5),0 0 30px rgba(255,215,0,0.2)}
+@keyframes orbFillBig{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.4)}100%{transform:scale(1.15);opacity:1}}
+
+/* Hero Display */
+.hero-area{display:flex;align-items:center;justify-content:center;min-height:100px;
+  transition:transform 0.3s ease;position:relative}
+.hero-area img{width:150px;height:150px;border-radius:50%;object-fit:cover;
+  border:5px solid rgba(255,255,255,0.6);box-shadow:0 10px 40px rgba(0,0,0,0.5);
+  transition:all 0.3s ease}
+.hero-area.celebrate img{animation:heroCelebrateNew 1s ease;
+  box-shadow:0 0 40px rgba(255,215,0,0.8),0 0 80px rgba(255,215,0,0.4)}
+.hero-area.sad img{animation:heroSadNew 0.6s ease}
+@keyframes heroCelebrateNew{0%{transform:scale(1)}20%{transform:scale(1.4) rotate(-8deg)}
+  40%{transform:scale(1.5) rotate(8deg)}60%{transform:scale(1.3) rotate(-4deg)}
+  80%{transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes heroSadNew{0%,100%{transform:translateY(0)}20%{transform:translateY(-10px)}
+  40%{transform:translateY(6px)}60%{transform:translateY(-4px)}80%{transform:translateY(2px)}}
+
+/* Streak Banner */
+.streak-banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:250;
+  display:none;font-size:2.5rem;font-weight:900;color:#FFD700;text-align:center;
+  text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,100,0,0.5),3px 3px 0 #C62828;
+  animation:streakPop 1.2s ease forwards;white-space:nowrap}
+@keyframes streakPop{0%{transform:translate(-50%,-50%) scale(0) rotate(-20deg);opacity:0}
+  30%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg);opacity:1}
+  60%{transform:translate(-50%,-50%) scale(1.1) rotate(-2deg);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1.2) rotate(0deg);opacity:0}}
+
+/* Question Area */
+.question-area{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:500px}
+.prompt-text{font-size:1.6rem;font-weight:900;color:#fff;text-align:center;
+  text-shadow:0 3px 10px rgba(0,0,0,0.4);
+  -webkit-text-stroke:0.5px rgba(255,255,255,0.3)}
+
+/* Counting Items */
+.count-items{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:14px;
+  background:rgba(255,255,255,0.08);border-radius:20px;border:2px solid rgba(255,255,255,0.1);
+  min-height:60px;max-width:380px;backdrop-filter:blur(4px)}
+.count-item{font-size:2rem;animation:itemBounceIn 0.4s ease both;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3))}
+@keyframes itemBounceIn{0%{transform:scale(0) rotate(-180deg);opacity:0}
+  60%{transform:scale(1.3) rotate(15deg)}80%{transform:scale(0.9) rotate(-5deg)}
+  100%{transform:scale(1) rotate(0deg);opacity:1}}
+
+/* Equation Display */
+.equation{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 24px;
+  background:rgba(255,255,255,0.1);border-radius:24px;backdrop-filter:blur(8px);
+  border:3px solid rgba(255,255,255,0.15);box-shadow:0 8px 30px rgba(0,0,0,0.3)}
+.eq-num{font-size:3.5rem;font-weight:900;color:#fff;
+  text-shadow:0 4px 10px rgba(0,0,0,0.4);-webkit-text-stroke:1px rgba(255,255,255,0.2);min-width:55px;text-align:center}
+.eq-op{font-size:2.5rem;font-weight:900}
+.eq-op.add{color:#69F0AE}
+.eq-op.sub{color:#FF8A80}
+.eq-op.eq{color:#fff}
+.eq-mystery{font-size:4rem;color:#FFD700;animation:mysteryGlow 1.5s ease-in-out infinite}
+@keyframes mysteryGlow{0%,100%{text-shadow:0 4px 10px rgba(0,0,0,0.4)}
+  50%{text-shadow:0 0 30px rgba(255,215,0,0.8),0 0 60px rgba(255,215,0,0.4)}}
+
+/* Item Groups */
+.eq-items{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.item-group{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;padding:8px 12px;
+  background:rgba(255,255,255,0.08);border-radius:14px;max-width:170px}
+.small-item{font-size:1.2rem}
+.big-num{font-size:2.2rem;font-weight:900;color:#fff;margin-left:6px}
+.eq-op-big{font-size:2.2rem;font-weight:900}
+.eq-op-big.add{color:#69F0AE}
+.eq-op-big.sub{color:#FF8A80}
+
+/* Answer Buttons */
+.answers{display:flex;gap:14px;justify-content:center;padding:10px 0;width:100%;max-width:420px}
+.answer-btn{flex:1;min-width:90px;min-height:90px;max-width:130px;border-radius:22px;
+  border:5px solid rgba(255,255,255,0.6);background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(240,240,255,0.9));
+  font-size:3rem;font-weight:900;color:#333;cursor:pointer;touch-action:manipulation;
+  transition:all 0.2s ease;box-shadow:0 8px 25px rgba(0,0,0,0.3),inset 0 -4px 0 rgba(0,0,0,0.1);
+  position:relative;overflow:hidden}
+.answer-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);pointer-events:none;border-radius:17px 17px 0 0}
+.answer-btn:active:not(.disabled):not(.correct):not(.wrong){transform:scale(0.92) translateY(3px);
+  box-shadow:0 3px 10px rgba(0,0,0,0.2),inset 0 -1px 0 rgba(0,0,0,0.1)}
+.answer-btn.correct{background:linear-gradient(135deg,#4CAF50,#66BB6A);border-color:#2E7D32;color:#fff;
+  transform:scale(1.12);box-shadow:0 0 30px rgba(76,175,80,0.7),0 0 60px rgba(76,175,80,0.3);
+  animation:correctPop 0.7s ease}
+@keyframes correctPop{0%{transform:scale(1)}25%{transform:scale(1.25) rotate(-3deg)}
+  50%{transform:scale(1.05) rotate(2deg)}75%{transform:scale(1.15)}100%{transform:scale(1.12)}}
+.answer-btn.wrong{background:linear-gradient(135deg,#FF9800,#FFB74D);border-color:#E65100;
+  color:#fff;animation:shake 0.5s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px) rotate(-2deg)}
+  30%{transform:translateX(8px) rotate(2deg)}45%{transform:translateX(-6px)}
+  60%{transform:translateX(6px)}75%{transform:translateX(-3px)}90%{transform:translateX(3px)}}
+.answer-btn.disabled{opacity:0.35;pointer-events:none}
+
+/* Battle Mode */
+.battle-area{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;width:100%;max-width:520px}
+.battle-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 14px;
+  border:5px solid;border-radius:24px;background:rgba(255,255,255,0.92);cursor:pointer;
+  touch-action:manipulation;transition:all 0.3s ease;box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  max-width:220px;position:relative;overflow:hidden}
+.battle-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.4),transparent);pointer-events:none}
+.battle-card:active:not(.winner):not(.loser){transform:scale(0.95)}
+.battle-card img{width:90px;height:90px;border-radius:50%;object-fit:cover;
+  border:4px solid rgba(255,255,255,0.7);box-shadow:0 6px 20px rgba(0,0,0,0.25)}
+.battle-num{font-size:4rem;font-weight:900;text-shadow:0 3px 6px rgba(0,0,0,0.15)}
+.battle-name{font-size:0.95rem;font-weight:700;color:#555}
+.vs-text{font-size:2rem;font-weight:900;color:#FFD700;
+  text-shadow:0 3px 10px rgba(0,0,0,0.5);animation:vsBounce 1.2s ease-in-out infinite}
+@keyframes vsBounce{0%,100%{transform:scale(1) rotate(0deg)}
+  50%{transform:scale(1.3) rotate(5deg)}}
+.battle-card.winner{background:linear-gradient(135deg,#4CAF50,#66BB6A);border-color:#2E7D32 !important;
+  color:#fff;transform:scale(1.12);box-shadow:0 0 30px rgba(76,175,80,0.6);animation:battleWinNew 0.7s ease}
+.battle-card.winner .battle-num{color:#fff}
+.battle-card.winner .battle-name{color:rgba(255,255,255,0.9)}
+.battle-card.loser{opacity:0.4;transform:scale(0.85);filter:grayscale(0.6)}
+@keyframes battleWinNew{0%{transform:scale(1)}30%{transform:scale(1.2) rotate(-4deg)}
+  60%{transform:scale(1.08) rotate(3deg)}100%{transform:scale(1.12) rotate(0)}}
+
+/* Results Overlay */
+.results-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  background:rgba(10,10,46,0.95);backdrop-filter:blur(10px);padding:20px}
+.results-hero{text-align:center;margin-bottom:8px}
+.results-hero img{width:130px;height:130px;border-radius:50%;object-fit:cover;
+  border:5px solid rgba(255,215,0,0.6);box-shadow:0 0 40px rgba(255,215,0,0.4);
+  animation:resultsHeroIn 0.8s ease}
+@keyframes resultsHeroIn{0%{transform:scale(0) rotate(-30deg);opacity:0}
+  60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.results-title{font-size:2.2rem;font-weight:900;text-align:center;
+  background:linear-gradient(135deg,#FFD700,#FF6347);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:titlePulse 2s ease-in-out infinite}
+@keyframes titlePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.results-stars{font-size:2.2rem;text-align:center;padding:10px 0}
+.results-stars .star{display:inline-block;opacity:0;animation:starAppear 0.4s ease forwards}
+@keyframes starAppear{0%{transform:scale(0) rotate(-180deg);opacity:0}
+  60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.results-stars .star.empty{filter:grayscale(1);opacity:0.3}
+.results-score{font-size:1.5rem;font-weight:700;color:rgba(255,255,255,0.8)}
+.results-buttons{display:flex;gap:14px;margin-top:12px}
+.results-btn{padding:16px 28px;border:none;border-radius:16px;font-size:1.2rem;font-weight:800;
+  cursor:pointer;touch-action:manipulation;color:#fff;transition:transform 0.2s;
+  box-shadow:0 6px 20px rgba(0,0,0,0.3)}
+.results-btn:active{transform:scale(0.95)}
+.results-btn-retry{background:linear-gradient(135deg,#4CAF50,#2E7D32)}
+.results-btn-menu{background:linear-gradient(135deg,#1976D2,#0D47A1)}
+
+/* Unlock Box */
+.unlock-box{text-align:center;padding:18px;margin:10px 0;
+  background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,152,0,0.15));
+  border-radius:20px;border:3px solid rgba(255,215,0,0.5);
+  animation:unlockShine 0.8s ease;box-shadow:0 0 30px rgba(255,215,0,0.3)}
+@keyframes unlockShine{0%{transform:scale(0) rotate(-25deg);opacity:0}
+  50%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.unlock-title{font-size:1.5rem;font-weight:900;color:#FFD700;margin-bottom:8px;
+  text-shadow:0 2px 8px rgba(255,215,0,0.5)}
+.unlock-box img{width:100px;height:100px;border-radius:50%;object-fit:cover;
+  border:4px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5)}
+.unlock-name{font-size:1.3rem;font-weight:800;color:#fff;margin-top:8px}
+
+/* ===== RESPONSIVE ===== */
+@media (orientation:portrait){
+  .answer-btn{min-height:80px;font-size:2.5rem}
+  .eq-num{font-size:2.8rem}
+  .hero-area img{width:120px;height:120px}
+  .battle-card img{width:75px;height:75px}
+  .battle-num{font-size:3rem}
+  .hero-showcase-card img{width:100px;height:100px}
+  .menu-title{font-size:2.2rem}
+}
+@media (max-width:600px){
+  .answer-btn{min-width:75px;min-height:75px;font-size:2.2rem;border-radius:18px}
+  .eq-num{font-size:2.2rem}
+  .eq-mystery{font-size:2.8rem}
+  .count-items{max-width:280px;gap:4px}
+  .count-item{font-size:1.5rem}
+  .equation{gap:10px;padding:10px 16px}
+  .battle-card{padding:12px 8px}
+  .battle-num{font-size:2.5rem}
+  .collection-badge{width:40px;height:40px}
+  .collection-badge img{width:30px;height:30px}
+  .power-orb{width:30px;height:30px;font-size:0.8rem}
+  .hero-showcase-card img{width:80px;height:80px}
+  .hero-showcase-card{min-width:100px;padding:8px}
+  #action-word{font-size:3.5rem}
+  #countdown-number{font-size:8rem}
+  .streak-banner{font-size:2rem}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
+</style>
+</head>
+<body>
+<!-- Particle Canvas -->
+<canvas id="particles-canvas"></canvas>
+<!-- Action Word -->
+<div id="action-word"></div>
+<!-- Streak Banner -->
+<div id="streak-banner" class="streak-banner"></div>
+<!-- Countdown Overlay -->
+<div id="countdown-overlay"><div id="countdown-number"></div></div>
+<!-- Screen Flash -->
+<div id="screen-flash"></div>
+
+<!-- ===== MENU SCREEN ===== -->
+<div id="menu-screen" class="screen active">
+  <h1 class="menu-title">גיבורי על</h1>
+  <p class="menu-subtitle">משחק חשבון וספירה</p>
+
+  <div class="hero-showcase" id="hero-showcase"></div>
+
+  <div class="star-counter" id="star-counter">⭐ 0</div>
+
+  <div class="mode-buttons">
+    <button class="mode-btn mode-btn-counting" id="btn-counting">
+      <span class="mode-btn-icon">🔢</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">ספירת כוח</span><span class="mode-btn-desc">ספור את הכוחות</span></span>
+    </button>
+    <button class="mode-btn mode-btn-mission" id="btn-mission">
+      <span class="mode-btn-icon">💥</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">משימת גיבורים</span><span class="mode-btn-desc">חיבור וחיסור</span></span>
+    </button>
+    <button class="mode-btn mode-btn-battle" id="btn-battle">
+      <span class="mode-btn-icon">⚔️</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">קרב מספרים</span><span class="mode-btn-desc">מי חזק יותר?</span></span>
+    </button>
+  </div>
+
+  <div class="collection-row" id="collection-row"></div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game-screen" class="screen game-screen">
+  <div class="game-header">
+    <button class="back-btn" id="back-btn">🏠</button>
+    <span class="progress-text" id="progress-text">1/8</span>
+  </div>
+  <div class="power-meter" id="power-meter"></div>
+  <div class="hero-area" id="hero-area"></div>
+  <div class="question-area" id="question-area"></div>
+  <div class="answers" id="answers-area"></div>
+</div>
+
+<!-- ===== RESULTS OVERLAY ===== -->
+<div id="results-overlay" class="results-overlay">
+  <div class="results-hero" id="results-hero"></div>
+  <h2 class="results-title" id="results-title"></h2>
+  <div class="results-stars" id="results-stars"></div>
+  <p class="results-score" id="results-score"></p>
+  <div id="results-unlock"></div>
+  <div class="results-buttons">
+    <button class="results-btn results-btn-retry" id="btn-retry">🔄 שחק שוב</button>
+    <button class="results-btn results-btn-menu" id="btn-results-menu">🏠 תפריט</button>
+  </div>
+</div>
+
+<script>
+// ===== HEROES DATA =====
+const HEROES_DATA = [
+  {id:'spiderman',name_he:'ספיידרמן',emoji:'🕷️',color:'#E23636',colorLight:'#FFCDD2',
+   gradient:'linear-gradient(135deg,#E23636,#C62828)',powerEmoji:'🕸️',powerName_he:'רשתות',
+   image:'images/heroes/spiderman.png',
+   phrases:{correct:['!ספיידרמן גאה בך','!כוח עכביש','!רשת מושלמת'],wrong:['!ספיידרמן אומר נסה שוב','!עוד ניסיון'],intro:'ספיידרמן צריך את עזרתך'}},
+  {id:'ironman',name_he:'איירון מן',emoji:'🤖',color:'#B71C1C',colorLight:'#FFCCBC',
+   gradient:'linear-gradient(135deg,#FF6F00,#B71C1C)',powerEmoji:'💥',powerName_he:'פיצוצים',
+   image:'images/heroes/ironman.png',
+   phrases:{correct:['!איירון מן מתרשם','!טכנולוגיה מעולה','!כוח מוחות'],wrong:['!איירון מן אומר נסה שוב','!קרוב'],intro:'איירון מן צריך את עזרתך'}},
+  {id:'hulk',name_he:'האלק',emoji:'👊',color:'#2E7D32',colorLight:'#C8E6C9',
+   gradient:'linear-gradient(135deg,#4CAF50,#1B5E20)',powerEmoji:'💪',powerName_he:'מכות',
+   image:'images/heroes/hulk.png',
+   phrases:{correct:['!האלק חזק','!כוח ענק','!האלק מרוצה'],wrong:['!האלק אומר נסה שוב','!עוד פעם'],intro:'האלק צריך את עזרתך'}},
+  {id:'captain',name_he:'קפטן אמריקה',emoji:'🛡️',color:'#1565C0',colorLight:'#BBDEFB',
+   gradient:'linear-gradient(135deg,#1976D2,#0D47A1)',powerEmoji:'⭐',powerName_he:'כוכבים',
+   image:'images/heroes/captain.png',
+   phrases:{correct:['!קפטן אמריקה גאה','!מגן מושלם','!גיבור אמיתי'],wrong:['!הקפטן אומר נסה שוב','!אל תוותר'],intro:'קפטן אמריקה צריך את עזרתך'}},
+  {id:'thor',name_he:"ת'ור",emoji:'⚡',color:'#7B1FA2',colorLight:'#E1BEE7',
+   gradient:'linear-gradient(135deg,#9C27B0,#4A148C)',powerEmoji:'🔨',powerName_he:'ברקים',
+   image:'images/heroes/thor.png',
+   phrases:{correct:["!כוח הרעם","!ת'ור מתרשם","!ברק מעולה"],wrong:["!ת'ור אומר נסה שוב","!עוד פעם"],intro:"ת'ור צריך את עזרתך"}},
+  {id:'panther',name_he:'הפנתר השחור',emoji:'🐾',color:'#37474F',colorLight:'#CFD8DC',
+   gradient:'linear-gradient(135deg,#546E7A,#263238)',powerEmoji:'✨',powerName_he:'ניצוצות',
+   image:'images/heroes/panther.png',
+   phrases:{correct:['!ווקנדה לנצח','!כוח הפנתר','!מדהים'],wrong:['!הפנתר אומר נסה שוב','!קרוב מאוד'],intro:'הפנתר השחור צריך את עזרתך'}},
+  {id:'venom',name_he:'ונום',emoji:'👅',color:'#212121',colorLight:'#E0E0E0',
+   gradient:'linear-gradient(135deg,#424242,#000000)',powerEmoji:'🖤',powerName_he:'סימביוטים',
+   image:'images/heroes/venom.png',
+   phrases:{correct:['!ונום אוהב את זה','!כוח חושך','!מפחיד וחכם'],wrong:['!ונום אומר נסה שוב','!עוד פעם'],intro:'ונום צריך את עזרתך'}},
+  {id:'vision',name_he:"ויז'ן",emoji:'🔮',color:'#880E4F',colorLight:'#F8BBD0',
+   gradient:'linear-gradient(135deg,#AD1457,#880E4F)',powerEmoji:'💎',powerName_he:'קרניים',
+   image:'images/heroes/vision.png',
+   phrases:{correct:["!ויז'ן מחשב נכון","!חישוב מושלם","!מוח על"],wrong:["!ויז'ן אומר נסה שוב","!קרוב"],intro:"ויז'ן צריך את עזרתך"}},
+  {id:'wolverine',name_he:'וולברין',emoji:'🐺',color:'#F9A825',colorLight:'#FFF9C4',
+   gradient:'linear-gradient(135deg,#F9A825,#F57F17)',powerEmoji:'🔪',powerName_he:'טפרים',
+   image:'images/heroes/wolverine.png',
+   phrases:{correct:['!וולברין מרוצה','!טפרים חדות','!חזק'],wrong:['!וולברין אומר נסה שוב','!עוד פעם'],intro:'וולברין צריך את עזרתך'}},
+  {id:'strange',name_he:"דוקטור סטריינג'",emoji:'🪄',color:'#C62828',colorLight:'#FFCDD2',
+   gradient:'linear-gradient(135deg,#D32F2F,#4A148C)',powerEmoji:'🌀',powerName_he:'כישופים',
+   image:'images/heroes/strange.png',
+   phrases:{correct:["!קסם מושלם","!דוקטור סטריינג' מתרשם","!כוח קסום"],wrong:["!דוקטור סטריינג' אומר נסה שוב","!כמעט"],intro:"דוקטור סטריינג' צריך את עזרתך"}},
+  {id:'thing',name_he:'הדבר',emoji:'🪨',color:'#E65100',colorLight:'#FFE0B2',
+   gradient:'linear-gradient(135deg,#E65100,#BF360C)',powerEmoji:'🧱',powerName_he:'סלעים',
+   image:'images/heroes/thing.png',
+   phrases:{correct:['!הגיע הזמן לריסוק','!הדבר מרוצה','!חזק כמו סלע'],wrong:['!הדבר אומר נסה שוב','!עוד פעם'],intro:'הדבר צריך את עזרתך'}},
+  {id:'colossus',name_he:'קולוסוס',emoji:'🦾',color:'#B71C1C',colorLight:'#FFCDD2',
+   gradient:'linear-gradient(135deg,#C62828,#880E4F)',powerEmoji:'🛡️',powerName_he:'מגנים',
+   image:'images/heroes/colossus.png',
+   phrases:{correct:['!קולוסוס מתרשם','!כוח פלדה','!חזק'],wrong:['!קולוסוס אומר נסה שוב','!עוד פעם'],intro:'קולוסוס צריך את עזרתך'}},
+  {id:'antman',name_he:'אנט-מן',emoji:'🐜',color:'#D32F2F',colorLight:'#FFCDD2',
+   gradient:'linear-gradient(135deg,#D32F2F,#616161)',powerEmoji:'🐜',powerName_he:'נמלים',
+   image:'images/heroes/antman.png',
+   phrases:{correct:['!אנט-מן מתרשם','!קטן אבל חזק','!גודל לא משנה'],wrong:['!אנט-מן אומר נסה שוב','!קרוב'],intro:'אנט-מן צריך את עזרתך'}},
+  {id:'blackwidow',name_he:'האלמנה השחורה',emoji:'🕷️',color:'#263238',colorLight:'#CFD8DC',
+   gradient:'linear-gradient(135deg,#37474F,#263238)',powerEmoji:'🎯',powerName_he:'מטרות',
+   image:'images/heroes/blackwidow.png',
+   phrases:{correct:['!האלמנה השחורה גאה','!דיוק מושלם','!מעולה'],wrong:['!האלמנה אומרת נסי שוב','!קרוב'],intro:'האלמנה השחורה צריכה את עזרתך'}},
+  {id:'marvel',name_he:'קפטן מארוול',emoji:'🌟',color:'#E65100',colorLight:'#FFE0B2',
+   gradient:'linear-gradient(135deg,#FF6F00,#E65100)',powerEmoji:'☄️',powerName_he:'כדורי אש',
+   image:'images/heroes/marvel.png',
+   phrases:{correct:['!קפטן מארוול מתרשמת','!כוח קוסמי','!מדהים'],wrong:['!קפטן מארוול אומרת נסי שוב','!כמעט'],intro:'קפטן מארוול צריכה את עזרתך'}},
+  {id:'deadpool',name_he:'דדפול',emoji:'😜',color:'#C62828',colorLight:'#FFCDD2',
+   gradient:'linear-gradient(135deg,#C62828,#B71C1C)',powerEmoji:'⚔️',powerName_he:'חרבות',
+   image:'images/heroes/deadpool.png',
+   phrases:{correct:['!דדפול אוהב את זה','!מגניב','!וואו באמת'],wrong:['!דדפול אומר נסה שוב','!אופס'],intro:'דדפול צריך את עזרתך'}},
+  {id:'drax',name_he:'דראקס',emoji:'🗡️',color:'#607D8B',colorLight:'#CFD8DC',
+   gradient:'linear-gradient(135deg,#78909C,#455A64)',powerEmoji:'🗡️',powerName_he:'סכינים',
+   image:'images/heroes/drax.png',
+   phrases:{correct:['!דראקס ההורס מרוצה','!כוח ענק','!חזק'],wrong:['!דראקס אומר נסה שוב','!עוד פעם'],intro:'דראקס צריך את עזרתך'}},
+  {id:'doom',name_he:'דוקטור דום',emoji:'👑',color:'#2E7D32',colorLight:'#C8E6C9',
+   gradient:'linear-gradient(135deg,#2E7D32,#1B5E20)',powerEmoji:'⚡',powerName_he:'קסמים',
+   image:'images/heroes/doom.png',
+   phrases:{correct:['!דוקטור דום מרוצה','!כוח מוחלט','!מושלם'],wrong:['!דוקטור דום אומר נסה שוב','!עוד פעם'],intro:'דוקטור דום צריך את עזרתך'}},
+  {id:'juggernaut',name_he:"ג'אגרנאוט",emoji:'🔴',color:'#B71C1C',colorLight:'#FFCDD2',
+   gradient:'linear-gradient(135deg,#C62828,#7F0000)',powerEmoji:'💥',powerName_he:'מהלומות',
+   image:'images/heroes/juggernaut.png',
+   phrases:{correct:["!ג'אגרנאוט מרוצה","!כוח בלתי ניתן לעצירה","!חזק"],wrong:["!ג'אגרנאוט אומר נסה שוב","!עוד פעם"],intro:"ג'אגרנאוט צריך את עזרתך"}},
+  {id:'thanos',name_he:'תאנוס',emoji:'🟣',color:'#4A148C',colorLight:'#E1BEE7',
+   gradient:'linear-gradient(135deg,#6A1B9A,#4A148C)',powerEmoji:'💎',powerName_he:'אבני אינסוף',
+   image:'images/heroes/thanos.png',
+   phrases:{correct:['!תאנוס מרוצה','!כוח בלתי נתפס','!בלתי ניתן לעצירה'],wrong:['!תאנוס אומר נסה שוב','!עוד פעם'],intro:'תאנוס צריך את עזרתך'}},
+  {id:'octopus',name_he:'דוקטור אוקטופוס',emoji:'🐙',color:'#388E3C',colorLight:'#C8E6C9',
+   gradient:'linear-gradient(135deg,#43A047,#1B5E20)',powerEmoji:'🦾',powerName_he:'זרועות',
+   image:'images/heroes/octopus.png',
+   phrases:{correct:['!דוקטור אוקטופוס מרוצה','!שמונה זרועות של הצלחה','!מבריק'],wrong:['!דוקטור אוקטופוס אומר נסה שוב','!עוד פעם'],intro:'דוקטור אוקטופוס צריך את עזרתך'}},
+  {id:'wasp',name_he:'הצרעה',emoji:'🐝',color:'#F9A825',colorLight:'#FFF9C4',
+   gradient:'linear-gradient(135deg,#FBC02D,#F57F17)',powerEmoji:'✨',powerName_he:'עקיצות',
+   image:'images/heroes/wasp.png',
+   phrases:{correct:['!הצרעה מתרשמת','!עקיצה מושלמת','!קטנה אבל חזקה'],wrong:['!הצרעה אומרת נסי שוב','!כמעט'],intro:'הצרעה צריכה את עזרתך'}}
+];
+
+const HEBREW_NUMBERS = {
+  0:'אפס',1:'אחת',2:'שתיים',3:'שלוש',4:'ארבע',5:'חמש',
+  6:'שש',7:'שבע',8:'שמונה',9:'תשע',10:'עשר',
+  11:'אחת עשרה',12:'שתים עשרה',13:'שלוש עשרה',14:'ארבע עשרה',
+  15:'חמש עשרה',16:'שש עשרה',17:'שבע עשרה',18:'שמונה עשרה',
+  19:'תשע עשרה',20:'עשרים',
+  21:'עשרים ואחת',22:'עשרים ושתיים',23:'עשרים ושלוש',24:'עשרים וארבע',
+  25:'עשרים וחמש',26:'עשרים ושש',27:'עשרים ושבע',28:'עשרים ושמונה',
+  29:'עשרים ותשע',30:'שלושים',
+  31:'שלושים ואחת',32:'שלושים ושתיים',33:'שלושים ושלוש',34:'שלושים וארבע',
+  35:'שלושים וחמש',36:'שלושים ושש',37:'שלושים ושבע',38:'שלושים ושמונה',
+  39:'שלושים ותשע',40:'ארבעים',
+  41:'ארבעים ואחת',42:'ארבעים ושתיים',43:'ארבעים ושלוש',44:'ארבעים וארבע',
+  45:'ארבעים וחמש',46:'ארבעים ושש',47:'ארבעים ושבע',48:'ארבעים ושמונה',
+  49:'ארבעים ותשע',50:'חמישים'
+};
+
+const HERO_PRAISE = ['!כל הכבוד','!מעולה','!מדהים','!וואו','!גיבור על אמיתי','!נכון מאוד','!יופי','!בול','!מושלם'];
+const HERO_ENCOURAGE = ['!נסה שוב','!כמעט','!קרוב','!אפשר לנסות שוב','!בוא ננסה שוב'];
+const HERO_LEVEL_UP = ['!עלית שלב','!אתה מתקדם','!הולך ונהיה גיבור על'];
+const ACTION_WORDS = ['POW!','BAM!','BOOM!','WOW!','!יש','!בום','!פאו','!וואו','SMASH!','ZAP!'];
+
+// ===== SPEECH MODULE =====
+const Speech = {
+  _voice:null,_ready:false,_useFallback:false,_initPromise:null,_fallbackAudio:null,
+  _sequenceTimeouts:[],_isSpeaking:false,
+  init(){
+    if(this._initPromise) return this._initPromise;
+    this._initPromise = new Promise(resolve=>{
+      if(!window.speechSynthesis){this._useFallback=true;this._ready=true;resolve(true);return}
+      const findVoice=()=>{
+        const voices=speechSynthesis.getVoices();
+        this._voice=voices.find(v=>/he[-_]IL/i.test(v.lang))||voices.find(v=>/^he/i.test(v.lang));
+        if(this._voice){this._ready=true;this._useFallback=false;resolve(true);return true}
+        return false};
+      if(findVoice()) return;
+      const onVC=()=>{if(findVoice()) speechSynthesis.removeEventListener('voiceschanged',onVC)};
+      speechSynthesis.addEventListener('voiceschanged',onVC);
+      let att=0;const iv=setInterval(()=>{att++;
+        if(findVoice()||att>15){clearInterval(iv);speechSynthesis.removeEventListener('voiceschanged',onVC);
+          if(!this._ready){this._useFallback=true;this._ready=true;resolve(true)}}},200)});
+    return this._initPromise},
+  speak(text){if(!this._ready||!text) return;this._clearSequence();
+    if(this._useFallback) this._speakFallback(text);else this._speakNative(text)},
+  speakSequence(segments,pauseMs){if(!this._ready||!segments||segments.length===0) return;
+    pauseMs=pauseMs||800;this.stop();
+    if(this._useFallback) this._speakFallbackSequence(segments,pauseMs);
+    else this._speakNativeSequence(segments,pauseMs)},
+  _speakNative(text){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);
+    u.voice=this._voice;u.lang='he-IL';u.rate=0.75;u.pitch=1.05;speechSynthesis.speak(u)},
+  _speakNativeSequence(segments,pauseMs){this._isSpeaking=true;let idx=0;
+    const next=()=>{if(!this._isSpeaking||idx>=segments.length){this._isSpeaking=false;return}
+      const text=segments[idx];idx++;if(!text){next();return}
+      const u=new SpeechSynthesisUtterance(text);u.voice=this._voice;u.lang='he-IL';u.rate=0.75;u.pitch=1.05;
+      u.onend=()=>{if(idx<segments.length&&this._isSpeaking){const t=setTimeout(next,pauseMs);this._sequenceTimeouts.push(t)}else this._isSpeaking=false};
+      u.onerror=()=>{if(this._isSpeaking){const t=setTimeout(next,pauseMs);this._sequenceTimeouts.push(t)}};
+      speechSynthesis.speak(u)};next()},
+  _speakFallback(text){this._stopFallbackAudio();try{const chunks=this._chunkText(text,180);
+    if(chunks.length===1) this._playFallbackChunk(chunks[0]);
+    else this._speakFallbackSequence(chunks,300)}catch(e){}},
+  _speakFallbackSequence(segments,pauseMs){this._isSpeaking=true;let idx=0;
+    const playNext=()=>{if(!this._isSpeaking||idx>=segments.length){this._isSpeaking=false;return}
+      const text=segments[idx];idx++;if(!text){playNext();return}
+      const chunks=this._chunkText(text,180);let ci=0;
+      const playChunk=()=>{if(!this._isSpeaking||ci>=chunks.length){
+        if(idx<segments.length&&this._isSpeaking){const t=setTimeout(playNext,pauseMs);this._sequenceTimeouts.push(t)}
+        else this._isSpeaking=false;return}
+        this._playFallbackChunk(chunks[ci],()=>{ci++;
+          if(ci<chunks.length){const t=setTimeout(playChunk,200);this._sequenceTimeouts.push(t)}
+          else playChunk()})};playChunk()};playNext()},
+  _playFallbackChunk(text,onEnd){try{const enc=encodeURIComponent(text);
+    const url='https://translate.google.com/translate_tts?ie=UTF-8&tl=iw&client=tw-ob&q='+enc;
+    this._fallbackAudio=new Audio(url);this._fallbackAudio.playbackRate=0.75;
+    if(onEnd){this._fallbackAudio.addEventListener('ended',onEnd,{once:true});
+      this._fallbackAudio.addEventListener('error',onEnd,{once:true})}
+    this._fallbackAudio.play().catch(()=>{if(onEnd) onEnd()})}catch(e){if(onEnd) onEnd()}},
+  _chunkText(text,maxLen){const enc=encodeURIComponent(text);if(enc.length<=maxLen) return [text];
+    const words=text.split(' ');const chunks=[];let cur='';
+    for(let i=0;i<words.length;i++){const cand=cur?cur+' '+words[i]:words[i];
+      if(encodeURIComponent(cand).length>maxLen&&cur){chunks.push(cur);cur=words[i]}else cur=cand}
+    if(cur) chunks.push(cur);return chunks},
+  _clearSequence(){this._isSpeaking=false;this._sequenceTimeouts.forEach(t=>clearTimeout(t));this._sequenceTimeouts=[]},
+  _stopFallbackAudio(){if(this._fallbackAudio){this._fallbackAudio.pause();this._fallbackAudio.currentTime=0;this._fallbackAudio=null}},
+  stop(){this._clearSequence();if(window.speechSynthesis) speechSynthesis.cancel();this._stopFallbackAudio()}
+};
+
+// ===== SOUNDS MODULE =====
+const Sounds = {
+  _ctx:null,
+  init(){try{if(!this._ctx){const AC=window.AudioContext||window.webkitAudioContext;if(AC) this._ctx=new AC()}
+    if(this._ctx&&this._ctx.state==='suspended') this._ctx.resume()}catch(e){this._ctx=null}},
+  _e(){if(!this._ctx) this.init();return this._ctx},
+  correct(){const c=this._e();if(!c) return;const n=c.currentTime;
+    const o1=c.createOscillator(),g1=c.createGain();o1.frequency.value=880;o1.type='sine';
+    g1.gain.setValueAtTime(0.3,n);g1.gain.exponentialRampToValueAtTime(0.01,n+0.25);
+    o1.connect(g1);g1.connect(c.destination);o1.start(n);o1.stop(n+0.25);
+    const o2=c.createOscillator(),g2=c.createGain();o2.frequency.value=1320;o2.type='sine';
+    g2.gain.setValueAtTime(0.25,n+0.15);g2.gain.exponentialRampToValueAtTime(0.01,n+0.5);
+    o2.connect(g2);g2.connect(c.destination);o2.start(n+0.15);o2.stop(n+0.5)},
+  wrong(){const c=this._e();if(!c) return;const n=c.currentTime;
+    const o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(330,n);
+    o.frequency.exponentialRampToValueAtTime(220,n+0.3);o.type='sine';
+    g.gain.setValueAtTime(0.18,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.3);
+    o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+0.3)},
+  powerUp(){const c=this._e();if(!c) return;const n=c.currentTime;
+    [{freq:440,s:0,d:0.12},{freq:554,s:0.08,d:0.12},{freq:659,s:0.14,d:0.15},
+     {freq:880,s:0.22,d:0.3},{freq:1047,s:0.25,d:0.35}].forEach(nt=>{
+      const o=c.createOscillator(),g=c.createGain();o.frequency.value=nt.freq;o.type='sawtooth';
+      const t=n+nt.s;g.gain.setValueAtTime(0.18,t);g.gain.exponentialRampToValueAtTime(0.01,t+nt.d);
+      o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+nt.d)})},
+  celebration(){const c=this._e();if(!c) return;const n=c.currentTime;
+    const mg=c.createGain();mg.gain.value=0.3;mg.connect(c.destination);
+    [{freq:523,s:0,d:0.2},{freq:659,s:0.2,d:0.2},{freq:784,s:0.4,d:0.2},
+     {freq:1047,s:0.65,d:0.35},{freq:1319,s:1.05,d:0.5},{freq:1568,s:1.1,d:0.5}].forEach(nt=>{
+      const o=c.createOscillator(),g=c.createGain();o.frequency.value=nt.freq;o.type='sine';
+      const t=n+nt.s;g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.01,t+nt.d);
+      o.connect(g);g.connect(mg);o.start(t);o.stop(t+nt.d)})},
+  countdown(){const c=this._e();if(!c) return;const n=c.currentTime;
+    const o=c.createOscillator(),g=c.createGain();o.frequency.value=660;o.type='sine';
+    g.gain.setValueAtTime(0.25,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.15);
+    o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+0.15)},
+  countdownGo(){const c=this._e();if(!c) return;const n=c.currentTime;
+    const o=c.createOscillator(),g=c.createGain();o.frequency.value=1047;o.type='sine';
+    g.gain.setValueAtTime(0.3,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.3);
+    o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+0.3)},
+  combo(){const c=this._e();if(!c) return;const n=c.currentTime;
+    [{f:523,s:0},{f:659,s:0.06},{f:784,s:0.12},{f:1047,s:0.18}].forEach(nt=>{
+      const o=c.createOscillator(),g=c.createGain();o.frequency.value=nt.f;o.type='triangle';
+      const t=n+nt.s;g.gain.setValueAtTime(0.2,t);g.gain.exponentialRampToValueAtTime(0.01,t+0.2);
+      o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+0.2)})},
+  whoosh(){const c=this._e();if(!c) return;const n=c.currentTime;
+    const o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(200,n);
+    o.frequency.exponentialRampToValueAtTime(1200,n+0.1);o.frequency.exponentialRampToValueAtTime(100,n+0.2);
+    o.type='sawtooth';g.gain.setValueAtTime(0.12,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.2);
+    o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+0.2)}
+};
+
+// ===== STORAGE =====
+const Storage = {
+  _key: 'gefen_heroes_standalone_adaptive',
+  saveHeroMathAdaptive(data){try{localStorage.setItem(this._key,JSON.stringify(data))}catch(e){}},
+  getHeroMathAdaptive(){try{const d=localStorage.getItem(this._key);return d?JSON.parse(d):null}catch(e){return null}}
+};
+
+// ===== ADAPTIVE DIFFICULTY ENGINE =====
+const Adaptive = {
+  _defaultSkill(){return {level:1,streak:0,wrongStreak:0,totalCorrect:0,totalWrong:0}},
+  _state:null,
+  getState(){
+    if(!this._state){this._state=Storage.getHeroMathAdaptive()||{
+      counting:this._defaultSkill(),addition:this._defaultSkill(),
+      subtraction:this._defaultSkill(),comparison:this._defaultSkill(),
+      heroesUnlocked:['spiderman'],totalStars:0,roundsCompleted:0}}
+    return this._state},
+  save(){Storage.saveHeroMathAdaptive(this._state)},
+  recordCorrect(skill){const s=this.getState()[skill];if(!s) return;
+    s.streak++;s.wrongStreak=0;s.totalCorrect++;
+    if(s.streak>=3&&s.level<5){s.level++;s.streak=0;this.save();return 'level_up'}
+    this.save();return 'correct'},
+  recordWrong(skill){const s=this.getState()[skill];if(!s) return;
+    s.streak=0;s.wrongStreak++;s.totalWrong++;
+    if(s.wrongStreak>=2&&s.level>1){s.level--;s.wrongStreak=0;this.save();return 'level_down'}
+    this.save();return 'wrong'},
+  getLevel(skill){return this.getState()[skill]?.level||1},
+  unlockNextHero(){const st=this.getState();st.roundsCompleted++;
+    if(st.roundsCompleted%2===0){const allIds=HEROES_DATA.map(h=>h.id);
+      const locked=allIds.filter(id=>!st.heroesUnlocked.includes(id));
+      if(locked.length>0){st.heroesUnlocked.push(locked[0]);this.save();return locked[0]}}
+    this.save();return null},
+  addStars(c){this.getState().totalStars+=c;this.save()},
+  generateCounting(){const lv=this.getLevel('counting');let mn,mx;
+    switch(lv){case 1:mn=11;mx=15;break;case 2:mn=11;mx=20;break;case 3:mn=15;mx=30;break;
+      case 4:mn=20;mx=40;break;case 5:mn=30;mx=50;break;default:mn=11;mx=15}
+    const ans=mn+Math.floor(Math.random()*(mx-mn+1));
+    return {answer:ans,distractors:this._dist(ans,mn,mx),level:lv}},
+  generateAddition(){const lv=this.getLevel('addition');let a,b;
+    switch(lv){case 1:b=Math.random()<0.5?1:2;a=5+Math.floor(Math.random()*(15-b-5+1));break;
+      case 2:b=1+Math.floor(Math.random()*5);a=5+Math.floor(Math.random()*(20-b-5+1));break;
+      case 3:b=3+Math.floor(Math.random()*3);a=5+Math.floor(Math.random()*(25-b-5+1));break;
+      case 4:b=2+Math.floor(Math.random()*8);a=8+Math.floor(Math.random()*(35-b-8+1));break;
+      case 5:b=3+Math.floor(Math.random()*10);a=10+Math.floor(Math.random()*(50-b-10+1));break;
+      default:a=7;b=2}
+    const ans=a+b;return {a,b,answer:ans,distractors:this._dist(ans,Math.max(ans-5,2),ans+5),operation:'+',level:lv}},
+  generateSubtraction(){const lv=this.getLevel('subtraction');let a,b;
+    switch(lv){case 1:b=Math.random()<0.5?1:2;a=11+Math.floor(Math.random()*5);break;
+      case 2:b=1+Math.floor(Math.random()*3);a=11+Math.floor(Math.random()*10);break;
+      case 3:b=3+Math.floor(Math.random()*3);a=13+Math.floor(Math.random()*13);break;
+      case 4:b=2+Math.floor(Math.random()*8);a=15+Math.floor(Math.random()*21);break;
+      case 5:b=3+Math.floor(Math.random()*12);a=20+Math.floor(Math.random()*31);break;
+      default:a=13;b=2}
+    if(a-b<1) a=b+1+Math.floor(Math.random()*5);
+    const ans=a-b;return {a,b,answer:ans,distractors:this._dist(ans,Math.max(ans-5,0),ans+5),operation:'-',level:lv}},
+  generateComparison(){const lv=this.getLevel('comparison');let minGap;
+    switch(lv){case 1:minGap=7;break;case 2:minGap=5;break;case 3:minGap=3;break;
+      case 4:case 5:minGap=1;break;default:minGap=7}
+    const maxNum=lv<=2?20:lv<=4?35:50;
+    const gap=minGap+Math.floor(Math.random()*4);
+    let numA=5+Math.floor(Math.random()*(maxNum-gap-5+1));let numB=numA+gap;
+    if(Math.random()<0.5)[numA,numB]=[numB,numA];
+    return {numA,numB,answer:Math.max(numA,numB),level:lv}},
+  _dist(ans,mn,mx){const opts=new Set([ans]);let att=0;
+    while(opts.size<3&&att<50){att++;let d;
+      if(Math.random()<0.5) d=ans+(1+Math.floor(Math.random()*3))*(Math.random()<0.5?1:-1);
+      else d=mn+Math.floor(Math.random()*(mx-mn+1));
+      if(d>=1&&d!==ans) opts.add(d)}
+    while(opts.size<3) opts.add(ans+opts.size);
+    return Array.from(opts).sort(()=>Math.random()-0.5)}
+};
+
+// ===== PARTICLE SYSTEM =====
+const Particles = {
+  canvas:null,ctx:null,particles:[],animId:null,
+  init(){this.canvas=document.getElementById('particles-canvas');
+    this.ctx=this.canvas.getContext('2d');this._resize();
+    window.addEventListener('resize',()=>this._resize())},
+  _resize(){this.canvas.width=window.innerWidth;this.canvas.height=window.innerHeight},
+  spawn(x,y,color,count){for(let i=0;i<count;i++){
+    const angle=Math.random()*Math.PI*2;const speed=2+Math.random()*6;
+    const size=3+Math.random()*5;
+    this.particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+      size,color:color||this._randColor(),life:1,decay:0.015+Math.random()*0.02,
+      type:'circle'})}
+    if(!this.animId) this._animate()},
+  spawnStars(x,y,color,count){for(let i=0;i<count;i++){
+    const angle=Math.random()*Math.PI*2;const speed=3+Math.random()*5;
+    this.particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+      size:6+Math.random()*8,color:color||'#FFD700',life:1,decay:0.012+Math.random()*0.015,
+      type:'star'})}
+    if(!this.animId) this._animate()},
+  spawnConfetti(count){for(let i=0;i<count;i++){
+    const x=Math.random()*this.canvas.width;const y=-20-Math.random()*100;
+    this.particles.push({x,y,vx:(Math.random()-0.5)*3,vy:1+Math.random()*3,
+      size:6+Math.random()*6,color:this._randColor(),life:1,decay:0.003+Math.random()*0.005,
+      type:'confetti',rot:Math.random()*360,rotSpeed:(Math.random()-0.5)*10})}
+    if(!this.animId) this._animate()},
+  _randColor(){const colors=['#FF6347','#FFD700','#00BFFF','#FF1493','#7FFF00','#FF4500','#9400D3','#00FF7F'];
+    return colors[Math.floor(Math.random()*colors.length)]},
+  _animate(){this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    this.particles=this.particles.filter(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life-=p.decay;
+      if(p.life<=0) return false;
+      this.ctx.save();this.ctx.globalAlpha=p.life;
+      if(p.type==='star'){this._drawStar(p.x,p.y,p.size,p.color)}
+      else if(p.type==='confetti'){this.ctx.translate(p.x,p.y);
+        p.rot+=p.rotSpeed;this.ctx.rotate(p.rot*Math.PI/180);
+        this.ctx.fillStyle=p.color;this.ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
+        this.ctx.setTransform(1,0,0,1,0,0)}
+      else{this.ctx.fillStyle=p.color;this.ctx.beginPath();
+        this.ctx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);this.ctx.fill()}
+      this.ctx.restore();return true});
+    if(this.particles.length>0) this.animId=requestAnimationFrame(()=>this._animate());
+    else{this.animId=null;this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)}},
+  _drawStar(cx,cy,size,color){this.ctx.fillStyle=color;this.ctx.beginPath();
+    for(let i=0;i<5;i++){const angle=i*Math.PI*2/5-Math.PI/2;
+      const ox=cx+Math.cos(angle)*size;const oy=cy+Math.sin(angle)*size;
+      if(i===0) this.ctx.moveTo(ox,oy);else this.ctx.lineTo(ox,oy);
+      const ia=angle+Math.PI/5;this.ctx.lineTo(cx+Math.cos(ia)*size*0.4,cy+Math.sin(ia)*size*0.4)}
+    this.ctx.closePath();this.ctx.fill()}
+};
+
+// ===== MAIN GAME =====
+const Game = {
+  currentMode:null,currentHero:null,state:null,timeouts:[],QUESTIONS:8,roundStreak:0,
+  _initialized:false,
+
+  init(){
+    if(this._initialized) return;
+    this._initialized=true;
+    document.getElementById('btn-counting').addEventListener('click',()=>this.startMode('counting'));
+    document.getElementById('btn-mission').addEventListener('click',()=>this.startMode('mission'));
+    document.getElementById('btn-battle').addEventListener('click',()=>this.startMode('battle'));
+    document.getElementById('back-btn').addEventListener('click',()=>this.showMenu());
+    document.getElementById('btn-retry').addEventListener('click',()=>this.startMode(this.currentMode));
+    document.getElementById('btn-results-menu').addEventListener('click',()=>this.showMenu());
+    Particles.init();
+    this.showMenu();
+  },
+
+  cleanup(){this.timeouts.forEach(t=>clearTimeout(t));this.timeouts=[];Speech.stop()},
+  _t(fn,ms){const t=setTimeout(fn,ms);this.timeouts.push(t);return t},
+
+  // ===== MENU =====
+  showMenu(){
+    this.cleanup();
+    this._showScreen('menu-screen');
+    this._updateMenuStats();
+    this._buildShowcase();
+    this._t(()=>Speech.speak('בוא נשחק עם גיבורי על'),500);
+    Sounds.whoosh();
+  },
+
+  _showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('results-overlay').style.display='none';
+  },
+
+  _updateMenuStats(){
+    const st=Adaptive.getState();
+    document.getElementById('star-counter').textContent='⭐ '+st.totalStars;
+    const row=document.getElementById('collection-row');
+    row.innerHTML=HEROES_DATA.map(h=>{
+      const unlocked=st.heroesUnlocked.includes(h.id);
+      return `<span class="collection-badge ${unlocked?'unlocked':'locked'}"
+        style="${unlocked?'background:'+h.color+';border-color:'+h.color:''}">
+        ${unlocked?`<img src="${h.image}" alt="${h.name_he}" onerror="this.parentElement.textContent='${h.emoji}'">`
+        :'<span class="lock-icon">❓</span>'}</span>`}).join('');
+  },
+
+  _buildShowcase(){
+    const st=Adaptive.getState();
+    const unlocked=HEROES_DATA.filter(h=>st.heroesUnlocked.includes(h.id));
+    // Show all unlocked heroes, duplicate for seamless scroll
+    const heroes=[...unlocked,...unlocked];
+    const showcase=document.getElementById('hero-showcase');
+    showcase.innerHTML=`<div class="hero-showcase-track" id="showcase-track">${
+      heroes.map(h=>`<div class="hero-showcase-card" data-hero="${h.id}" style="border-color:${h.color}">
+        <img src="${h.image}" alt="${h.name_he}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span style="display:none;font-size:4rem">${h.emoji}</span>
+        <span class="hero-name">${h.name_he}</span>
+      </div>`).join('')}</div>`;
+    // Adjust animation duration based on number of heroes
+    const track=document.getElementById('showcase-track');
+    track.style.animationDuration=(heroes.length*3)+'s';
+  },
+
+  _pickHero(){
+    const st=Adaptive.getState();
+    const unlocked=HEROES_DATA.filter(h=>st.heroesUnlocked.includes(h.id));
+    return unlocked[Math.floor(Math.random()*unlocked.length)]},
+
+  // ===== COUNTDOWN =====
+  _doCountdown(cb){
+    const overlay=document.getElementById('countdown-overlay');
+    const numEl=document.getElementById('countdown-number');
+    overlay.style.display='flex';
+    const steps=['3','2','1','!קדימה'];
+    const heSteps=['שלוש','שתיים','אחת','קדימה'];
+    const colors=['#FF6347','#FFD700','#00BFFF','#7FFF00'];
+    let i=0;
+    const next=()=>{
+      if(i>=steps.length){overlay.style.display='none';cb();return}
+      numEl.textContent=steps[i];numEl.style.color=colors[i];
+      numEl.style.animation='none';numEl.offsetHeight;numEl.style.animation='countZoom 0.7s ease';
+      if(i<3) Sounds.countdown(); else Sounds.countdownGo();
+      Speech.speak(heSteps[i]);
+      i++;this._t(next,800)};
+    next();
+  },
+
+  // ===== START MODE =====
+  startMode(mode){
+    this.cleanup();this.currentMode=mode;this.currentHero=this._pickHero();this.roundStreak=0;
+    this.state={questionIndex:0,score:0,questions:[],answered:false};
+    // Speak mode name
+    const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים'};
+    Speech.speak(modeNames[mode]);
+    Sounds.whoosh();
+
+    for(let i=0;i<this.QUESTIONS;i++){
+      if(mode==='counting') this.state.questions.push(Adaptive.generateCounting());
+      else if(mode==='mission'){
+        const sl=Adaptive.getLevel('subtraction');
+        if(sl>=2&&Math.random()<0.4) this.state.questions.push(Adaptive.generateSubtraction());
+        else this.state.questions.push(Adaptive.generateAddition());
+      } else if(mode==='battle') this.state.questions.push(Adaptive.generateComparison());
+    }
+
+    this._showScreen('game-screen');
+    const gs=document.getElementById('game-screen');
+    gs.style.background=this.currentHero.gradient;
+
+    // Countdown then start
+    this._t(()=>{
+      this._doCountdown(()=>{
+        this._t(()=>Speech.speak(this.currentHero.phrases.intro),200);
+        this._t(()=>this._showQuestion(),800);
+      });
+    },300);
+  },
+
+  // ===== SHOW QUESTION =====
+  _showQuestion(){
+    const {questionIndex,questions}=this.state;
+    if(questionIndex>=questions.length){this._showResults();return}
+    this.state.answered=false;
+    const q=questions[questionIndex];
+    document.getElementById('progress-text').textContent=`${questionIndex+1}/${questions.length}`;
+    this._updatePowerMeter();
+    const heroArea=document.getElementById('hero-area');
+    heroArea.innerHTML=`<img src="${this.currentHero.image}" alt="${this.currentHero.name_he}"
+      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:7rem\\'>${this.currentHero.emoji}</span>')">`;
+    heroArea.className='hero-area';
+    const qArea=document.getElementById('question-area');
+    const aArea=document.getElementById('answers-area');
+    if(this.currentMode==='counting') this._showCounting(q,qArea,aArea);
+    else if(this.currentMode==='mission') this._showMission(q,qArea,aArea);
+    else if(this.currentMode==='battle') this._showBattle(q,qArea,aArea);
+  },
+
+  // ===== COUNTING MODE =====
+  _showCounting(q,qArea,aArea){
+    const hero=this.currentHero;const count=q.answer;
+    let items='<div class="count-items">';
+    for(let i=0;i<count;i++) items+=`<span class="count-item" style="animation-delay:${i*0.1}s">${hero.powerEmoji}</span>`;
+    items+='</div>';
+    qArea.innerHTML=`<div class="prompt-text">?כמה ${hero.powerName_he} יש</div>${items}`;
+    this._t(()=>Speech.speak(`כמה ${hero.powerName_he} יש? ספור אותם`),300);
+    this._showAnswerBtns(q.distractors,q.answer,aArea,'counting');
+  },
+
+  // ===== MISSION MODE =====
+  _showMission(q,qArea,aArea){
+    const hero=this.currentHero;const isAdd=q.operation==='+';
+    const opSym=isAdd?'+':'−';const opWord=isAdd?'ועוד':'פחות';
+    const opClass=isAdd?'add':'sub';
+    qArea.innerHTML=`
+      <div class="prompt-text">${hero.name_he}</div>
+      <div class="equation">
+        <span class="eq-num">${q.a}</span>
+        <span class="eq-op ${opClass}">${opSym}</span>
+        <span class="eq-num">${q.b}</span>
+        <span class="eq-op eq">=</span>
+        <span class="eq-num eq-mystery">?</span>
+      </div>
+      <div class="eq-items">
+        ${this._renderItemGroup(q.a,hero.powerEmoji)}
+        <span class="eq-op-big ${opClass}">${opSym}</span>
+        ${this._renderItemGroup(q.b,hero.powerEmoji)}
+      </div>`;
+    const nA=HEBREW_NUMBERS[q.a]||q.a;const nB=HEBREW_NUMBERS[q.b]||q.b;
+    this._t(()=>Speech.speak(`${nA} ${opWord} ${nB} שווה?`),300);
+    this._showAnswerBtns(q.distractors,q.answer,aArea,q.operation==='+'?'addition':'subtraction');
+  },
+
+  _renderItemGroup(count,emoji){
+    if(count>15) return `<span class="item-group"><span class="big-num">${count}</span><span>${emoji}</span></span>`;
+    let h='<span class="item-group">';
+    for(let i=0;i<count;i++) h+=`<span class="small-item">${emoji}</span>`;
+    return h+'</span>';
+  },
+
+  // ===== BATTLE MODE =====
+  _showBattle(q,qArea,aArea){
+    const st=Adaptive.getState();
+    const unlocked=HEROES_DATA.filter(h=>st.heroesUnlocked.includes(h.id));
+    let heroA=unlocked[Math.floor(Math.random()*unlocked.length)];
+    let heroB=unlocked[Math.floor(Math.random()*unlocked.length)];
+    if(unlocked.length>1) while(heroB.id===heroA.id) heroB=unlocked[Math.floor(Math.random()*unlocked.length)];
+    qArea.innerHTML=`
+      <div class="prompt-text">?מי חזק יותר</div>
+      <div class="battle-area">
+        <button class="battle-card" data-num="${q.numA}" style="border-color:${heroA.color}">
+          <img src="${heroA.image}" alt="${heroA.name_he}" onerror="this.outerHTML='<span style=\\'font-size:4rem\\'>${heroA.emoji}</span>'">
+          <span class="battle-num" style="color:${heroA.color}">${q.numA}</span>
+          <span class="battle-name">${heroA.name_he}</span>
+        </button>
+        <span class="vs-text">⚡VS⚡</span>
+        <button class="battle-card" data-num="${q.numB}" style="border-color:${heroB.color}">
+          <img src="${heroB.image}" alt="${heroB.name_he}" onerror="this.outerHTML='<span style=\\'font-size:4rem\\'>${heroB.emoji}</span>'">
+          <span class="battle-num" style="color:${heroB.color}">${q.numB}</span>
+          <span class="battle-name">${heroB.name_he}</span>
+        </button>
+      </div>`;
+    aArea.innerHTML='';
+    const nA=HEBREW_NUMBERS[q.numA]||q.numA;const nB=HEBREW_NUMBERS[q.numB]||q.numB;
+    this._t(()=>Speech.speak(`${nA} או ${nB}? מי חזק יותר? מי יש לו יותר?`),300);
+    const cards=qArea.querySelectorAll('.battle-card');
+    cards.forEach(card=>{card.addEventListener('click',()=>{
+      if(this.state.answered) return;
+      this._handleBattle(parseInt(card.dataset.num),q.answer,cards)})});
+  },
+
+  _handleBattle(chosen,correct,cards){
+    this.state.answered=true;
+    cards.forEach(card=>{const num=parseInt(card.dataset.num);
+      if(num===correct) card.classList.add('winner');else card.classList.add('loser')});
+    if(chosen===correct){
+      this.state.score++;this.roundStreak++;
+      const result=Adaptive.recordCorrect('comparison');
+      Sounds.powerUp();this._correctEffects(result==='level_up');
+      this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול!`)},1200);
+    } else {
+      this.roundStreak=0;Adaptive.recordWrong('comparison');Sounds.wrong();this._wrongEffects();
+      this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול`)},1200);
+    }
+    this._updatePowerMeter();
+    this._t(()=>this._nextQuestion(),2500);
+  },
+
+  // ===== ANSWER BUTTONS =====
+  _showAnswerBtns(options,answer,container,skill){
+    container.innerHTML=options.map(num=>`<button class="answer-btn" data-num="${num}">${num}</button>`).join('');
+    container.querySelectorAll('.answer-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        if(this.state.answered) return;
+        this._handleAnswer(parseInt(btn.dataset.num),answer,container,skill)})});
+  },
+
+  _handleAnswer(chosen,correct,container,skill){
+    this.state.answered=true;
+    const btns=container.querySelectorAll('.answer-btn');
+    btns.forEach(btn=>{const num=parseInt(btn.dataset.num);btn.classList.add('disabled');
+      if(num===correct) btn.classList.add('correct');
+      else if(num===chosen&&num!==correct) btn.classList.add('wrong')});
+    if(chosen===correct){
+      this.state.score++;this.roundStreak++;
+      const result=Adaptive.recordCorrect(skill);
+      Sounds.powerUp();this._correctEffects(result==='level_up');
+      this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh}!`)},1000);
+    } else {
+      this.roundStreak=0;Adaptive.recordWrong(skill);Sounds.wrong();this._wrongEffects();
+      this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`התשובה היא ${nh}`)},1200);
+    }
+    this._updatePowerMeter();
+    this._t(()=>this._nextQuestion(),2800);
+  },
+
+  // ===== EFFECTS =====
+  _correctEffects(isLevelUp){
+    const heroArea=document.getElementById('hero-area');
+    heroArea.classList.add('celebrate');
+    // Screen flash
+    const flash=document.getElementById('screen-flash');
+    flash.style.background='rgba(255,215,0,0.3)';flash.style.opacity='1';
+    setTimeout(()=>{flash.style.opacity='0'},150);
+    // Particles from hero
+    const rect=heroArea.getBoundingClientRect();
+    const cx=rect.left+rect.width/2;const cy=rect.top+rect.height/2;
+    Particles.spawnStars(cx,cy,this.currentHero.color,15);
+    Particles.spawn(cx,cy,this.currentHero.color,10);
+    // Action word
+    this._showActionWord();
+    // Streak check
+    this._checkStreak();
+    // Praise
+    this._speakPraise(isLevelUp);
+  },
+
+  _wrongEffects(){
+    const heroArea=document.getElementById('hero-area');
+    heroArea.classList.add('sad');
+    const flash=document.getElementById('screen-flash');
+    flash.style.background='rgba(255,100,0,0.15)';flash.style.opacity='1';
+    setTimeout(()=>{flash.style.opacity='0'},200);
+    this._speakEncourage();
+  },
+
+  _showActionWord(){
+    const el=document.getElementById('action-word');
+    const word=ACTION_WORDS[Math.floor(Math.random()*ACTION_WORDS.length)];
+    el.textContent=word;
+    el.style.top=(20+Math.random()*30)+'%';
+    el.style.left=(15+Math.random()*50)+'%';
+    el.style.display='block';el.style.animation='none';
+    el.offsetHeight;el.style.animation='actionPop 0.8s ease forwards';
+    setTimeout(()=>{el.style.display='none'},900);
+  },
+
+  _checkStreak(){
+    const banner=document.getElementById('streak-banner');
+    let text=null;
+    if(this.roundStreak===3){text='🔥 !שלוש ברצף';Sounds.combo()}
+    else if(this.roundStreak===5){text='🔥🔥 !חמש ברצף! מדהים';Sounds.combo();
+      Particles.spawnConfetti(30)}
+    else if(this.roundStreak===8){text='🏆 !מושלם! שמונה ברצף';Sounds.celebration();
+      Particles.spawnConfetti(60)}
+    if(text){
+      banner.textContent=text;banner.style.display='block';
+      banner.style.animation='none';banner.offsetHeight;
+      banner.style.animation='streakPop 1.2s ease forwards';
+      this._t(()=>{banner.style.display='none'},1300);
+      this._t(()=>Speech.speak(text.replace(/[🔥🏆]/g,'').replace('!','')),200);
+    }
+  },
+
+  _nextQuestion(){
+    this.state.questionIndex++;
+    const remaining=this.QUESTIONS-this.state.questionIndex;
+    for(let i=0;i<remaining;i++){
+      const idx=this.state.questionIndex+i;
+      if(this.currentMode==='counting') this.state.questions[idx]=Adaptive.generateCounting();
+      else if(this.currentMode==='mission'){
+        const sl=Adaptive.getLevel('subtraction');
+        if(sl>=2&&Math.random()<0.4) this.state.questions[idx]=Adaptive.generateSubtraction();
+        else this.state.questions[idx]=Adaptive.generateAddition();
+      } else if(this.currentMode==='battle') this.state.questions[idx]=Adaptive.generateComparison();
+    }
+    this._showQuestion();
+  },
+
+  // ===== POWER METER =====
+  _updatePowerMeter(){
+    const meter=document.getElementById('power-meter');if(!meter) return;
+    const hero=this.currentHero;const {score}=this.state;
+    let h='';for(let i=0;i<this.QUESTIONS;i++){
+      const filled=i<score;
+      h+=`<span class="power-orb ${filled?'filled':''}"
+        style="${filled?'background:'+hero.color+';border-color:'+hero.color:''}">
+        ${filled?hero.powerEmoji:'○'}</span>`}
+    meter.innerHTML=h;
+  },
+
+  // ===== RESULTS =====
+  _showResults(){
+    this.cleanup();const {score,questions}=this.state;const total=questions.length;
+    const hero=this.currentHero;
+    Adaptive.addStars(score);
+    const newHeroId=Adaptive.unlockNextHero();
+    const newHero=newHeroId?HEROES_DATA.find(h=>h.id===newHeroId):null;
+
+    document.getElementById('results-overlay').style.display='flex';
+
+    const pct=Math.round((score/total)*100);
+    let title,emoji;
+    if(pct>=90){title='!גיבור על אמיתי';emoji='🏆'}
+    else if(pct>=70){title='!כל הכבוד';emoji='🌟'}
+    else if(pct>=50){title='!יפה מאוד';emoji='👏'}
+    else{title='!ניסיון טוב';emoji='💪'}
+
+    document.getElementById('results-hero').innerHTML=
+      `<img src="${hero.image}" alt="${hero.name_he}"
+        onerror="this.outerHTML='<span style=\\'font-size:6rem\\'>${hero.emoji}</span>'">`;
+    document.getElementById('results-title').textContent=emoji+' '+title;
+
+    let starsHtml='';
+    for(let i=0;i<total;i++){
+      const earned=i<score;
+      starsHtml+=`<span class="star ${earned?'':'empty'}" style="animation-delay:${i*0.15}s">⭐</span>`;
+    }
+    document.getElementById('results-stars').innerHTML=starsHtml;
+    document.getElementById('results-score').textContent=`${score} מתוך ${total}`;
+
+    const unlockEl=document.getElementById('results-unlock');
+    if(newHero){
+      unlockEl.innerHTML=`<div class="unlock-box">
+        <div class="unlock-title">!גיבור חדש נפתח</div>
+        <img src="${newHero.image}" alt="${newHero.name_he}"
+          onerror="this.outerHTML='<span style=\\'font-size:5rem\\'>${newHero.emoji}</span>'">
+        <div class="unlock-name">${newHero.name_he}</div></div>`;
+    } else unlockEl.innerHTML='';
+
+    if(pct>=70){Sounds.celebration();Particles.spawnConfetti(80)}
+    else Sounds.correct();
+
+    this._t(()=>{
+      if(newHero) Speech.speakSequence([title.replace('!',''),`גיבור חדש נפתח! ${newHero.name_he}`],1000);
+      else Speech.speak(title.replace('!',''));
+    },500);
+  },
+
+  // ===== SPEECH HELPERS =====
+  _speakPraise(isLevelUp){
+    const hero=this.currentHero;
+    if(isLevelUp){
+      const phrase=HERO_LEVEL_UP[Math.floor(Math.random()*HERO_LEVEL_UP.length)];
+      this._t(()=>Speech.speak(phrase.replace('!','')),300);
+    } else {
+      const pool=[...hero.phrases.correct,...HERO_PRAISE];
+      const phrase=pool[Math.floor(Math.random()*pool.length)];
+      this._t(()=>Speech.speak(phrase.replace('!','')),300);
+    }
+  },
+  _speakEncourage(){
+    const hero=this.currentHero;
+    const pool=[...hero.phrases.wrong,...HERO_ENCOURAGE];
+    const phrase=pool[Math.floor(Math.random()*pool.length)];
+    this._t(()=>Speech.speak(phrase.replace('!','')),300);
+  }
+};
+
+// ===== INIT ON LOAD =====
+document.addEventListener('DOMContentLoaded',()=>{
+  // Init speech and sounds on first user interaction
+  let inited=false;
+  const initOnce=()=>{
+    if(inited) return;inited=true;
+    Speech.init();Sounds.init();
+    document.removeEventListener('click',initOnce);
+    document.removeEventListener('touchstart',initOnce);
+  };
+  document.addEventListener('click',initOnce);
+  document.addEventListener('touchstart',initOnce);
+  Game.init();
+});
+
+</script>
+</body>
+</html>
