@@ -148,6 +148,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-counting{background:linear-gradient(135deg,#9C27B0,#4A148C)}
 .mode-btn-mission{background:linear-gradient(135deg,#E23636,#B71C1C)}
 .mode-btn-battle{background:linear-gradient(135deg,#FF6F00,#E65100)}
+.mode-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  transition:left 0.5s}
+.mode-btn:hover::after{left:120%}
 
 /* Hero Collection */
 .collection-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:6px 12px;
@@ -399,7 +403,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 /* Team card header with inline SVG logo */
 .team-card-header{display:flex;align-items:center;justify-content:center;gap:8px;
   padding:8px 10px;position:relative;z-index:2}
-.team-card-header svg{width:28px;height:28px;flex-shrink:0}
+.team-card-header svg{width:32px;height:32px;flex-shrink:0;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));transition:transform 0.3s}
+.team-card:hover .team-card-header svg{transform:scale(1.15) rotate(5deg)}
 .team-card-name{font-family:'Bangers',cursive;font-size:1.2rem;color:#fff;
   -webkit-text-stroke:1px #000;paint-order:stroke fill;letter-spacing:1px;
   text-shadow:2px 2px 0 rgba(0,0,0,0.5)}
@@ -423,6 +429,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .team-cosmic{background:linear-gradient(135deg,#00695C,#004D40)}
 .team-marvel{background:linear-gradient(180deg,#E23636,#B71C1C)}
 
+/* Team complete glow */
+.team-card.team-complete{box-shadow:4px 4px 0 rgba(0,0,0,0.5),0 0 15px rgba(255,215,0,0.3)}
+.team-card.team-complete .comic-corner{border-top-color:rgba(255,215,0,0.7)}
+
 /* Comic speed lines on team cards */
 .team-card .speed-lines{position:absolute;top:0;left:0;width:100%;height:100%;
   background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,255,255,0.03) 8px,rgba(255,255,255,0.03) 10px);
@@ -431,7 +441,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 /* Marvel banner logo */
 .marvel-banner{width:100%;max-width:520px;padding:6px 12px;position:relative;z-index:1;
   display:flex;align-items:center;justify-content:center;gap:10px}
-.marvel-banner svg{height:30px;width:auto}
+.marvel-banner svg{height:36px;width:auto;filter:drop-shadow(0 2px 6px rgba(244,67,54,0.5));
+  animation:marvelGlow 3s ease-in-out infinite}
+@keyframes marvelGlow{0%,100%{filter:drop-shadow(0 2px 6px rgba(244,67,54,0.5))}
+  50%{filter:drop-shadow(0 2px 12px rgba(244,67,54,0.8))}}
 .marvel-banner-line{flex:1;height:3px;background:linear-gradient(90deg,transparent,#E23636,transparent);border-radius:2px}
 
 /* Comic panel decorative corner */
@@ -470,9 +483,15 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   <!-- Marvel Banner Logo -->
   <div class="marvel-banner">
     <span class="marvel-banner-line"></span>
-    <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="200" height="50" rx="4" fill="#E23636"/>
-      <text x="100" y="37" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="36" font-weight="900" fill="#fff" letter-spacing="4">MARVEL</text>
+    <svg viewBox="0 0 220 56" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="marvelGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#F44336"/>
+          <stop offset="100%" stop-color="#B71C1C"/>
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="216" height="52" rx="5" fill="url(#marvelGrad)" stroke="#fff" stroke-width="2"/>
+      <text x="110" y="41" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="40" font-weight="900" fill="#fff" letter-spacing="6" stroke="#000" stroke-width="0.5">MARVEL</text>
     </svg>
     <span class="marvel-banner-line"></span>
   </div>
@@ -503,6 +522,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   </div>
 
   <div class="collection-row" id="collection-row"></div>
+  <div style="font-family:'Bangers',cursive;font-size:0.9rem;color:rgba(255,255,255,0.3);letter-spacing:2px;padding:10px 0;position:relative;z-index:1">MARVEL MATH HEROES</div>
 </div>
 
 <!-- ===== GAME SCREEN ===== -->
@@ -591,7 +611,7 @@ const HEROES_DATA = [
    phrases:{correct:['!האלמנה השחורה גאה','!דיוק מושלם','!מעולה'],wrong:['!האלמנה אומרת נסי שוב','!קרוב'],intro:'האלמנה השחורה צריכה את עזרתך'}},
   {id:'marvel',name_he:'קפטן מארוול',emoji:'🌟',color:'#E65100',colorLight:'#FFE0B2',
    gradient:'linear-gradient(135deg,#FF6F00,#E65100)',powerEmoji:'☄️',powerName_he:'כדורי אש',
-   image:'images/heroes/marvel.png',
+   image:'images/heroes/captainmarvel.png',
    phrases:{correct:['!קפטן מארוול מתרשמת','!כוח קוסמי','!מדהים'],wrong:['!קפטן מארוול אומרת נסי שוב','!כמעט'],intro:'קפטן מארוול צריכה את עזרתך'}},
   {id:'deadpool',name_he:'דדפול',emoji:'😜',color:'#C62828',colorLight:'#FFCDD2',
    gradient:'linear-gradient(135deg,#C62828,#B71C1C)',powerEmoji:'⚔️',powerName_he:'חרבות',
@@ -599,7 +619,7 @@ const HEROES_DATA = [
    phrases:{correct:['!דדפול אוהב את זה','!מגניב','!וואו באמת'],wrong:['!דדפול אומר נסה שוב','!אופס'],intro:'דדפול צריך את עזרתך'}},
   {id:'drax',name_he:'דראקס',emoji:'🗡️',color:'#607D8B',colorLight:'#CFD8DC',
    gradient:'linear-gradient(135deg,#78909C,#455A64)',powerEmoji:'🗡️',powerName_he:'סכינים',
-   image:'images/heroes/drax.png',
+   image:'images/heroes/drax.jpg',
    phrases:{correct:['!דראקס ההורס מרוצה','!כוח ענק','!חזק'],wrong:['!דראקס אומר נסה שוב','!עוד פעם'],intro:'דראקס צריך את עזרתך'}},
   {id:'doom',name_he:'דוקטור דום',emoji:'👑',color:'#2E7D32',colorLight:'#C8E6C9',
    gradient:'linear-gradient(135deg,#2E7D32,#1B5E20)',powerEmoji:'⚡',powerName_he:'קסמים',
@@ -650,26 +670,36 @@ const TEAMS_DATA = [
   {id:'avengers',name_he:'האוונג\'רס',cssClass:'team-avengers',
    members:['ironman','captain','hulk','thor','blackwidow','vision','antman','wasp','panther','strange'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
-     <text x="20" y="29" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="28" font-weight="900" fill="#FFD700" stroke="#000" stroke-width="1">A</text>
+     <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#FFD700" stroke-width="2.5"/>
+     <path d="M20 6 L28 32 L12 32 Z" fill="none" stroke="#FFD700" stroke-width="2" stroke-linejoin="round"/>
+     <line x1="14" y1="24" x2="26" y2="24" stroke="#FFD700" stroke-width="2"/>
+     <text x="20" y="29" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="22" font-weight="900" fill="#fff" stroke="#000" stroke-width="0.5">A</text>
    </svg>`},
   {id:'xmen',name_he:'אקס-מן',cssClass:'team-xmen',
    members:['wolverine','colossus','deadpool'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
-     <text x="20" y="29" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="26" font-weight="900" fill="#FFD700" stroke="#000" stroke-width="1">X</text>
+     <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#FFD700" stroke-width="2.5"/>
+     <line x1="10" y1="10" x2="30" y2="30" stroke="#FFD700" stroke-width="3.5" stroke-linecap="round"/>
+     <line x1="30" y1="10" x2="10" y2="30" stroke="#FFD700" stroke-width="3.5" stroke-linecap="round"/>
+     <circle cx="20" cy="20" r="6" fill="none" stroke="#fff" stroke-width="1.5"/>
    </svg>`},
   {id:'villains',name_he:'הנבלים',cssClass:'team-villains',
    members:['thanos','venom','doom','juggernaut','octopus'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
-     <text x="20" y="28" text-anchor="middle" font-size="22">💀</text>
+     <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#9C27B0" stroke-width="2.5"/>
+     <circle cx="14" cy="16" r="4" fill="#fff"/><circle cx="14" cy="16" r="2" fill="#000"/>
+     <circle cx="26" cy="16" r="4" fill="#fff"/><circle cx="26" cy="16" r="2" fill="#000"/>
+     <path d="M13 28 Q20 22 27 28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
    </svg>`},
-  {id:'cosmic',name_he:'כוחות קוסמיים',cssClass:'team-cosmic',
-   members:['marvel','drax','spiderman','strange','thing'],
+  {id:'cosmic',name_he:'שומרי הגלקסיה',cssClass:'team-cosmic',
+   members:['marvel','drax','spiderman','thing'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
-     <text x="20" y="28" text-anchor="middle" font-size="22">🌌</text>
+     <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#00E5FF" stroke-width="2.5"/>
+     <circle cx="20" cy="20" r="3" fill="#FFD700"/>
+     <ellipse cx="20" cy="20" rx="12" ry="5" fill="none" stroke="#00E5FF" stroke-width="1.5" transform="rotate(-30 20 20)"/>
+     <ellipse cx="20" cy="20" rx="12" ry="5" fill="none" stroke="#00E5FF" stroke-width="1.5" transform="rotate(30 20 20)"/>
+     <circle cx="12" cy="11" r="1.5" fill="#FFD700"/><circle cx="28" cy="13" r="1" fill="#FFD700"/>
+     <circle cx="15" cy="30" r="1.2" fill="#FFD700"/><circle cx="30" cy="27" r="0.8" fill="#FFD700"/>
    </svg>`}
 ];
 
@@ -1048,10 +1078,12 @@ const Game = {
           onerror="this.style.display='none'" title="${hero.name_he}">`;
       }).join('');
       const fullWidth=team.members.length>5?'full-width':'';
-      return `<div class="team-card ${team.cssClass} ${fullWidth}">
+      const allUnlocked=team.members.every(mid=>st.heroesUnlocked.includes(mid));
+      const teamComplete=allUnlocked?'team-complete':'';
+      return `<div class="team-card ${team.cssClass} ${fullWidth} ${teamComplete}">
         <div class="speed-lines"></div>
         <div class="comic-corner"></div>
-        <div class="team-card-header">${team.logo}<span class="team-card-name">${team.name_he}</span></div>
+        <div class="team-card-header">${team.logo}<span class="team-card-name">${team.name_he}</span>${allUnlocked?'<span style="font-size:0.8rem;margin-right:4px">✓</span>':''}</div>
         <div class="team-members">${membersHtml}</div>
       </div>`;
     }).join('');
