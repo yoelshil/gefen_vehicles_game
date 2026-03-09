@@ -383,6 +383,68 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   .prompt-text{font-size:1.5rem}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
+
+/* ===== TEAM CARDS - COMIC PANEL LAYOUT ===== */
+.teams-section{width:100%;max-width:520px;padding:0 12px;position:relative;z-index:1}
+.teams-title{font-family:'Bangers',cursive;font-size:1.8rem;color:#FFD700;text-align:center;
+  -webkit-text-stroke:1.5px #000;paint-order:stroke fill;letter-spacing:2px;margin-bottom:8px;
+  text-shadow:2px 2px 0 rgba(0,0,0,0.4)}
+.teams-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.team-card{position:relative;border:4px solid #000;border-radius:14px;overflow:hidden;
+  box-shadow:4px 4px 0 rgba(0,0,0,0.5);cursor:pointer;touch-action:manipulation;
+  transition:transform 0.2s;min-height:120px;display:flex;flex-direction:column}
+.team-card:active{transform:scale(0.96)}
+.team-card.full-width{grid-column:1 / -1}
+
+/* Team card header with inline SVG logo */
+.team-card-header{display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:8px 10px;position:relative;z-index:2}
+.team-card-header svg{width:28px;height:28px;flex-shrink:0}
+.team-card-name{font-family:'Bangers',cursive;font-size:1.2rem;color:#fff;
+  -webkit-text-stroke:1px #000;paint-order:stroke fill;letter-spacing:1px;
+  text-shadow:2px 2px 0 rgba(0,0,0,0.5)}
+
+/* Comic-panel halftone overlay on team cards */
+.team-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(circle,rgba(0,0,0,0.08) 1px,transparent 1px);
+  background-size:4px 4px;pointer-events:none;z-index:1}
+
+/* Team members row */
+.team-members{display:flex;justify-content:center;gap:4px;padding:6px 8px;flex-wrap:wrap;position:relative;z-index:2}
+.team-member{width:40px;height:40px;border-radius:50%;object-fit:cover;
+  border:3px solid #000;box-shadow:0 0 0 2px #FFD700;transition:transform 0.3s}
+.team-member:hover{transform:scale(1.15)}
+.team-member.locked-member{filter:grayscale(0.9);opacity:0.4;box-shadow:0 0 0 2px #555}
+
+/* Team-specific colors */
+.team-avengers{background:linear-gradient(135deg,#1565C0,#0D47A1)}
+.team-xmen{background:linear-gradient(135deg,#F9A825,#E65100)}
+.team-villains{background:linear-gradient(135deg,#4A148C,#1a0033)}
+.team-cosmic{background:linear-gradient(135deg,#00695C,#004D40)}
+.team-marvel{background:linear-gradient(180deg,#E23636,#B71C1C)}
+
+/* Comic speed lines on team cards */
+.team-card .speed-lines{position:absolute;top:0;left:0;width:100%;height:100%;
+  background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,255,255,0.03) 8px,rgba(255,255,255,0.03) 10px);
+  pointer-events:none;z-index:0}
+
+/* Marvel banner logo */
+.marvel-banner{width:100%;max-width:520px;padding:6px 12px;position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;gap:10px}
+.marvel-banner svg{height:30px;width:auto}
+.marvel-banner-line{flex:1;height:3px;background:linear-gradient(90deg,transparent,#E23636,transparent);border-radius:2px}
+
+/* Comic panel decorative corner */
+.team-card .comic-corner{position:absolute;top:0;right:0;width:0;height:0;
+  border-left:20px solid transparent;border-top:20px solid rgba(255,215,0,0.4);z-index:3}
+
+@media (max-width:600px){
+  .teams-grid{gap:8px}
+  .team-card{min-height:100px}
+  .team-member{width:34px;height:34px}
+  .team-card-name{font-size:1rem}
+  .teams-title{font-size:1.5rem}
+}
 </style>
 </head>
 <body>
@@ -405,9 +467,25 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   <h1 class="menu-title">גיבורי על</h1>
   <p class="menu-subtitle">MARVEL MATH</p>
 
+  <!-- Marvel Banner Logo -->
+  <div class="marvel-banner">
+    <span class="marvel-banner-line"></span>
+    <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="200" height="50" rx="4" fill="#E23636"/>
+      <text x="100" y="37" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="36" font-weight="900" fill="#fff" letter-spacing="4">MARVEL</text>
+    </svg>
+    <span class="marvel-banner-line"></span>
+  </div>
+
   <div class="hero-showcase" id="hero-showcase"></div>
 
   <div class="star-counter" id="star-counter">⭐ 0</div>
+
+  <!-- Team Cards Section -->
+  <div class="teams-section">
+    <div class="teams-title">קבוצות גיבורי על</div>
+    <div class="teams-grid" id="teams-grid"></div>
+  </div>
 
   <div class="mode-buttons">
     <button class="mode-btn mode-btn-counting" id="btn-counting">
@@ -566,6 +644,34 @@ const HERO_PRAISE = ['!כל הכבוד','!מעולה','!מדהים','!וואו',
 const HERO_ENCOURAGE = ['!נסה שוב','!כמעט','!קרוב','!אפשר לנסות שוב','!בוא ננסה שוב'];
 const HERO_LEVEL_UP = ['!עלית שלב','!אתה מתקדם','!הולך ונהיה גיבור על'];
 const ACTION_WORDS = ['POW!','BAM!','BOOM!','WOW!','!יש','!בום','!פאו','!וואו','SMASH!','ZAP!'];
+
+// ===== TEAM DEFINITIONS =====
+const TEAMS_DATA = [
+  {id:'avengers',name_he:'האוונג\'רס',cssClass:'team-avengers',
+   members:['ironman','captain','hulk','thor','blackwidow','vision','antman','wasp','panther','strange'],
+   logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
+     <text x="20" y="29" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="28" font-weight="900" fill="#FFD700" stroke="#000" stroke-width="1">A</text>
+   </svg>`},
+  {id:'xmen',name_he:'אקס-מן',cssClass:'team-xmen',
+   members:['wolverine','colossus','deadpool'],
+   logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
+     <text x="20" y="29" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="26" font-weight="900" fill="#FFD700" stroke="#000" stroke-width="1">X</text>
+   </svg>`},
+  {id:'villains',name_he:'הנבלים',cssClass:'team-villains',
+   members:['thanos','venom','doom','juggernaut','octopus'],
+   logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
+     <text x="20" y="28" text-anchor="middle" font-size="22">💀</text>
+   </svg>`},
+  {id:'cosmic',name_he:'כוחות קוסמיים',cssClass:'team-cosmic',
+   members:['marvel','drax','spiderman','strange','thing'],
+   logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+     <circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/>
+     <text x="20" y="28" text-anchor="middle" font-size="22">🌌</text>
+   </svg>`}
+];
 
 // ===== FULLSCREEN =====
 function toggleFullscreen(){
@@ -886,6 +992,7 @@ const Game = {
     this._showScreen('menu-screen');
     this._updateMenuStats();
     this._buildShowcase();
+    this._buildTeams();
     this._t(()=>Speech.speak('בוא נשחק עם גיבורי על'),500);
     Sounds.whoosh();
   },
@@ -927,6 +1034,27 @@ const Game = {
         </div>`}).join('')}</div>`;
     const track=document.getElementById('showcase-track');
     track.style.animationDuration=(all.length*3)+'s';
+  },
+
+  _buildTeams(){
+    const st=Adaptive.getState();
+    const grid=document.getElementById('teams-grid');
+    grid.innerHTML=TEAMS_DATA.map((team,idx)=>{
+      const membersHtml=team.members.map(mid=>{
+        const hero=HEROES_DATA.find(h=>h.id===mid);
+        if(!hero) return '';
+        const isUnlocked=st.heroesUnlocked.includes(mid);
+        return `<img class="team-member ${isUnlocked?'':'locked-member'}" src="${hero.image}" alt="${hero.name_he}"
+          onerror="this.style.display='none'" title="${hero.name_he}">`;
+      }).join('');
+      const fullWidth=team.members.length>5?'full-width':'';
+      return `<div class="team-card ${team.cssClass} ${fullWidth}">
+        <div class="speed-lines"></div>
+        <div class="comic-corner"></div>
+        <div class="team-card-header">${team.logo}<span class="team-card-name">${team.name_he}</span></div>
+        <div class="team-members">${membersHtml}</div>
+      </div>`;
+    }).join('');
   },
 
   _pickHero(){
