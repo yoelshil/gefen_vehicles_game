@@ -11,25 +11,31 @@
 /* ===== RESET & BASE ===== */
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,sans-serif;
-  background:#0a0a2e;color:#fff;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  background:#080820;color:#fff;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 
 /* ===== ANIMATED SPACE + HALFTONE BACKGROUND ===== */
 body::before{content:'';position:fixed;top:0;left:0;width:200%;height:200%;
-  background:radial-gradient(2px 2px at 20px 30px,#fff,transparent),
-  radial-gradient(2px 2px at 40px 70px,rgba(255,255,200,0.8),transparent),
-  radial-gradient(3px 3px at 90px 40px,#fff,transparent),
-  radial-gradient(2px 2px at 130px 80px,rgba(200,200,255,0.9),transparent),
+  background:radial-gradient(3px 3px at 20px 30px,#fff,transparent),
+  radial-gradient(2px 2px at 40px 70px,rgba(255,255,200,0.9),transparent),
+  radial-gradient(4px 4px at 90px 40px,#fff,transparent),
+  radial-gradient(3px 3px at 130px 80px,rgba(200,200,255,1),transparent),
   radial-gradient(2px 2px at 160px 30px,#fff,transparent),
-  radial-gradient(3px 3px at 50px 160px,rgba(255,200,200,0.8),transparent),
+  radial-gradient(3px 3px at 50px 160px,rgba(255,200,200,0.9),transparent),
   radial-gradient(2px 2px at 100px 120px,#fff,transparent),
-  radial-gradient(2px 2px at 180px 150px,rgba(200,255,200,0.7),transparent);
-  background-size:200px 200px;animation:starsMove 120s linear infinite;z-index:0;pointer-events:none}
+  radial-gradient(3px 3px at 180px 150px,rgba(200,255,200,0.8),transparent);
+  background-size:200px 200px;animation:starsMove 80s linear infinite;z-index:0;pointer-events:none}
 @keyframes starsMove{0%{transform:translate(0,0)}100%{transform:translate(-200px,-200px)}}
 
-/* Comic halftone overlay */
+/* Comic halftone overlay - much stronger */
 body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
-  background:radial-gradient(circle,rgba(255,255,255,0.03) 1px,transparent 1px);
-  background-size:8px 8px;z-index:0;pointer-events:none}
+  background:radial-gradient(circle,rgba(255,255,255,0.07) 1px,transparent 1px);
+  background-size:6px 6px;z-index:0;pointer-events:none}
+
+/* Speed lines overlay */
+.speed-lines-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(45deg,transparent,transparent 30px,rgba(255,255,255,0.015) 30px,rgba(255,255,255,0.015) 32px);
+  animation:speedLinesMove 8s linear infinite}
+@keyframes speedLinesMove{0%{background-position:0 0}100%{background-position:60px 60px}}
 
 /* ===== FULLSCREEN BUTTON ===== */
 .fullscreen-btn{position:fixed;top:10px;left:10px;z-index:500;width:44px;height:44px;
@@ -93,45 +99,50 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 @keyframes rayRotate{0%{transform:translate(-50%,-50%) rotate(0deg)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
 
 /* ===== MENU SCREEN ===== */
-#menu-screen{padding:10px 16px;gap:10px;position:relative}
+#menu-screen{padding:10px 16px;gap:8px;position:relative}
 
-.menu-title{font-family:'Bangers',cursive;font-size:3.5rem;text-align:center;margin-top:12px;
-  color:#FFD700;-webkit-text-stroke:3px #000;paint-order:stroke fill;
-  text-shadow:4px 4px 0 #C62828,6px 6px 0 rgba(0,0,0,0.3);
-  letter-spacing:3px;animation:titlePulse 3s ease-in-out infinite;position:relative;z-index:1}
-@keyframes titlePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.menu-title{font-family:'Bangers',cursive;font-size:4rem;text-align:center;margin-top:8px;
+  color:#FFD700;-webkit-text-stroke:4px #000;paint-order:stroke fill;
+  text-shadow:4px 4px 0 #C62828,6px 6px 0 #8B0000,8px 8px 0 rgba(0,0,0,0.4);
+  letter-spacing:4px;animation:titlePulse 3s ease-in-out infinite;position:relative;z-index:1}
+@keyframes titlePulse{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.06) rotate(-1deg)}}
 
-.menu-subtitle{font-family:'Bangers',cursive;font-size:1.4rem;color:#fff;text-align:center;
-  -webkit-text-stroke:1px rgba(0,0,0,0.5);letter-spacing:4px;
-  text-shadow:2px 2px 0 rgba(0,0,0,0.5);margin:0 0 6px;position:relative;z-index:1}
+.menu-subtitle{font-family:'Bangers',cursive;font-size:1.5rem;color:#fff;text-align:center;
+  -webkit-text-stroke:1.5px rgba(0,0,0,0.6);letter-spacing:6px;
+  text-shadow:2px 2px 0 #E23636,3px 3px 0 rgba(0,0,0,0.5);margin:0 0 4px;position:relative;z-index:1}
 
-/* Star Counter - Comic Badge */
-.star-counter{font-family:'Bangers',cursive;font-size:1.6rem;color:#FFD700;
-  display:flex;align-items:center;gap:6px;padding:8px 20px;
-  background:linear-gradient(135deg,#1a1a4e,#0D47A1);border:3px solid #000;border-radius:30px;
-  box-shadow:3px 3px 0 #000;letter-spacing:1px;position:relative;z-index:1}
-
+/* Star Counter - Comic Shield Badge */
+.star-counter{font-family:'Bangers',cursive;font-size:1.8rem;color:#FFD700;
+  display:flex;align-items:center;gap:8px;padding:10px 24px;
+  background:linear-gradient(135deg,#1a1a4e,#0D47A1);border:4px solid #000;border-radius:30px;
+  box-shadow:4px 4px 0 #000,inset 0 0 10px rgba(255,215,0,0.15);letter-spacing:2px;position:relative;z-index:1}
 
 /* Mode Buttons - Comic Style */
-.mode-buttons{display:flex;flex-direction:column;gap:12px;width:100%;max-width:380px;padding:0 16px;
+.mode-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:480px;padding:0 12px;
   position:relative;z-index:1}
-.mode-btn{display:flex;align-items:center;gap:14px;padding:16px 20px;border:4px solid #000;border-radius:14px;
-  cursor:pointer;touch-action:manipulation;font-size:1.3rem;font-weight:800;color:#fff;
+.mode-btn{display:flex;align-items:center;gap:10px;padding:14px 14px;border:5px solid #000;border-radius:16px;
+  cursor:pointer;touch-action:manipulation;font-size:1.2rem;font-weight:800;color:#fff;
   position:relative;overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;
-  box-shadow:5px 5px 0 #000;transform:skewX(-2deg);font-family:'Bangers',cursive;letter-spacing:1px}
-.mode-btn:active{transform:skewX(-2deg) scale(0.96);box-shadow:2px 2px 0 #000}
-.mode-btn-icon{font-size:2.2rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
+  box-shadow:6px 6px 0 #000;transform:skewX(-3deg);font-family:'Bangers',cursive;letter-spacing:1px}
+.mode-btn:active{transform:skewX(-3deg) scale(0.94);box-shadow:2px 2px 0 #000}
+.mode-btn-icon{font-size:2rem;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.5))}
 .mode-btn-text{display:flex;flex-direction:column;text-align:right}
-.mode-btn-title{font-size:1.4rem}
-.mode-btn-desc{font-size:0.8rem;font-weight:400;opacity:0.8;font-family:'Segoe UI',sans-serif;
+.mode-btn-title{font-size:1.2rem}
+.mode-btn-desc{font-size:0.7rem;font-weight:400;opacity:0.8;font-family:'Segoe UI',sans-serif;
   -webkit-text-stroke:0;letter-spacing:0}
 .mode-btn-counting{background:linear-gradient(135deg,#9C27B0,#4A148C)}
 .mode-btn-mission{background:linear-gradient(135deg,#E23636,#B71C1C)}
 .mode-btn-battle{background:linear-gradient(135deg,#FF6F00,#E65100)}
+.mode-btn-puzzle{background:linear-gradient(135deg,#1565C0,#0D47A1)}
+.mode-btn-memory{background:linear-gradient(135deg,#00897B,#004D40)}
+.mode-btn-order{background:linear-gradient(135deg,#C62828,#6A1B9A)}
+.mode-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.04) 4px,rgba(255,255,255,0.04) 6px);
+  pointer-events:none}
 .mode-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
-  transition:left 0.5s}
-.mode-btn:hover::after{left:120%}
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+  animation:btnShine 4s ease-in-out infinite}
+@keyframes btnShine{0%,100%{left:-100%}50%{left:120%}}
 
 /* Hero Collection */
 .collection-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:6px 12px;
@@ -175,11 +186,14 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 /* Hero Display */
 .hero-area{display:flex;align-items:center;justify-content:center;min-height:100px;
   transition:transform 0.3s ease;position:relative;z-index:2}
+.hero-area::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0deg,rgba(255,215,0,0.1) 10deg,transparent 20deg,
+  rgba(255,100,0,0.06) 30deg,transparent 40deg);animation:rayRotate 12s linear infinite;pointer-events:none}
 .hero-area img{width:140px;height:140px;border-radius:50%;object-fit:cover;
-  border:5px solid #000;box-shadow:0 0 0 4px #FFD700,6px 6px 0 rgba(0,0,0,0.5);
+  border:6px solid #000;box-shadow:0 0 0 4px #FFD700,0 0 20px rgba(255,215,0,0.3),8px 8px 0 rgba(0,0,0,0.5);
   transition:all 0.3s ease}
 .hero-area.celebrate img{animation:heroCelebrateNew 1s ease;
-  box-shadow:0 0 0 4px #FFD700,0 0 40px rgba(255,215,0,0.8)}
+  box-shadow:0 0 0 4px #FFD700,0 0 50px rgba(255,215,0,0.9),0 0 80px rgba(255,100,0,0.4)}
 .hero-area.sad img{animation:heroSadNew 0.6s ease}
 @keyframes heroCelebrateNew{0%{transform:scale(1)}20%{transform:scale(1.4) rotate(-8deg)}
   40%{transform:scale(1.5) rotate(8deg)}60%{transform:scale(1.3) rotate(-4deg)}
@@ -190,30 +204,31 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 /* Question Area - Speech Bubble */
 .question-area{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:500px;
   position:relative;z-index:2}
-.speech-bubble{position:relative;background:rgba(255,255,255,0.12);border:3px solid rgba(255,255,255,0.3);
-  border-radius:20px;padding:10px 18px;backdrop-filter:blur(6px)}
-.speech-bubble::after{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);
-  border:8px solid transparent;border-bottom-color:rgba(255,255,255,0.3)}
-.speech-bubble.burst-bg{background:url('images/comics/burst-yellow.png') center/contain no-repeat,
-  rgba(255,255,255,0.12);padding:20px 28px}
-.prompt-text{font-family:'Bangers',cursive;font-size:1.8rem;color:#fff;text-align:center;
-  -webkit-text-stroke:1px rgba(0,0,0,0.4);paint-order:stroke fill;
-  letter-spacing:2px;text-shadow:2px 2px 0 rgba(0,0,0,0.3)}
+.speech-bubble{position:relative;background:rgba(255,255,255,0.15);border:4px solid #000;
+  border-radius:24px;padding:12px 20px;backdrop-filter:blur(8px);
+  box-shadow:5px 5px 0 rgba(0,0,0,0.4),inset 0 0 15px rgba(255,255,255,0.05)}
+.speech-bubble::after{content:'';position:absolute;top:-16px;left:50%;transform:translateX(-50%);
+  border:10px solid transparent;border-bottom-color:#000}
+.speech-bubble::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  border:8px solid transparent;border-bottom-color:rgba(255,255,255,0.15);z-index:1}
+.prompt-text{font-family:'Bangers',cursive;font-size:2rem;color:#fff;text-align:center;
+  -webkit-text-stroke:1.5px rgba(0,0,0,0.5);paint-order:stroke fill;
+  letter-spacing:3px;text-shadow:2px 2px 0 rgba(0,0,0,0.4),0 0 10px rgba(255,215,0,0.2)}
 
 /* Counting Items */
-.count-items{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:14px;
-  background:rgba(255,255,255,0.08);border-radius:20px;border:3px solid rgba(255,255,255,0.15);
-  min-height:60px;max-width:380px}
-.count-item{font-size:2rem;animation:itemBounceIn 0.4s ease both;
-  filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3))}
+.count-items{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:16px;
+  background:rgba(0,0,0,0.35);border-radius:20px;border:4px solid rgba(255,255,255,0.25);
+  min-height:60px;max-width:380px;box-shadow:inset 0 0 20px rgba(0,0,0,0.3)}
+.count-item{font-size:2.2rem;animation:itemBounceIn 0.4s ease both;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,0.5))}
 @keyframes itemBounceIn{0%{transform:scale(0) rotate(-180deg);opacity:0}
   60%{transform:scale(1.3) rotate(15deg)}80%{transform:scale(0.9) rotate(-5deg)}
   100%{transform:scale(1) rotate(0deg);opacity:1}}
 
 /* Equation Display */
-.equation{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 24px;
-  background:rgba(0,0,0,0.3);border-radius:20px;border:4px solid #000;
-  box-shadow:5px 5px 0 rgba(0,0,0,0.4)}
+.equation{display:flex;align-items:center;justify-content:center;gap:14px;padding:16px 26px;
+  background:rgba(0,0,0,0.4);border-radius:20px;border:5px solid #000;
+  box-shadow:6px 6px 0 rgba(0,0,0,0.5),inset 0 0 15px rgba(0,0,0,0.2)}
 .eq-num{font-family:'Russo One',sans-serif;font-size:3.5rem;font-weight:900;color:#fff;
   -webkit-text-stroke:2px #000;paint-order:stroke fill;
   text-shadow:3px 3px 0 rgba(0,0,0,0.4);min-width:55px;text-align:center}
@@ -240,42 +255,55 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 /* Answer Buttons - Comic 3D */
 .answers{display:flex;gap:14px;justify-content:center;padding:10px 0;width:100%;max-width:420px;
   position:relative;z-index:2}
-.answer-btn{flex:1;min-width:90px;min-height:90px;max-width:130px;border-radius:18px;
-  border:5px solid #000;background:linear-gradient(180deg,#fff,#e8e8f0);
-  font-family:'Russo One',sans-serif;font-size:3rem;font-weight:900;color:#222;
+.answer-btn{flex:1;min-width:95px;min-height:95px;max-width:130px;border-radius:20px;
+  border:6px solid #000;background:linear-gradient(180deg,#fff,#e0e0ee);
+  font-family:'Russo One',sans-serif;font-size:3.2rem;font-weight:900;color:#222;
   cursor:pointer;touch-action:manipulation;transition:all 0.12s ease;
-  box-shadow:6px 6px 0 #000;position:relative;-webkit-text-stroke:0.5px rgba(0,0,0,0.2)}
+  box-shadow:8px 8px 0 #000;position:relative;-webkit-text-stroke:1px rgba(0,0,0,0.15)}
+.answer-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.4),transparent);border-radius:14px 14px 0 0;pointer-events:none}
 .answer-btn:active:not(.disabled):not(.correct):not(.wrong){
-  transform:translateY(4px);box-shadow:2px 2px 0 #000}
-.answer-btn.correct{background:linear-gradient(135deg,#4CAF50,#66BB6A);border-color:#1B5E20;color:#fff;
-  transform:scale(1.12) translateY(-4px);box-shadow:0 0 30px rgba(76,175,80,0.7),6px 6px 0 #000;
-  animation:correctPop 0.7s ease;-webkit-text-stroke:1px #000}
-@keyframes correctPop{0%{transform:scale(1)}25%{transform:scale(1.25) rotate(-4deg)}
-  50%{transform:scale(1.05) rotate(3deg)}75%{transform:scale(1.15)}100%{transform:scale(1.12)}}
+  transform:translateY(6px);box-shadow:2px 2px 0 #000}
+.answer-btn.correct{background:linear-gradient(135deg,#43A047,#66BB6A);border-color:#1B5E20;color:#fff;
+  transform:scale(1.15) translateY(-6px);
+  box-shadow:0 0 40px rgba(76,175,80,0.8),0 0 80px rgba(76,175,80,0.3),8px 8px 0 #000;
+  animation:correctPop 0.7s ease;-webkit-text-stroke:2px #000}
+@keyframes correctPop{0%{transform:scale(1)}20%{transform:scale(1.3) rotate(-6deg)}
+  40%{transform:scale(1.05) rotate(4deg)}60%{transform:scale(1.2) rotate(-2deg)}
+  80%{transform:scale(1.12)}100%{transform:scale(1.15)}}
 .answer-btn.wrong{background:linear-gradient(135deg,#FF9800,#FFB74D);border-color:#E65100;
-  color:#fff;animation:shake 0.5s ease;-webkit-text-stroke:1px #000}
-@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px) rotate(-2deg)}
-  30%{transform:translateX(8px) rotate(2deg)}45%{transform:translateX(-6px)}
-  60%{transform:translateX(6px)}75%{transform:translateX(-3px)}90%{transform:translateX(3px)}}
-.answer-btn.disabled{opacity:0.35;pointer-events:none}
+  color:#fff;animation:shake 0.6s ease;-webkit-text-stroke:2px #000}
+@keyframes shake{0%,100%{transform:translateX(0)}10%{transform:translateX(-10px) rotate(-3deg)}
+  20%{transform:translateX(10px) rotate(3deg)}30%{transform:translateX(-8px) rotate(-2deg)}
+  40%{transform:translateX(8px) rotate(2deg)}50%{transform:translateX(-6px)}
+  60%{transform:translateX(6px)}70%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.answer-btn.disabled{opacity:0.3;pointer-events:none}
 
 /* Battle Mode */
 .battle-area{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;
   width:100%;max-width:520px;position:relative;z-index:2}
 .battle-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;
-  border:5px solid #000;border-radius:20px;background:linear-gradient(180deg,#fff,#eee);
+  border:6px solid #000;border-radius:20px;background:linear-gradient(180deg,#fff,#eee);
   cursor:pointer;touch-action:manipulation;transition:all 0.2s ease;
-  box-shadow:5px 5px 0 #000;max-width:210px;position:relative;transform:rotate(-2deg)}
-.battle-card:nth-child(3){transform:rotate(2deg)}
+  box-shadow:7px 7px 0 #000;max-width:210px;position:relative;transform:rotate(-3deg)}
+.battle-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;border-radius:14px;
+  background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,0,0,0.02) 5px,rgba(0,0,0,0.02) 7px);
+  pointer-events:none}
+.battle-card:nth-child(3){transform:rotate(3deg)}
 .battle-card:active:not(.winner):not(.loser){transform:scale(0.95) rotate(0deg);box-shadow:2px 2px 0 #000}
 .battle-card img{width:85px;height:85px;border-radius:50%;object-fit:cover;
   border:4px solid #000;box-shadow:0 0 0 3px #FFD700}
 .battle-num{font-family:'Russo One',sans-serif;font-size:3.5rem;
   -webkit-text-stroke:2px #000;paint-order:stroke fill;text-shadow:3px 3px 0 rgba(0,0,0,0.15)}
 .battle-name{font-family:'Bangers',cursive;font-size:1rem;color:#333;letter-spacing:1px}
-.vs-text{font-family:'Bangers',cursive;font-size:2.5rem;color:#FFD700;
-  -webkit-text-stroke:2px #000;paint-order:stroke fill;
-  text-shadow:3px 3px 0 rgba(0,0,0,0.5);animation:vsBounce 1.2s ease-in-out infinite}
+.vs-text{font-family:'Bangers',cursive;font-size:3rem;color:#FFD700;
+  -webkit-text-stroke:3px #000;paint-order:stroke fill;
+  text-shadow:3px 3px 0 #C62828,5px 5px 0 rgba(0,0,0,0.5);animation:vsBounce 1.2s ease-in-out infinite;
+  position:relative;z-index:1}
+.vs-text::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80px;height:80px;background:radial-gradient(circle,rgba(255,215,0,0.3) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:-1;animation:vsGlow 1.2s ease-in-out infinite}
+@keyframes vsGlow{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.5}50%{transform:translate(-50%,-50%) scale(1.5);opacity:1}}
 @keyframes vsBounce{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.3) rotate(5deg)}}
 .battle-card.winner{background:linear-gradient(135deg,#4CAF50,#66BB6A);border-color:#1B5E20;
   color:#fff;transform:scale(1.12) rotate(0deg);
@@ -289,10 +317,11 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 /* Results Overlay */
 .results-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;
   display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;
-  background:rgba(10,10,46,0.95);backdrop-filter:blur(10px);padding:20px;overflow-y:auto}
-.results-comic-frame{position:absolute;top:10px;right:10px;width:100px;height:auto;opacity:0.15;
+  background:rgba(8,8,32,0.96);backdrop-filter:blur(12px);padding:20px;overflow-y:auto;
+  border:6px solid rgba(255,215,0,0.3);border-image:repeating-linear-gradient(45deg,#FFD700 0,#FFD700 5px,transparent 5px,transparent 10px) 6}
+.results-comic-frame{position:absolute;top:10px;right:10px;width:120px;height:auto;opacity:0.2;
   pointer-events:none;z-index:0}
-.results-comic-frame-left{position:absolute;bottom:10px;left:10px;width:100px;height:auto;opacity:0.15;
+.results-comic-frame-left{position:absolute;bottom:10px;left:10px;width:120px;height:auto;opacity:0.2;
   pointer-events:none;z-index:0;transform:scaleX(-1)}
 
 /* Speed lines behind results */
@@ -308,9 +337,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   animation:resultsHeroIn 0.8s ease}
 @keyframes resultsHeroIn{0%{transform:scale(0) rotate(-30deg);opacity:0}
   60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-.results-title{font-family:'Bangers',cursive;font-size:2.5rem;text-align:center;
-  color:#FFD700;-webkit-text-stroke:2px #000;paint-order:stroke fill;
-  text-shadow:3px 3px 0 #C62828;letter-spacing:2px;
+.results-title{font-family:'Bangers',cursive;font-size:3rem;text-align:center;
+  color:#FFD700;-webkit-text-stroke:3px #000;paint-order:stroke fill;
+  text-shadow:3px 3px 0 #C62828,5px 5px 0 rgba(0,0,0,0.4);letter-spacing:3px;
   animation:titleGlowResult 2s ease-in-out infinite;position:relative;z-index:1}
 @keyframes titleGlowResult{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 .results-stars{font-size:2.2rem;text-align:center;padding:10px 0;position:relative;z-index:1}
@@ -321,10 +350,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .results-score{font-family:'Bangers',cursive;font-size:1.6rem;color:rgba(255,255,255,0.8);
   letter-spacing:2px;position:relative;z-index:1}
 .results-buttons{display:flex;gap:14px;margin-top:12px;position:relative;z-index:1}
-.results-btn{padding:14px 24px;border:4px solid #000;border-radius:14px;font-family:'Bangers',cursive;
-  font-size:1.3rem;cursor:pointer;touch-action:manipulation;color:#fff;transition:transform 0.15s;
-  box-shadow:4px 4px 0 #000;letter-spacing:1px}
-.results-btn:active{transform:scale(0.95);box-shadow:2px 2px 0 #000}
+.results-btn{padding:16px 28px;border:5px solid #000;border-radius:16px;font-family:'Bangers',cursive;
+  font-size:1.4rem;cursor:pointer;touch-action:manipulation;color:#fff;transition:transform 0.15s;
+  box-shadow:6px 6px 0 #000;letter-spacing:2px;transform:skewX(-2deg)}
+.results-btn:active{transform:skewX(-2deg) scale(0.93);box-shadow:2px 2px 0 #000}
 .results-btn-retry{background:linear-gradient(135deg,#4CAF50,#2E7D32)}
 .results-btn-menu{background:linear-gradient(135deg,#1976D2,#0D47A1)}
 
@@ -352,11 +381,11 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   .menu-title{font-size:2.8rem}
 }
 @media (max-width:600px){
-  .answer-btn{min-width:75px;min-height:75px;font-size:2.2rem;border-radius:14px;box-shadow:4px 4px 0 #000}
+  .answer-btn{min-width:75px;min-height:80px;font-size:2.4rem;border-radius:16px;box-shadow:5px 5px 0 #000}
   .eq-num{font-size:2.2rem}
   .eq-mystery{font-size:2.8rem}
-  .count-items{max-width:280px;gap:4px}
-  .count-item{font-size:1.5rem}
+  .count-items{max-width:300px;gap:6px}
+  .count-item{font-size:1.8rem}
   .equation{gap:10px;padding:10px 16px}
   .battle-card{padding:12px 8px}
   .battle-num{font-size:2.5rem}
@@ -366,21 +395,102 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   #action-word{font-size:4rem}
   #countdown-number{font-size:9rem}
   .streak-banner{font-size:2.2rem}
-  .menu-title{font-size:2.4rem}
-  .prompt-text{font-size:1.5rem}
+  .menu-title{font-size:2.8rem}
+  .prompt-text{font-size:1.6rem}
+  .mode-buttons{grid-template-columns:1fr 1fr;gap:8px}
+  .mode-btn{padding:10px 10px;gap:8px}
+  .mode-btn-icon{font-size:1.6rem}
+  .mode-btn-title{font-size:1rem}
+  .mode-btn-desc{font-size:0.65rem}
 }
+/* ===== PUZZLE MODE ===== */
+.puzzle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:320px;
+  position:relative;z-index:2}
+.puzzle-piece{aspect-ratio:1;border:4px solid #000;border-radius:10px;cursor:pointer;
+  touch-action:manipulation;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#1a1a4e,#0D47A1);box-shadow:4px 4px 0 #000;
+  transition:all 0.4s ease;display:flex;align-items:center;justify-content:center}
+.puzzle-piece.revealed{cursor:default;border-color:#FFD700;
+  box-shadow:0 0 15px rgba(255,215,0,0.4),4px 4px 0 #000}
+.puzzle-piece.revealed .puzzle-img{opacity:1;transform:scale(1)}
+.puzzle-piece .puzzle-img{width:100%;height:100%;object-fit:cover;opacity:0;
+  transform:scale(0.5);transition:all 0.5s ease;position:absolute;top:0;left:0}
+.puzzle-piece.active{border-color:#FFD700;animation:puzzleGlow 1s ease-in-out infinite}
+@keyframes puzzleGlow{0%,100%{box-shadow:0 0 10px rgba(255,215,0,0.3),4px 4px 0 #000}
+  50%{box-shadow:0 0 25px rgba(255,215,0,0.7),4px 4px 0 #000}}
+.puzzle-piece .puzzle-num{font-family:'Bangers',cursive;font-size:1.8rem;color:rgba(255,255,255,0.3);
+  position:absolute}
+.puzzle-piece.unrevealed::before{content:'?';font-family:'Bangers',cursive;font-size:2.5rem;
+  color:rgba(255,215,0,0.4);position:absolute}
+
+/* ===== MEMORY CARD GAME ===== */
+.memory-grid{display:grid;gap:8px;width:100%;max-width:380px;position:relative;z-index:2}
+.memory-grid.pairs-6{grid-template-columns:repeat(4,1fr)}
+.memory-grid.pairs-8{grid-template-columns:repeat(4,1fr)}
+.memory-card{aspect-ratio:0.8;perspective:800px;cursor:pointer;touch-action:manipulation}
+.memory-card-inner{position:relative;width:100%;height:100%;transition:transform 0.5s;
+  transform-style:preserve-3d}
+.memory-card.flipped .memory-card-inner,.memory-card.matched .memory-card-inner{transform:rotateY(180deg)}
+.memory-card-face,.memory-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;
+  border:4px solid #000;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  box-shadow:4px 4px 0 #000}
+.memory-card-back{background:linear-gradient(135deg,#E23636,#B71C1C);
+  background-image:url('images/comics/burst-yellow.png');background-size:80%;background-position:center;background-repeat:no-repeat;
+  background-color:#E23636}
+.memory-card-back::after{content:'';position:absolute;width:100%;height:100%;border-radius:8px;
+  background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,0.05) 3px,rgba(0,0,0,0.05) 5px)}
+.memory-card-face{background:linear-gradient(180deg,#fff,#e8e8f0);transform:rotateY(180deg);
+  flex-direction:column;padding:4px}
+.memory-card-face .card-text{font-family:'Russo One',sans-serif;font-size:1.4rem;font-weight:900;
+  color:#222;-webkit-text-stroke:0.5px rgba(0,0,0,0.2);text-align:center;line-height:1.2}
+.memory-card-face .card-text.card-answer{font-size:2rem;color:#E23636}
+.memory-card.matched .memory-card-face{border-color:#FFD700;
+  box-shadow:0 0 15px rgba(255,215,0,0.5),4px 4px 0 #000}
+.memory-card.matched{pointer-events:none}
+.memory-attempts{font-family:'Bangers',cursive;font-size:1.3rem;color:#FFD700;
+  -webkit-text-stroke:1px #000;letter-spacing:2px;position:relative;z-index:2}
+
+/* ===== LINEUP / ORDINALITY GAME ===== */
+.lineup-area{display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:10px;
+  width:100%;max-width:500px;overflow-x:auto;position:relative;z-index:2;
+  -webkit-overflow-scrolling:touch}
+.lineup-hero{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;
+  touch-action:manipulation;transition:all 0.3s ease;flex-shrink:0}
+.lineup-hero img{width:50px;height:50px;border-radius:50%;object-fit:cover;
+  border:4px solid #000;box-shadow:0 0 0 2px #FFD700;transition:all 0.3s}
+.lineup-hero .lineup-platform{width:50px;height:30px;background:linear-gradient(180deg,#FFD700,#FFA000);
+  border:3px solid #000;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;
+  font-family:'Russo One',sans-serif;font-size:0.9rem;font-weight:900;color:#000;
+  box-shadow:3px 3px 0 #000}
+.lineup-hero.highlighted img{box-shadow:0 0 0 3px #FFD700,0 0 20px rgba(255,215,0,0.8);
+  transform:scale(1.15);animation:lineupPulse 0.8s ease-in-out infinite}
+.lineup-hero.correct-pick img{box-shadow:0 0 0 3px #4CAF50,0 0 25px rgba(76,175,80,0.8);border-color:#1B5E20}
+.lineup-hero.wrong-pick img{box-shadow:0 0 0 3px #FF5722,0 0 15px rgba(255,87,34,0.6);border-color:#BF360C;
+  animation:shake 0.5s ease}
+@keyframes lineupPulse{0%,100%{transform:scale(1.15) translateY(0)}50%{transform:scale(1.15) translateY(-5px)}}
+.ordinal-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px 0;
+  width:100%;max-width:400px;position:relative;z-index:2}
+.ordinal-btn{padding:10px 16px;border:4px solid #000;border-radius:12px;
+  font-family:'Bangers',cursive;font-size:1.1rem;color:#fff;cursor:pointer;
+  touch-action:manipulation;box-shadow:4px 4px 0 #000;transition:all 0.15s;
+  background:linear-gradient(135deg,#1976D2,#0D47A1)}
+.ordinal-btn:active{transform:scale(0.95);box-shadow:2px 2px 0 #000}
+.ordinal-btn.correct{background:linear-gradient(135deg,#4CAF50,#2E7D32);border-color:#1B5E20}
+.ordinal-btn.wrong{background:linear-gradient(135deg,#FF9800,#E65100);border-color:#BF360C;animation:shake 0.5s ease}
+
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
 
 /* ===== TEAM CARDS - COMIC PANEL LAYOUT ===== */
-.teams-section{width:100%;max-width:520px;padding:0 12px;position:relative;z-index:1}
+.teams-section{width:100%;max-width:100%;padding:0 12px;position:relative;z-index:1}
 .teams-title{font-family:'Bangers',cursive;font-size:1.8rem;color:#FFD700;text-align:center;
   -webkit-text-stroke:1.5px #000;paint-order:stroke fill;letter-spacing:2px;margin-bottom:8px;
   text-shadow:2px 2px 0 rgba(0,0,0,0.4)}
-.teams-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.teams-grid{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;
+  -webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none}
+.teams-grid::-webkit-scrollbar{display:none}
 .team-card{position:relative;border:4px solid #000;border-radius:14px;overflow:hidden;
   box-shadow:4px 4px 0 rgba(0,0,0,0.5);
-  min-height:120px;display:flex;flex-direction:column}
-.team-card.full-width{grid-column:1 / -1}
+  min-height:110px;min-width:140px;flex-shrink:0;display:flex;flex-direction:column;scroll-snap-align:start}
 
 /* Team card header with inline SVG logo */
 .team-card-header{display:flex;align-items:center;justify-content:center;gap:8px;
@@ -417,8 +527,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 /* Comic speed lines on team cards */
 .team-card .speed-lines{position:absolute;top:0;left:0;width:100%;height:100%;
-  background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,255,255,0.03) 8px,rgba(255,255,255,0.03) 10px);
-  pointer-events:none;z-index:0}
+  background:repeating-linear-gradient(45deg,transparent,transparent 6px,rgba(255,255,255,0.05) 6px,rgba(255,255,255,0.05) 8px);
+  pointer-events:none;z-index:0;animation:teamSpeedLines 10s linear infinite}
+@keyframes teamSpeedLines{0%{background-position:0 0}100%{background-position:40px 40px}}
 
 /* Marvel banner logo */
 .marvel-banner{width:100%;max-width:520px;padding:6px 12px;position:relative;z-index:1;
@@ -443,6 +554,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 </style>
 </head>
 <body>
+<div class="speed-lines-bg"></div>
 <!-- Fullscreen Button -->
 <button class="fullscreen-btn" id="fullscreen-btn" title="מסך מלא">⛶</button>
 <!-- Particle Canvas -->
@@ -460,8 +572,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 <div id="menu-screen" class="screen active">
   <div class="ray-burst"></div>
   <img src="images/comics/spiderman-logo.png" alt="" style="position:absolute;top:8px;right:60px;width:50px;opacity:0.2;pointer-events:none;z-index:0">
-  <h1 class="menu-title">גיבורי על</h1>
-  <p class="menu-subtitle">MARVEL MATH</p>
+  <h1 class="menu-title" data-speak="גיבורי על">גיבורי על</h1>
+  <p class="menu-subtitle" data-speak="מארוול מאת'">MARVEL MATH</p>
 
   <!-- Marvel Banner Logo -->
   <div class="marvel-banner">
@@ -479,7 +591,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
     <span class="marvel-banner-line"></span>
   </div>
 
-  <div class="star-counter" id="star-counter">⭐ 0</div>
+  <div class="star-counter" id="star-counter" data-speak="כוכבים">⭐ 0</div>
 
   <!-- Team Cards Section -->
   <div class="teams-section">
@@ -488,17 +600,29 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   </div>
 
   <div class="mode-buttons">
-    <button class="mode-btn mode-btn-counting" id="btn-counting">
+    <button class="mode-btn mode-btn-counting" id="btn-counting" data-speak="ספירת כוח, ספור את הכוחות">
       <span class="mode-btn-icon">🔢</span>
       <span class="mode-btn-text"><span class="mode-btn-title">ספירת כוח</span><span class="mode-btn-desc">ספור את הכוחות</span></span>
     </button>
-    <button class="mode-btn mode-btn-mission" id="btn-mission">
+    <button class="mode-btn mode-btn-mission" id="btn-mission" data-speak="משימת גיבורים, חיבור וחיסור">
       <span class="mode-btn-icon">💥</span>
       <span class="mode-btn-text"><span class="mode-btn-title">משימת גיבורים</span><span class="mode-btn-desc">חיבור וחיסור</span></span>
     </button>
-    <button class="mode-btn mode-btn-battle" id="btn-battle">
+    <button class="mode-btn mode-btn-battle" id="btn-battle" data-speak="קרב מספרים, מי חזק יותר?">
       <span class="mode-btn-icon">⚔️</span>
       <span class="mode-btn-text"><span class="mode-btn-title">קרב מספרים</span><span class="mode-btn-desc">מי חזק יותר?</span></span>
+    </button>
+    <button class="mode-btn mode-btn-puzzle" id="btn-puzzle" data-speak="פאזל חשבון, פתור חידות וגלה את הגיבור">
+      <span class="mode-btn-icon">🧩</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">פאזל חשבון</span><span class="mode-btn-desc">גלה את הגיבור</span></span>
+    </button>
+    <button class="mode-btn mode-btn-memory" id="btn-memory" data-speak="משחק זיכרון, התאם תרגיל לתשובה">
+      <span class="mode-btn-icon">🃏</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">זיכרון חשבון</span><span class="mode-btn-desc">התאם תרגיל לתשובה</span></span>
+    </button>
+    <button class="mode-btn mode-btn-order" id="btn-order" data-speak="מספרים בסדר, ספירה ומיקום">
+      <span class="mode-btn-icon">🏆</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">מספרים בסדר</span><span class="mode-btn-desc">ספירה ומיקום</span></span>
     </button>
   </div>
 
@@ -529,8 +653,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   <p class="results-score" id="results-score"></p>
   <div id="results-unlock"></div>
   <div class="results-buttons">
-    <button class="results-btn results-btn-retry" id="btn-retry">🔄 שחק שוב</button>
-    <button class="results-btn results-btn-menu" id="btn-results-menu">🏠 תפריט</button>
+    <button class="results-btn results-btn-retry" id="btn-retry" data-speak="שחק שוב">🔄 שחק שוב</button>
+    <button class="results-btn results-btn-menu" id="btn-results-menu" data-speak="תפריט">🏠 תפריט</button>
   </div>
 </div>
 
@@ -644,6 +768,8 @@ const HEBREW_NUMBERS = {
   49:'ארבעים ותשע',50:'חמישים'
 };
 
+const HEBREW_ORDINALS = {1:'ראשון',2:'שני',3:'שלישי',4:'רביעי',5:'חמישי',
+  6:'שישי',7:'שביעי',8:'שמיני',9:'תשיעי',10:'עשירי'};
 const HERO_PRAISE = ['!כל הכבוד','!מעולה','!מדהים','!וואו','!גיבור על אמיתי','!נכון מאוד','!יופי','!בול','!מושלם'];
 const HERO_ENCOURAGE = ['!נסה שוב','!כמעט','!קרוב','!אפשר לנסות שוב','!בוא ננסה שוב'];
 const HERO_LEVEL_UP = ['!עלית שלב','!אתה מתקדם','!הולך ונהיה גיבור על'];
@@ -660,7 +786,7 @@ const ACTION_IMAGES = {
 // ===== TEAM DEFINITIONS =====
 const TEAMS_DATA = [
   {id:'avengers',name_he:'האוונג\'רס',cssClass:'team-avengers',
-   members:['ironman','captain','hulk','thor','blackwidow','vision','antman','wasp','panther','strange'],
+   members:['ironman','captain','hulk','thor','blackwidow','vision','antman','wasp','panther','strange','spiderman'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
      <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#FFD700" stroke-width="2.5"/>
      <path d="M20 6 L28 32 L12 32 Z" fill="none" stroke="#FFD700" stroke-width="2" stroke-linejoin="round"/>
@@ -684,7 +810,7 @@ const TEAMS_DATA = [
      <path d="M13 28 Q20 22 27 28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
    </svg>`},
   {id:'cosmic',name_he:'שומרי הגלקסיה',cssClass:'team-cosmic',
-   members:['marvel','drax','spiderman','thing'],
+   members:['marvel','drax','thing'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
      <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#00E5FF" stroke-width="2.5"/>
      <circle cx="20" cy="20" r="3" fill="#FFD700"/>
@@ -838,7 +964,14 @@ const Adaptive = {
     if(!this._state){this._state=Storage.getHeroMathAdaptive()||{
       counting:this._defaultSkill(),addition:this._defaultSkill(),
       subtraction:this._defaultSkill(),comparison:this._defaultSkill(),
+      puzzle:this._defaultSkill(),memory:this._defaultSkill(),
+      cardinality:this._defaultSkill(),ordinality:this._defaultSkill(),
       heroesUnlocked:['spiderman'],totalStars:0,roundsCompleted:0}}
+    // migrate old saves
+    if(!this._state.puzzle) this._state.puzzle=this._defaultSkill();
+    if(!this._state.memory) this._state.memory=this._defaultSkill();
+    if(!this._state.cardinality) this._state.cardinality=this._defaultSkill();
+    if(!this._state.ordinality) this._state.ordinality=this._defaultSkill();
     return this._state},
   save(){Storage.saveHeroMathAdaptive(this._state)},
   recordCorrect(skill){const s=this.getState()[skill];if(!s) return;
@@ -915,17 +1048,54 @@ const Adaptive = {
   // COMPARISON: starts from small numbers below 10
   generateComparison(){const lv=this.getLevel('comparison');let minGap,maxNum,minNum;
     switch(lv){
-      case 1:minNum=2;maxNum=9;minGap=4;break;   // small, easy
-      case 2:minNum=3;maxNum=15;minGap=3;break;
-      case 3:minNum=5;maxNum=20;minGap=2;break;
-      case 4:minNum=8;maxNum=35;minGap=1;break;
-      case 5:minNum=10;maxNum=50;minGap=1;break;
-      default:minNum=2;maxNum=9;minGap=4}
+      case 1:minNum=1;maxNum=9;minGap=3;break;    // both under 10, easy
+      case 2:minNum=2;maxNum=10;minGap=2;break;   // around 10, can cross
+      case 3:minNum=3;maxNum=15;minGap=2;break;   // mix under/over 10
+      case 4:minNum=5;maxNum=25;minGap=1;break;   // bigger numbers
+      case 5:minNum=10;maxNum=50;minGap=1;break;  // large range
+      default:minNum=1;maxNum=9;minGap=3}
     const gap=minGap+Math.floor(Math.random()*3);
     let numA=minNum+Math.floor(Math.random()*(maxNum-gap-minNum+1));
     let numB=numA+gap;
     if(Math.random()<0.5)[numA,numB]=[numB,numA];
     return {numA,numB,answer:Math.max(numA,numB),level:lv}},
+
+  // PUZZLE: generates same type of questions as current mode mix
+  generatePuzzleQuestion(){
+    const al=this.getLevel('addition');const cl=this.getLevel('counting');
+    if(cl<=2||Math.random()<0.4) return {...this.generateCounting(),mode:'counting'};
+    return {...this.generateAddition(),mode:'addition'};
+  },
+
+  // MEMORY: generates equation+answer pairs
+  generateMemoryPairs(count){
+    const pairs=[];const used=new Set();
+    for(let i=0;i<count;i++){
+      let q,eq,ans;let att=0;
+      do{
+        att++;
+        if(Math.random()<0.6){q=this.generateAddition();eq=`${q.a} + ${q.b}`;ans=q.answer}
+        else{q=this.generateSubtraction();eq=`${q.a} - ${q.b}`;ans=q.answer}
+      }while(used.has(ans)&&att<20);
+      used.add(ans);
+      pairs.push({equation:eq,answer:ans,hebrewEq:`${HEBREW_NUMBERS[q.a]||q.a} ${q.operation==='+'?'ועוד':'פחות'} ${HEBREW_NUMBERS[q.b]||q.b}`,
+        hebrewAns:HEBREW_NUMBERS[ans]||String(ans)});
+    }
+    return pairs;
+  },
+
+  // ORDINALITY: generate lineup question
+  generateOrdinalQuestion(){
+    const lv=this.getLevel('ordinality');let lineupSize,askType;
+    switch(lv){
+      case 1:lineupSize=3+Math.floor(Math.random()*2);askType='cardinality';break;
+      case 2:lineupSize=3+Math.floor(Math.random()*2);askType=Math.random()<0.5?'cardinality':'ordinal';break;
+      case 3:lineupSize=5+Math.floor(Math.random()*2);askType='ordinal';break;
+      case 4:lineupSize=6+Math.floor(Math.random()*3);askType=Math.random()<0.5?'ordinal':'reverse';break;
+      case 5:lineupSize=7+Math.floor(Math.random()*3);askType=Math.random()<0.3?'cardinality':Math.random()<0.6?'ordinal':'reverse';break;
+      default:lineupSize=4;askType='cardinality'}
+    return {lineupSize,askType,level:lv};
+  },
 
   _dist(ans,mn,mx){const opts=new Set([ans]);let att=0;
     while(opts.size<3&&att<50){att++;let d;
@@ -998,6 +1168,9 @@ const Game = {
     document.getElementById('btn-counting').addEventListener('click',()=>this.startMode('counting'));
     document.getElementById('btn-mission').addEventListener('click',()=>this.startMode('mission'));
     document.getElementById('btn-battle').addEventListener('click',()=>this.startMode('battle'));
+    document.getElementById('btn-puzzle').addEventListener('click',()=>this.startMode('puzzle'));
+    document.getElementById('btn-memory').addEventListener('click',()=>this.startMode('memory'));
+    document.getElementById('btn-order').addEventListener('click',()=>this.startMode('order'));
     document.getElementById('back-btn').addEventListener('click',()=>this.showMenu());
     document.getElementById('btn-retry').addEventListener('click',()=>this.startMode(this.currentMode));
     document.getElementById('btn-results-menu').addEventListener('click',()=>this.showMenu());
@@ -1026,11 +1199,13 @@ const Game = {
 
   _updateMenuStats(){
     const st=Adaptive.getState();
-    document.getElementById('star-counter').textContent='⭐ '+st.totalStars;
+    const starEl=document.getElementById('star-counter');
+    starEl.textContent='⭐ '+st.totalStars;
+    starEl.dataset.speak=st.totalStars+' כוכבים';
     const row=document.getElementById('collection-row');
     row.innerHTML=HEROES_DATA.map(h=>{
       const unlocked=st.heroesUnlocked.includes(h.id);
-      return `<span class="collection-badge ${unlocked?'unlocked':'locked'}"
+      return `<span class="collection-badge ${unlocked?'unlocked':'locked'}" data-speak="${unlocked?h.name_he:'נעול'}"
         style="${unlocked?'background:'+h.color+';border-color:'+h.color:'background:#222;border-color:#444'}">
         <img src="${h.image}" alt="${h.name_he}" onerror="this.parentElement.textContent='${unlocked?h.emoji:'🔒'}'">
       </span>`}).join('');
@@ -1050,7 +1225,7 @@ const Game = {
       const fullWidth=team.members.length>5?'full-width':'';
       const allUnlocked=team.members.every(mid=>st.heroesUnlocked.includes(mid));
       const teamComplete=allUnlocked?'team-complete':'';
-      return `<div class="team-card ${team.cssClass} ${fullWidth} ${teamComplete}">
+      return `<div class="team-card ${team.cssClass} ${fullWidth} ${teamComplete}" data-speak="${team.name_he}">
         <div class="speed-lines"></div>
         <div class="comic-corner"></div>
         <div class="team-card-header">${team.logo}<span class="team-card-name">${team.name_he}</span>${allUnlocked?'<span style="font-size:0.8rem;margin-right:4px">✓</span>':''}</div>
@@ -1087,17 +1262,34 @@ const Game = {
   startMode(mode){
     this.cleanup();this.currentMode=mode;this.currentHero=this._pickHero();this.roundStreak=0;
     this.state={questionIndex:0,score:0,questions:[],answered:false};
-    const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים'};
+    const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים',
+      puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר'};
     Speech.speak(modeNames[mode]);
     Sounds.whoosh();
 
-    for(let i=0;i<this.QUESTIONS;i++){
+    if(mode==='memory'){
+      // Memory mode has its own flow
+      this._showScreen('game-screen');
+      const gs=document.getElementById('game-screen');
+      gs.style.background=this.currentHero.gradient;
+      this._t(()=>{this._doCountdown(()=>{
+        this._t(()=>Speech.speak(this.currentHero.phrases.intro),200);
+        this._t(()=>this._startMemory(),800);
+      })},300);
+      return;
+    }
+
+    const numQ=mode==='puzzle'?9:this.QUESTIONS;
+    this.state.questions=[];
+    for(let i=0;i<numQ;i++){
       if(mode==='counting') this.state.questions.push(Adaptive.generateCounting());
       else if(mode==='mission'){
         const sl=Adaptive.getLevel('subtraction');
         if(sl>=2&&Math.random()<0.4) this.state.questions.push(Adaptive.generateSubtraction());
         else this.state.questions.push(Adaptive.generateAddition());
       } else if(mode==='battle') this.state.questions.push(Adaptive.generateComparison());
+      else if(mode==='puzzle') this.state.questions.push(Adaptive.generatePuzzleQuestion());
+      else if(mode==='order') this.state.questions.push(Adaptive.generateOrdinalQuestion());
     }
 
     this._showScreen('game-screen');
@@ -1115,20 +1307,25 @@ const Game = {
   // ===== SHOW QUESTION =====
   _showQuestion(){
     const {questionIndex,questions}=this.state;
-    if(questionIndex>=questions.length){this._showResults();return}
+    if(questionIndex>=questions.length){
+      if(this.currentMode==='puzzle') this.state.score=this.state.puzzleRevealed?this.state.puzzleRevealed.length:0;
+      this._showResults();return}
     this.state.answered=false;
     const q=questions[questionIndex];
     document.getElementById('progress-text').textContent=`${questionIndex+1}/${questions.length}`;
     this._updatePowerMeter();
     const heroArea=document.getElementById('hero-area');
-    heroArea.innerHTML=`<img src="${this.currentHero.image}" alt="${this.currentHero.name_he}"
-      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:7rem\\'>${this.currentHero.emoji}</span>')">`;
+    heroArea.innerHTML=`<img src="${this.currentHero.image}" alt="${this.currentHero.name_he}" data-speak="${this.currentHero.name_he}"
+      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:7rem\\' data-speak=\\'${this.currentHero.name_he}\\'>${this.currentHero.emoji}</span>')">`;
     heroArea.className='hero-area';
+    document.getElementById('progress-text').dataset.speak=`שאלה ${questionIndex+1} מתוך ${questions.length}`;
     const qArea=document.getElementById('question-area');
     const aArea=document.getElementById('answers-area');
     if(this.currentMode==='counting') this._showCounting(q,qArea,aArea);
     else if(this.currentMode==='mission') this._showMission(q,qArea,aArea);
     else if(this.currentMode==='battle') this._showBattle(q,qArea,aArea);
+    else if(this.currentMode==='puzzle') this._showPuzzleQuestion(q,qArea,aArea);
+    else if(this.currentMode==='order') this._showOrderQuestion(q,qArea,aArea);
   },
 
   // ===== COUNTING MODE =====
@@ -1137,7 +1334,7 @@ const Game = {
     let items='<div class="count-items">';
     for(let i=0;i<count;i++) items+=`<span class="count-item" style="animation-delay:${i*0.1}s">${hero.powerEmoji}</span>`;
     items+='</div>';
-    qArea.innerHTML=`<div class="speech-bubble burst-bg"><div class="prompt-text">?כמה ${hero.powerName_he} יש</div>${items}</div>`;
+    qArea.innerHTML=`<div class="speech-bubble"><div class="prompt-text" data-speak="כמה ${hero.powerName_he} יש">?כמה ${hero.powerName_he} יש</div>${items}</div>`;
     this._t(()=>Speech.speak(`כמה ${hero.powerName_he} יש? ספור אותם`),300);
     this._showAnswerBtns(q.distractors,q.answer,aArea,'counting');
   },
@@ -1185,13 +1382,13 @@ const Game = {
     qArea.innerHTML=`
       <div class="speech-bubble" style="background:url('images/comics/burst-purple.png') center/contain no-repeat,rgba(255,255,255,0.12);padding:20px 28px"><div class="prompt-text">?מי חזק יותר</div></div>
       <div class="battle-area">
-        <button class="battle-card" data-num="${q.numA}" style="border-color:${heroA.color}">
+        <button class="battle-card" data-num="${q.numA}" data-speak="${heroA.name_he}, ${HEBREW_NUMBERS[q.numA]||q.numA}" style="border-color:${heroA.color}">
           <img src="${heroA.image}" alt="${heroA.name_he}" onerror="this.outerHTML='<span style=\\'font-size:4rem\\'>${heroA.emoji}</span>'">
           <span class="battle-num" style="color:${heroA.color}">${q.numA}</span>
           <span class="battle-name">${heroA.name_he}</span>
         </button>
-        <span class="vs-text">⚡VS⚡</span>
-        <button class="battle-card" data-num="${q.numB}" style="border-color:${heroB.color}">
+        <span class="vs-text" data-speak="מול">⚡VS⚡</span>
+        <button class="battle-card" data-num="${q.numB}" data-speak="${heroB.name_he}, ${HEBREW_NUMBERS[q.numB]||q.numB}" style="border-color:${heroB.color}">
           <img src="${heroB.image}" alt="${heroB.name_he}" onerror="this.outerHTML='<span style=\\'font-size:4rem\\'>${heroB.emoji}</span>'">
           <span class="battle-num" style="color:${heroB.color}">${q.numB}</span>
           <span class="battle-name">${heroB.name_he}</span>
@@ -1225,7 +1422,7 @@ const Game = {
 
   // ===== ANSWER BUTTONS =====
   _showAnswerBtns(options,answer,container,skill){
-    container.innerHTML=options.map(num=>`<button class="answer-btn" data-num="${num}">${num}</button>`).join('');
+    container.innerHTML=options.map(num=>{const hn=HEBREW_NUMBERS[num]||num;return `<button class="answer-btn" data-num="${num}" data-speak="${hn}">${num}</button>`}).join('');
     container.querySelectorAll('.answer-btn').forEach(btn=>{
       btn.addEventListener('click',()=>{
         if(this.state.answered) return;
@@ -1242,6 +1439,14 @@ const Game = {
       this.state.score++;this.roundStreak++;
       const result=Adaptive.recordCorrect(skill);
       Sounds.powerUp();this._correctEffects(result==='level_up');
+      // Puzzle mode: reveal piece
+      if(this.currentMode==='puzzle'&&this.state.puzzleRevealed){
+        const pieceIdx=this.state.questionIndex;
+        this.state.puzzleRevealed.push(pieceIdx);
+        const piece=document.querySelector(`.puzzle-piece[data-idx="${pieceIdx}"]`);
+        if(piece){piece.classList.add('revealed');piece.classList.remove('active');
+          const num=piece.querySelector('.puzzle-num');if(num) num.style.display='none'}
+      }
       this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh}!`)},1000);
     } else {
       this.roundStreak=0;Adaptive.recordWrong(skill);Sounds.wrong();this._wrongEffects();
@@ -1311,7 +1516,8 @@ const Game = {
 
   _nextQuestion(){
     this.state.questionIndex++;
-    const remaining=this.QUESTIONS-this.state.questionIndex;
+    const total=this.state.questions.length;
+    const remaining=total-this.state.questionIndex;
     for(let i=0;i<remaining;i++){
       const idx=this.state.questionIndex+i;
       if(this.currentMode==='counting') this.state.questions[idx]=Adaptive.generateCounting();
@@ -1320,6 +1526,8 @@ const Game = {
         if(sl>=2&&Math.random()<0.4) this.state.questions[idx]=Adaptive.generateSubtraction();
         else this.state.questions[idx]=Adaptive.generateAddition();
       } else if(this.currentMode==='battle') this.state.questions[idx]=Adaptive.generateComparison();
+      else if(this.currentMode==='puzzle') this.state.questions[idx]=Adaptive.generatePuzzleQuestion();
+      else if(this.currentMode==='order') this.state.questions[idx]=Adaptive.generateOrdinalQuestion();
     }
     this._showQuestion();
   },
@@ -1338,7 +1546,18 @@ const Game = {
 
   // ===== RESULTS =====
   _showResults(){
-    this.cleanup();const {score,questions}=this.state;const total=questions.length;
+    this.cleanup();
+    let total,score;
+    if(this.currentMode==='memory'){
+      total=6;score=this.state.score;
+      // Star rating based on attempts
+      const att=this.state.memoryAttempts||0;
+      if(att<=9) score=6; else if(att<=12) score=5; else if(att<=15) score=4;
+      else if(att<=18) score=3; else score=2;
+      this.state.score=score;
+    } else {
+      score=this.state.score;total=this.state.questions.length;
+    }
     const hero=this.currentHero;
     Adaptive.addStars(score);
     const newHeroId=Adaptive.unlockNextHero();
@@ -1384,6 +1603,236 @@ const Game = {
     },500);
   },
 
+  // ===== PUZZLE MODE =====
+  _showPuzzleQuestion(q,qArea,aArea){
+    const hero=this.currentHero;
+    // Initialize puzzle state on first question
+    if(!this.state.puzzleRevealed) this.state.puzzleRevealed=[];
+    const pieceIdx=this.state.questionIndex;
+    // Show the puzzle grid
+    let gridHtml='<div class="puzzle-grid">';
+    for(let i=0;i<9;i++){
+      const isRevealed=this.state.puzzleRevealed.includes(i);
+      const row=Math.floor(i/3);const col=i%3;
+      const bgPos=`${col*50}% ${row*50}%`;
+      gridHtml+=`<div class="puzzle-piece ${isRevealed?'revealed':''} ${i===pieceIdx?'active':''}" data-idx="${i}">
+        <div class="puzzle-img" style="background:url('${hero.image}') no-repeat;background-size:300%;background-position:${bgPos}"></div>
+        ${isRevealed?'':`<span class="puzzle-num">${i+1}</span>`}
+      </div>`;
+    }
+    gridHtml+='</div>';
+    // Show question based on type
+    if(q.mode==='counting'){
+      let items='';
+      for(let i=0;i<q.answer;i++) items+=`<span class="count-item" style="animation-delay:${i*0.08}s">${hero.powerEmoji}</span>`;
+      qArea.innerHTML=`${gridHtml}<div class="speech-bubble" style="margin-top:8px">
+        <div class="prompt-text" data-speak="כמה ${hero.powerName_he} יש">?כמה ${hero.powerName_he} יש</div>
+        <div class="count-items">${items}</div></div>`;
+      this._t(()=>Speech.speak(`כמה ${hero.powerName_he} יש?`),300);
+      this._showAnswerBtns(q.distractors,q.answer,aArea,'counting');
+    } else {
+      const isAdd=q.operation==='+';const opSym=isAdd?'+':'−';const opClass=isAdd?'add':'sub';
+      const opWord=isAdd?'ועוד':'פחות';
+      qArea.innerHTML=`${gridHtml}<div class="speech-bubble" style="margin-top:8px">
+        <div class="equation">
+          <span class="eq-num">${q.a}</span><span class="eq-op ${opClass}">${opSym}</span>
+          <span class="eq-num">${q.b}</span><span class="eq-op eq">=</span>
+          <span class="eq-num eq-mystery">?</span></div></div>`;
+      const nA=HEBREW_NUMBERS[q.a]||q.a;const nB=HEBREW_NUMBERS[q.b]||q.b;
+      this._t(()=>Speech.speak(`${nA} ${opWord} ${nB} שווה?`),300);
+      this._showAnswerBtns(q.distractors,q.answer,aArea,q.operation==='+'?'addition':'subtraction');
+    }
+  },
+
+  // Override _handleAnswer for puzzle mode to reveal pieces
+  _handleAnswerOriginal:null,
+
+  // ===== MEMORY CARD GAME =====
+  _startMemory(){
+    const hero=this.currentHero;
+    const pairs=Adaptive.generateMemoryPairs(6);
+    const cards=[];
+    pairs.forEach((p,i)=>{
+      cards.push({id:i,type:'equation',text:p.equation,pairId:i,speak:p.hebrewEq});
+      cards.push({id:i,type:'answer',text:String(p.answer),pairId:i,speak:p.hebrewAns});
+    });
+    // Shuffle
+    for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]]}
+    this.state.memoryCards=cards;this.state.memoryFlipped=[];this.state.memoryMatched=[];
+    this.state.memoryAttempts=0;this.state.memoryLocked=false;
+    const qArea=document.getElementById('question-area');
+    const aArea=document.getElementById('answers-area');
+    aArea.innerHTML='';
+    const heroArea=document.getElementById('hero-area');
+    heroArea.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}" data-speak="${hero.name_he}"
+      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:5rem\\'>${hero.emoji}</span>')">`;
+    heroArea.className='hero-area';
+    document.getElementById('progress-text').textContent='התאם תרגיל לתשובה';
+    document.getElementById('progress-text').dataset.speak='התאם תרגיל לתשובה';
+    let html=`<div class="memory-attempts" data-speak="ניסיונות" id="memory-attempts">ניסיונות: 0</div>
+      <div class="memory-grid pairs-6">`;
+    cards.forEach((c,idx)=>{
+      html+=`<div class="memory-card" data-idx="${idx}" data-speak="${c.speak}">
+        <div class="memory-card-inner">
+          <div class="memory-card-back"></div>
+          <div class="memory-card-face"><span class="card-text ${c.type==='answer'?'card-answer':''}">${c.text}</span></div>
+        </div></div>`;
+    });
+    html+='</div>';
+    qArea.innerHTML=html;
+    this._t(()=>Speech.speak('התאם כל תרגיל לתשובה שלו'),300);
+    qArea.querySelectorAll('.memory-card').forEach(card=>{
+      card.addEventListener('click',()=>this._handleMemoryFlip(parseInt(card.dataset.idx)))});
+  },
+
+  _handleMemoryFlip(idx){
+    if(this.state.memoryLocked) return;
+    if(this.state.memoryFlipped.includes(idx)) return;
+    if(this.state.memoryMatched.includes(this.state.memoryCards[idx].pairId)) return;
+    const cards=document.querySelectorAll('.memory-card');
+    cards[idx].classList.add('flipped');
+    this.state.memoryFlipped.push(idx);
+    const card=this.state.memoryCards[idx];
+    Speech.speak(card.speak);
+    if(this.state.memoryFlipped.length===2){
+      this.state.memoryAttempts++;
+      document.getElementById('memory-attempts').textContent='ניסיונות: '+this.state.memoryAttempts;
+      const [i1,i2]=this.state.memoryFlipped;
+      const c1=this.state.memoryCards[i1];const c2=this.state.memoryCards[i2];
+      this.state.memoryLocked=true;
+      if(c1.pairId===c2.pairId&&c1.type!==c2.type){
+        // Match!
+        this._t(()=>{
+          cards[i1].classList.add('matched');cards[i2].classList.add('matched');
+          this.state.memoryMatched.push(c1.pairId);
+          this.state.score++;this.roundStreak++;
+          Sounds.powerUp();
+          const heroArea=document.getElementById('hero-area');heroArea.classList.add('celebrate');
+          this._t(()=>heroArea.classList.remove('celebrate'),1000);
+          this._showActionWord();
+          this.state.memoryFlipped=[];this.state.memoryLocked=false;
+          Speech.speak('מצאת התאמה!');
+          if(this.state.memoryMatched.length===6) this._t(()=>this._showResults(),1200);
+        },600);
+      } else {
+        // No match
+        this._t(()=>{
+          cards[i1].classList.remove('flipped');cards[i2].classList.remove('flipped');
+          this.roundStreak=0;Sounds.wrong();
+          this.state.memoryFlipped=[];this.state.memoryLocked=false;
+          Speech.speak('נסה שוב');
+        },1200);
+      }
+    }
+  },
+
+  // ===== ORDINALITY / CARDINALITY MODE =====
+  _showOrderQuestion(q,qArea,aArea){
+    const st=Adaptive.getState();
+    const unlocked=HEROES_DATA.filter(h=>st.heroesUnlocked.includes(h.id));
+    // Pick random heroes for lineup
+    const shuffled=[...unlocked].sort(()=>Math.random()-0.5);
+    const lineup=shuffled.slice(0,Math.min(q.lineupSize,shuffled.length));
+    if(lineup.length<3){for(let i=lineup.length;i<3;i++) lineup.push(HEROES_DATA[i%HEROES_DATA.length])}
+    this.state.orderLineup=lineup;
+    const hero=this.currentHero;
+
+    if(q.askType==='cardinality'){
+      // How many heroes?
+      const count=lineup.length;
+      let lineupHtml='<div class="lineup-area">';
+      lineup.forEach((h,i)=>{
+        lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}" data-idx="${i}">
+          <img src="${h.image}" alt="${h.name_he}" onerror="this.outerHTML='<span style=\\'font-size:2rem\\'>${h.emoji}</span>'">
+          <div class="lineup-platform">${i+1}</div></div>`;
+      });
+      lineupHtml+='</div>';
+      qArea.innerHTML=`${lineupHtml}<div class="speech-bubble"><div class="prompt-text" data-speak="כמה גיבורים עומדים בשורה">?כמה גיבורים עומדים בשורה</div></div>`;
+      const distractors=Adaptive._dist(count,Math.max(count-3,1),count+3);
+      this._t(()=>Speech.speak('כמה גיבורים עומדים בשורה? ספור אותם'),300);
+      this._showAnswerBtns(distractors,count,aArea,'cardinality');
+    } else if(q.askType==='ordinal'){
+      // Who is at position X?
+      const pos=1+Math.floor(Math.random()*lineup.length);
+      const targetHero=lineup[pos-1];
+      const ordName=HEBREW_ORDINALS[pos]||pos;
+      let lineupHtml='<div class="lineup-area">';
+      lineup.forEach((h,i)=>{
+        lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}, מקום ${HEBREW_ORDINALS[i+1]||i+1}" data-idx="${i}" data-hero-id="${h.id}">
+          <img src="${h.image}" alt="${h.name_he}" onerror="this.outerHTML='<span style=\\'font-size:2rem\\'>${h.emoji}</span>'">
+          <div class="lineup-platform">${i+1}</div></div>`;
+      });
+      lineupHtml+='</div>';
+      qArea.innerHTML=`${lineupHtml}<div class="speech-bubble"><div class="prompt-text" data-speak="מי עומד במקום ה${ordName}">?מי עומד במקום ה${ordName}</div></div>`;
+      aArea.innerHTML='';
+      this._t(()=>Speech.speak(`מי עומד במקום ה${ordName}? לחץ על הגיבור הנכון`),300);
+      // Click on correct hero
+      qArea.querySelectorAll('.lineup-hero').forEach(el=>{
+        el.style.cursor='pointer';
+        el.addEventListener('click',()=>{
+          if(this.state.answered) return;this.state.answered=true;
+          const clickedId=el.dataset.heroId;
+          if(clickedId===targetHero.id){
+            el.classList.add('correct-pick');this.state.score++;this.roundStreak++;
+            const result=Adaptive.recordCorrect('ordinality');
+            Sounds.powerUp();this._correctEffects(result==='level_up');
+            this._t(()=>Speech.speak(`${targetHero.name_he} עומד במקום ה${ordName}!`),800);
+          } else {
+            el.classList.add('wrong-pick');this.roundStreak=0;
+            Adaptive.recordWrong('ordinality');Sounds.wrong();this._wrongEffects();
+            // Highlight correct
+            qArea.querySelectorAll('.lineup-hero').forEach(lh=>{
+              if(lh.dataset.heroId===targetHero.id) lh.classList.add('correct-pick')});
+            this._t(()=>Speech.speak(`${targetHero.name_he} עומד במקום ה${ordName}`),800);
+          }
+          this._updatePowerMeter();this._t(()=>this._nextQuestion(),2500);
+        });
+      });
+    } else {
+      // Reverse: what position is hero X in?
+      const pos=1+Math.floor(Math.random()*lineup.length);
+      const targetHero=lineup[pos-1];
+      let lineupHtml='<div class="lineup-area">';
+      lineup.forEach((h,i)=>{
+        lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}" data-idx="${i}">
+          <img src="${h.image}" alt="${h.name_he}" onerror="this.outerHTML='<span style=\\'font-size:2rem\\'>${h.emoji}</span>'">
+          <div class="lineup-platform">${i+1}</div></div>`;
+      });
+      lineupHtml+='</div>';
+      qArea.innerHTML=`${lineupHtml}<div class="speech-bubble"><div class="prompt-text" data-speak="באיזה מקום עומד ${targetHero.name_he}">?באיזה מקום עומד ${targetHero.name_he}</div></div>`;
+      // Highlight the target hero
+      this._t(()=>{const heroes=qArea.querySelectorAll('.lineup-hero');
+        if(heroes[pos-1]) heroes[pos-1].classList.add('highlighted')},500);
+      // Generate ordinal answer buttons
+      const ordOptions=[];for(let i=1;i<=lineup.length;i++) ordOptions.push(i);
+      aArea.innerHTML='<div class="ordinal-buttons">'+ordOptions.map(n=>{
+        const ordName=HEBREW_ORDINALS[n]||n;
+        return `<button class="ordinal-btn" data-num="${n}" data-speak="מקום ${ordName}">${ordName}</button>`}).join('')+'</div>';
+      this._t(()=>Speech.speak(`באיזה מקום עומד ${targetHero.name_he}?`),300);
+      aArea.querySelectorAll('.ordinal-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          if(this.state.answered) return;this.state.answered=true;
+          const chosen=parseInt(btn.dataset.num);
+          aArea.querySelectorAll('.ordinal-btn').forEach(b=>b.style.pointerEvents='none');
+          if(chosen===pos){
+            btn.classList.add('correct');this.state.score++;this.roundStreak++;
+            const result=Adaptive.recordCorrect('ordinality');
+            Sounds.powerUp();this._correctEffects(result==='level_up');
+            const ordN=HEBREW_ORDINALS[pos]||pos;
+            this._t(()=>Speech.speak(`נכון! ${targetHero.name_he} במקום ה${ordN}`),800);
+          } else {
+            btn.classList.add('wrong');this.roundStreak=0;
+            Adaptive.recordWrong('ordinality');Sounds.wrong();this._wrongEffects();
+            aArea.querySelectorAll('.ordinal-btn').forEach(b=>{if(parseInt(b.dataset.num)===pos) b.classList.add('correct')});
+            const ordN=HEBREW_ORDINALS[pos]||pos;
+            this._t(()=>Speech.speak(`${targetHero.name_he} במקום ה${ordN}`),800);
+          }
+          this._updatePowerMeter();this._t(()=>this._nextQuestion(),2500);
+        });
+      });
+    }
+  },
+
   // ===== SPEECH HELPERS =====
   _speakPraise(isLevelUp){
     const hero=this.currentHero;
@@ -1415,6 +1864,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   };
   document.addEventListener('click',initOnce);
   document.addEventListener('touchstart',initOnce);
+  // Global click-to-speak for kids who can't read
+  document.addEventListener('click',(e)=>{
+    const el=e.target.closest('[data-speak]');
+    if(el&&el.dataset.speak) Speech.speak(el.dataset.speak);
+  });
   Game.init();
 });
 
