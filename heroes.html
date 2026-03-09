@@ -456,11 +456,11 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   -webkit-overflow-scrolling:touch}
 .lineup-hero{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;
   touch-action:manipulation;transition:all 0.3s ease;flex-shrink:0}
-.lineup-hero img{width:50px;height:50px;border-radius:50%;object-fit:cover;
-  border:4px solid #000;box-shadow:0 0 0 2px #FFD700;transition:all 0.3s}
-.lineup-hero .lineup-platform{width:50px;height:30px;background:linear-gradient(180deg,#FFD700,#FFA000);
-  border:3px solid #000;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;
-  font-family:'Russo One',sans-serif;font-size:0.9rem;font-weight:900;color:#000;
+.lineup-hero img{width:70px;height:70px;border-radius:50%;object-fit:cover;
+  border:4px solid #000;box-shadow:0 0 0 3px #FFD700;transition:all 0.3s}
+.lineup-hero .lineup-platform{width:70px;height:34px;background:linear-gradient(180deg,#FFD700,#FFA000);
+  border:3px solid #000;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;
+  font-family:'Russo One',sans-serif;font-size:1.1rem;font-weight:900;color:#000;
   box-shadow:3px 3px 0 #000}
 .lineup-hero.highlighted img{box-shadow:0 0 0 3px #FFD700,0 0 20px rgba(255,215,0,0.8);
   transform:scale(1.15);animation:lineupPulse 0.8s ease-in-out infinite}
@@ -1088,9 +1088,9 @@ const Adaptive = {
   generateOrdinalQuestion(){
     const lv=this.getLevel('ordinality');let lineupSize,askType;
     switch(lv){
-      case 1:lineupSize=3+Math.floor(Math.random()*2);askType='cardinality';break;
-      case 2:lineupSize=3+Math.floor(Math.random()*2);askType=Math.random()<0.5?'cardinality':'ordinal';break;
-      case 3:lineupSize=5+Math.floor(Math.random()*2);askType='ordinal';break;
+      case 1:lineupSize=3+Math.floor(Math.random()*3);askType=Math.random()<0.7?'cardinality':'ordinal';break;
+      case 2:lineupSize=4+Math.floor(Math.random()*3);askType=Math.random()<0.4?'cardinality':'ordinal';break;
+      case 3:lineupSize=5+Math.floor(Math.random()*3);askType=Math.random()<0.3?'cardinality':'ordinal';break;
       case 4:lineupSize=6+Math.floor(Math.random()*3);askType=Math.random()<0.5?'ordinal':'reverse';break;
       case 5:lineupSize=7+Math.floor(Math.random()*3);askType=Math.random()<0.3?'cardinality':Math.random()<0.6?'ordinal':'reverse';break;
       default:lineupSize=4;askType='cardinality'}
@@ -1728,12 +1728,9 @@ const Game = {
 
   // ===== ORDINALITY / CARDINALITY MODE =====
   _showOrderQuestion(q,qArea,aArea){
-    const st=Adaptive.getState();
-    const unlocked=HEROES_DATA.filter(h=>st.heroesUnlocked.includes(h.id));
-    // Pick random heroes for lineup
-    const shuffled=[...unlocked].sort(()=>Math.random()-0.5);
-    const lineup=shuffled.slice(0,Math.min(q.lineupSize,shuffled.length));
-    if(lineup.length<3){for(let i=lineup.length;i<3;i++) lineup.push(HEROES_DATA[i%HEROES_DATA.length])}
+    // Use ALL heroes for lineup variety (not just unlocked)
+    const shuffled=[...HEROES_DATA].sort(()=>Math.random()-0.5);
+    const lineup=shuffled.slice(0,q.lineupSize);
     this.state.orderLineup=lineup;
     const hero=this.currentHero;
 
