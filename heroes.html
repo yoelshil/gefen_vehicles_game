@@ -48,11 +48,13 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 /* ===== ACTION WORD OVERLAY ===== */
 #action-word{position:fixed;z-index:200;pointer-events:none;display:none;
-  font-family:'Bangers',cursive;font-size:6rem;color:#FFD700;
+  animation:actionPop 0.8s ease forwards}
+#action-word.text-mode{font-family:'Bangers',cursive;font-size:6rem;color:#FFD700;
   -webkit-text-stroke:3px #000;paint-order:stroke fill;
   background:linear-gradient(135deg,#FF6347,#FFD700);-webkit-background-clip:text;background-clip:text;
-  filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.7));
-  animation:actionPop 0.8s ease forwards;letter-spacing:2px}
+  filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.7));letter-spacing:2px}
+#action-word img{width:220px;height:auto;max-height:180px;object-fit:contain;
+  filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.5))}
 @keyframes actionPop{0%{transform:rotate(-15deg) scale(0);opacity:0}
   30%{transform:rotate(-10deg) scale(1.4);opacity:1}
   60%{transform:rotate(-12deg) scale(1.1);opacity:1}
@@ -192,6 +194,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   border-radius:20px;padding:10px 18px;backdrop-filter:blur(6px)}
 .speech-bubble::after{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);
   border:8px solid transparent;border-bottom-color:rgba(255,255,255,0.3)}
+.speech-bubble.burst-bg{background:url('images/comics/burst-yellow.png') center/contain no-repeat,
+  rgba(255,255,255,0.12);padding:20px 28px}
 .prompt-text{font-family:'Bangers',cursive;font-size:1.8rem;color:#fff;text-align:center;
   -webkit-text-stroke:1px rgba(0,0,0,0.4);paint-order:stroke fill;
   letter-spacing:2px;text-shadow:2px 2px 0 rgba(0,0,0,0.3)}
@@ -286,6 +290,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .results-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;
   display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;
   background:rgba(10,10,46,0.95);backdrop-filter:blur(10px);padding:20px;overflow-y:auto}
+.results-comic-frame{position:absolute;top:10px;right:10px;width:100px;height:auto;opacity:0.15;
+  pointer-events:none;z-index:0}
+.results-comic-frame-left{position:absolute;bottom:10px;left:10px;width:100px;height:auto;opacity:0.15;
+  pointer-events:none;z-index:0;transform:scaleX(-1)}
 
 /* Speed lines behind results */
 .results-overlay::before{content:'';position:absolute;top:50%;left:50%;width:600px;height:600px;
@@ -451,6 +459,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 <!-- ===== MENU SCREEN ===== -->
 <div id="menu-screen" class="screen active">
   <div class="ray-burst"></div>
+  <img src="images/comics/spiderman-logo.png" alt="" style="position:absolute;top:8px;right:60px;width:50px;opacity:0.2;pointer-events:none;z-index:0">
   <h1 class="menu-title">גיבורי על</h1>
   <p class="menu-subtitle">MARVEL MATH</p>
 
@@ -499,6 +508,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 <!-- ===== GAME SCREEN ===== -->
 <div id="game-screen" class="screen game-screen">
+  <img src="images/comics/spiderman-comic.png" alt="" style="position:absolute;bottom:10px;left:5px;width:80px;opacity:0.1;pointer-events:none;z-index:0">
   <div class="game-header">
     <button class="back-btn" id="back-btn">🏠</button>
     <span class="progress-text" id="progress-text">1/8</span>
@@ -511,6 +521,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 <!-- ===== RESULTS OVERLAY ===== -->
 <div id="results-overlay" class="results-overlay">
+  <img src="images/comics/frame-poof.png" class="results-comic-frame" alt="">
+  <img src="images/comics/frame-poof.png" class="results-comic-frame-left" alt="">
   <div class="results-hero" id="results-hero"></div>
   <h2 class="results-title" id="results-title"></h2>
   <div class="results-stars" id="results-stars"></div>
@@ -591,7 +603,7 @@ const HEROES_DATA = [
    phrases:{correct:['!דדפול אוהב את זה','!מגניב','!וואו באמת'],wrong:['!דדפול אומר נסה שוב','!אופס'],intro:'דדפול צריך את עזרתך'}},
   {id:'drax',name_he:'דראקס',emoji:'🗡️',color:'#607D8B',colorLight:'#CFD8DC',
    gradient:'linear-gradient(135deg,#78909C,#455A64)',powerEmoji:'🗡️',powerName_he:'סכינים',
-   image:'images/heroes/drax.jpg',
+   image:'images/heroes/drax.png',
    phrases:{correct:['!דראקס ההורס מרוצה','!כוח ענק','!חזק'],wrong:['!דראקס אומר נסה שוב','!עוד פעם'],intro:'דראקס צריך את עזרתך'}},
   {id:'doom',name_he:'דוקטור דום',emoji:'👑',color:'#2E7D32',colorLight:'#C8E6C9',
    gradient:'linear-gradient(135deg,#2E7D32,#1B5E20)',powerEmoji:'⚡',powerName_he:'קסמים',
@@ -636,6 +648,14 @@ const HERO_PRAISE = ['!כל הכבוד','!מעולה','!מדהים','!וואו',
 const HERO_ENCOURAGE = ['!נסה שוב','!כמעט','!קרוב','!אפשר לנסות שוב','!בוא ננסה שוב'];
 const HERO_LEVEL_UP = ['!עלית שלב','!אתה מתקדם','!הולך ונהיה גיבור על'];
 const ACTION_WORDS = ['POW!','BAM!','BOOM!','WOW!','!יש','!בום','!פאו','!וואו','SMASH!','ZAP!'];
+const ACTION_IMAGES = {
+  'BOOM!':'images/comics/boom.png',
+  'POW!':'images/comics/pow.png',
+  'WOW!':'images/comics/wow.png',
+  '!בום':'images/comics/boom.png',
+  '!פאו':'images/comics/pow.png',
+  '!וואו':'images/comics/wow.png'
+};
 
 // ===== TEAM DEFINITIONS =====
 const TEAMS_DATA = [
@@ -1117,7 +1137,7 @@ const Game = {
     let items='<div class="count-items">';
     for(let i=0;i<count;i++) items+=`<span class="count-item" style="animation-delay:${i*0.1}s">${hero.powerEmoji}</span>`;
     items+='</div>';
-    qArea.innerHTML=`<div class="speech-bubble"><div class="prompt-text">?כמה ${hero.powerName_he} יש</div>${items}</div>`;
+    qArea.innerHTML=`<div class="speech-bubble burst-bg"><div class="prompt-text">?כמה ${hero.powerName_he} יש</div>${items}</div>`;
     this._t(()=>Speech.speak(`כמה ${hero.powerName_he} יש? ספור אותם`),300);
     this._showAnswerBtns(q.distractors,q.answer,aArea,'counting');
   },
@@ -1163,7 +1183,7 @@ const Game = {
     let heroB=unlocked[Math.floor(Math.random()*unlocked.length)];
     if(unlocked.length>1) while(heroB.id===heroA.id) heroB=unlocked[Math.floor(Math.random()*unlocked.length)];
     qArea.innerHTML=`
-      <div class="speech-bubble"><div class="prompt-text">?מי חזק יותר</div></div>
+      <div class="speech-bubble" style="background:url('images/comics/burst-purple.png') center/contain no-repeat,rgba(255,255,255,0.12);padding:20px 28px"><div class="prompt-text">?מי חזק יותר</div></div>
       <div class="battle-area">
         <button class="battle-card" data-num="${q.numA}" style="border-color:${heroA.color}">
           <img src="${heroA.image}" alt="${heroA.name_he}" onerror="this.outerHTML='<span style=\\'font-size:4rem\\'>${heroA.emoji}</span>'">
@@ -1259,7 +1279,12 @@ const Game = {
   _showActionWord(){
     const el=document.getElementById('action-word');
     const word=ACTION_WORDS[Math.floor(Math.random()*ACTION_WORDS.length)];
-    el.textContent=word;
+    const imgSrc=ACTION_IMAGES[word];
+    if(imgSrc){
+      el.className='';el.innerHTML=`<img src="${imgSrc}" alt="${word}">`;
+    } else {
+      el.className='text-mode';el.innerHTML=word;
+    }
     el.style.top=(20+Math.random()*30)+'%';
     el.style.left=(15+Math.random()*50)+'%';
     el.style.display='block';el.style.animation='none';
