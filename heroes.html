@@ -39,7 +39,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 @keyframes speedLinesMove{0%{background-position:0 0}100%{background-position:60px 60px}}
 
 /* ===== FULLSCREEN BUTTON ===== */
-.fullscreen-btn{position:fixed;top:10px;left:10px;z-index:500;width:44px;height:44px;
+.fullscreen-btn{position:fixed;top:10px;right:10px;z-index:500;width:44px;height:44px;
   border-radius:12px;border:3px solid #000;background:linear-gradient(135deg,#FFD700,#FFA000);
   font-size:1.3rem;cursor:pointer;touch-action:manipulation;color:#000;font-weight:900;
   box-shadow:3px 3px 0 #000;transition:transform 0.15s;display:flex;align-items:center;justify-content:center}
@@ -438,9 +438,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .memory-card-face,.memory-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;
   border:4px solid #000;border-radius:12px;display:flex;align-items:center;justify-content:center;
   box-shadow:4px 4px 0 #000}
-.memory-card-back{background:linear-gradient(135deg,#E23636,#B71C1C);
-  background-image:url('images/comics/burst-yellow.png');background-size:80%;background-position:center;background-repeat:no-repeat;
-  background-color:#E23636}
+.memory-card-back{background:linear-gradient(135deg,#E23636 0%,#B71C1C 40%,#7F0000 100%);
+  background-image:url('images/comics/burst-yellow.png');background-size:70%;background-position:center;background-repeat:no-repeat}
 .memory-card-back::after{content:'';position:absolute;width:100%;height:100%;border-radius:8px;
   background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,0.05) 3px,rgba(0,0,0,0.05) 5px)}
 .memory-card-face{background:linear-gradient(180deg,#fff,#e8e8f0);transform:rotateY(180deg);
@@ -589,7 +588,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   box-shadow:0 0 20px rgba(255,215,0,0.2),inset 0 0 20px rgba(255,215,0,0.1)}
 
 /* ===== ROUND BANNER ===== */
-.round-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:300;
+.round-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:250;
   font-family:'Bangers',cursive;font-size:4rem;color:#FFD700;
   -webkit-text-stroke:3px #000;paint-order:stroke fill;
   text-shadow:4px 4px 0 #C62828,6px 6px 0 rgba(0,0,0,0.4);
@@ -610,15 +609,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 @keyframes vsSplatPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.3}
   50%{transform:translate(-50%,-50%) scale(1.15);opacity:0.5}}
 
-/* ===== ENHANCED MEMORY CARD BACKS ===== */
-.memory-card-back{background:linear-gradient(135deg,#E23636 0%,#B71C1C 40%,#7F0000 100%);
-  background-image:url('images/comics/burst-yellow.png');background-size:70%;
-  background-position:center;background-repeat:no-repeat}
-
 /* ===== ENHANCED CORRECT/WRONG EFFECTS ===== */
 .hero-area.celebrate::after{content:'';position:absolute;width:300px;height:300px;
   background:url('images/heroes/pngwing.com (3).png') center/contain no-repeat;
-  pointer-events:none;opacity:0.3;animation:sparkleFlash 1s ease forwards}
+  pointer-events:none;opacity:0.3;z-index:-1;animation:sparkleFlash 1s ease forwards}
 @keyframes sparkleFlash{0%{transform:scale(0.5);opacity:0}30%{transform:scale(1.2);opacity:0.4}
   100%{transform:scale(1.5);opacity:0}}
 </style>
