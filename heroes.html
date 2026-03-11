@@ -138,6 +138,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-memory{background:linear-gradient(135deg,#00897B,#004D40)}
 .mode-btn-order{background:linear-gradient(135deg,#C62828,#6A1B9A)}
 .mode-btn-readaloud{background:linear-gradient(135deg,#9C27B0,#E040FB)}
+.mode-btn:last-child{grid-column:1/-1}
 .mode-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
   background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.04) 4px,rgba(255,255,255,0.04) 6px);
   pointer-events:none}
@@ -175,15 +176,20 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   -webkit-text-stroke:1px rgba(0,0,0,0.5);letter-spacing:2px;
   text-shadow:2px 2px 0 rgba(0,0,0,0.4);position:relative;z-index:2}
 
-/* Power Meter */
-.power-meter{display:flex;gap:8px;justify-content:center;padding:6px 0;position:relative;z-index:2}
-.power-orb{width:36px;height:36px;border-radius:50%;border:3px solid rgba(255,255,255,0.3);
-  background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;
-  font-size:1rem;color:rgba(255,255,255,0.4);transition:all 0.4s ease}
-.power-orb.filled{border-color:#000;transform:scale(1.15);
-  animation:orbFillBig 0.6s ease;font-size:1.1rem;
-  box-shadow:0 0 15px rgba(255,215,0,0.5),3px 3px 0 rgba(0,0,0,0.4)}
-@keyframes orbFillBig{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.4)}100%{transform:scale(1.15);opacity:1}}
+/* Power Meter — Linear Number Line */
+.power-meter{display:flex;align-items:center;gap:0;padding:6px 16px;position:relative;z-index:2;width:100%;max-width:420px}
+.power-line{flex:1;height:6px;border-radius:3px;position:relative;background:rgba(255,255,255,0.15);margin:0 12px}
+.power-line-fill{height:100%;border-radius:3px;transition:width 0.6s ease;position:absolute;top:0;left:0}
+.power-node{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.08);position:absolute;top:50%;transform:translate(-50%,-50%);z-index:1;
+  font-size:0.6rem;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);
+  font-family:'Russo One',sans-serif;transition:all 0.4s ease}
+.power-node.filled{color:#000;box-shadow:0 0 8px rgba(255,215,0,0.5);animation:nodeFill 0.5s ease}
+@keyframes nodeFill{0%{transform:translate(-50%,-50%) scale(0.5)}50%{transform:translate(-50%,-50%) scale(1.3)}100%{transform:translate(-50%,-50%) scale(1)}}
+.power-hero-marker{position:absolute;top:-20px;font-size:1.3rem;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));z-index:2}
+.power-goal{font-size:1.1rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
+.power-start{font-size:0.9rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
 
 /* Hero Display */
 .hero-area{display:flex;align-items:center;justify-content:center;min-height:120px;
@@ -222,6 +228,17 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .count-items{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:16px;
   background:rgba(0,0,0,0.35);border-radius:20px;border:4px solid rgba(255,255,255,0.25);
   min-height:60px;max-width:380px;box-shadow:inset 0 0 20px rgba(0,0,0,0.3)}
+/* Structured grid layouts for subitizing */
+.count-items.grid-row{display:flex;flex-wrap:nowrap;justify-content:center}
+.count-items.grid-2x2{display:grid;grid-template-columns:repeat(2,auto);justify-content:center;justify-items:center}
+.count-items.grid-3x2{display:grid;grid-template-columns:repeat(3,auto);justify-content:center;justify-items:center}
+.count-items.grid-5plus{display:grid;grid-template-columns:repeat(5,auto);justify-content:center;justify-items:center}
+.count-items.grid-tenframe{display:grid;grid-template-columns:repeat(5,auto);justify-content:center;justify-items:center;
+  border:3px dashed rgba(255,215,0,0.3);padding:12px}
+/* Concrete→Abstract progression */
+.count-items.abstract .count-item{font-size:2rem}
+.digit-hint{font-family:'Russo One',sans-serif;font-size:1.2rem;color:rgba(255,215,0,0.5);text-align:center;margin-top:6px;
+  letter-spacing:2px}
 .count-item{font-size:2.6rem;animation:itemBounceIn 0.4s ease both;
   filter:drop-shadow(0 3px 8px rgba(0,0,0,0.5))}
 @keyframes itemBounceIn{0%{transform:scale(0) rotate(-180deg);opacity:0}
@@ -395,7 +412,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   .battle-num{font-size:2.8rem}
   .collection-badge{width:46px;height:46px}
   .collection-badge img{width:36px;height:36px}
-  .power-orb{width:30px;height:30px;font-size:0.8rem}
+  .power-node{width:18px;height:18px;font-size:0.5rem}
+  .power-hero-marker{font-size:1rem;top:-16px}
   #action-word{font-size:4rem}
   #countdown-number{font-size:9rem}
   .streak-banner{font-size:2.2rem}
@@ -578,6 +596,30 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .game-screen::after{content:'';position:absolute;top:4px;left:4px;right:4px;bottom:4px;
   border:3px solid rgba(255,215,0,0.15);border-radius:8px;pointer-events:none;z-index:0}
 
+/* ===== FOCUSING STATE — reduce visual clutter during questions ===== */
+.game-screen.focusing .deco-float{opacity:0;transition:opacity 0.5s}
+.game-screen.focusing::before{opacity:0.15;transition:opacity 0.5s}
+.game-screen.focusing .hero-area::before{opacity:0.2;transition:opacity 0.5s}
+.game-screen:not(.focusing) .deco-float{transition:opacity 0.5s}
+.game-screen:not(.focusing)::before{transition:opacity 0.3s}
+.game-screen:not(.focusing) .hero-area::before{transition:opacity 0.3s}
+
+/* ===== MULTI-REPRESENTATION NUMBER CARD ===== */
+.number-card{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:180;
+  background:rgba(0,0,20,0.92);backdrop-filter:blur(12px);border:5px solid #FFD700;border-radius:24px;
+  padding:20px 32px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  box-shadow:0 0 40px rgba(255,215,0,0.4),8px 8px 0 rgba(0,0,0,0.5);pointer-events:none;opacity:0;
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s}
+.number-card.show{transform:translate(-50%,-50%) scale(1);opacity:1}
+.number-card.hide{transform:translate(-50%,-50%) scale(0.8);opacity:0}
+.number-card-dots{display:flex;flex-direction:column;align-items:center;gap:4px}
+.number-card-dots div{display:flex;gap:6px}
+.number-card-dots span{font-size:1.4rem;filter:drop-shadow(0 0 4px rgba(255,215,0,0.4))}
+.number-card-digit{font-family:'Russo One',sans-serif;font-size:4rem;color:#FFD700;
+  -webkit-text-stroke:2px #000;text-shadow:3px 3px 0 rgba(0,0,0,0.4);line-height:1}
+.number-card-word{font-family:'Bangers',cursive;font-size:1.8rem;color:#fff;
+  -webkit-text-stroke:1px rgba(0,0,0,0.4);letter-spacing:3px}
+
 /* ===== ANSWER BUTTON COLOR TINTS ===== */
 .answer-btn:nth-child(1){background:linear-gradient(180deg,#fff,#ffe8e0)}
 .answer-btn:nth-child(2){background:linear-gradient(180deg,#fff,#e0e8ff)}
@@ -646,6 +688,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 <div id="countdown-overlay"><div id="countdown-number"></div></div>
 <!-- Screen Flash -->
 <div id="screen-flash"></div>
+<!-- Number Card (multi-representation) -->
+<div id="number-card" class="number-card"></div>
 
 <!-- ===== MENU SCREEN ===== -->
 <div id="menu-screen" class="screen active">
@@ -1571,6 +1615,9 @@ const Game = {
       if(this.currentMode==='puzzle') this.state.score=this.state.puzzleRevealed?this.state.puzzleRevealed.length:0;
       this._showResults();return}
     this.state.answered=false;
+    // Focusing state: dim decorations during question
+    const gs=document.getElementById('game-screen');
+    if(gs) gs.classList.add('focusing');
     const q=questions[questionIndex];
     document.getElementById('progress-text').textContent=`${questionIndex+1}/${questions.length}`;
     this._updatePowerMeter();
@@ -1586,21 +1633,31 @@ const Game = {
     document.getElementById('progress-text').dataset.speak=`שאלה ${questionIndex+1} מתוך ${questions.length}`;
     const qArea=document.getElementById('question-area');
     const aArea=document.getElementById('answers-area');
-    if(this.currentMode==='counting') this._showCounting(q,qArea,aArea);
-    else if(this.currentMode==='mission') this._showMission(q,qArea,aArea);
-    else if(this.currentMode==='battle') this._showBattle(q,qArea,aArea);
-    else if(this.currentMode==='puzzle') this._showPuzzleQuestion(q,qArea,aArea);
-    else if(this.currentMode==='order') this._showOrderQuestion(q,qArea,aArea);
-    else if(this.currentMode==='readaloud') this._showReadAloud(q,qArea,aArea);
+    // Smooth fade transition between questions
+    qArea.style.transition='opacity 0.15s';aArea.style.transition='opacity 0.15s';
+    qArea.style.opacity='0';aArea.style.opacity='0';
+    this._t(()=>{
+      if(this.currentMode==='counting') this._showCounting(q,qArea,aArea);
+      else if(this.currentMode==='mission') this._showMission(q,qArea,aArea);
+      else if(this.currentMode==='battle') this._showBattle(q,qArea,aArea);
+      else if(this.currentMode==='puzzle') this._showPuzzleQuestion(q,qArea,aArea);
+      else if(this.currentMode==='order') this._showOrderQuestion(q,qArea,aArea);
+      else if(this.currentMode==='readaloud') this._showReadAloud(q,qArea,aArea);
+      qArea.style.opacity='1';aArea.style.opacity='1';
+    },160);
   },
 
   // ===== COUNTING MODE =====
   _showCounting(q,qArea,aArea){
     const hero=this.currentHero;const count=q.answer;
-    let items='<div class="count-items">';
+    const qi=this.state.questionIndex;
+    const phase=qi<3?'concrete':qi<5?'bridging':'abstract';
+    const gridClass=count<=3?'grid-row':count===4?'grid-2x2':count<=6?'grid-3x2':count<=10?'grid-5plus':'grid-tenframe';
+    let items=`<div class="count-items ${gridClass} ${phase}">`;
     for(let i=0;i<count;i++) items+=`<span class="count-item" style="animation-delay:${i*0.1}s">${hero.powerEmoji}</span>`;
     items+='</div>';
-    qArea.innerHTML=`<div class="speech-bubble"><div class="prompt-text" data-speak="כמה ${hero.powerName_he} יש">?כמה ${hero.powerName_he} יש</div>${items}</div>`;
+    const digitHint=phase==='bridging'?`<div class="digit-hint">${count}=?</div>`:'';
+    qArea.innerHTML=`<div class="speech-bubble"><div class="prompt-text" data-speak="כמה ${hero.powerName_he} יש">?כמה ${hero.powerName_he} יש</div>${items}${digitHint}</div>`;
     this._t(()=>Speech.speak(`כמה ${hero.powerName_he} יש? ספור אותם`),300);
     this._showAnswerBtns(q.distractors,q.answer,aArea,'counting');
   },
@@ -1680,6 +1737,7 @@ const Game = {
       this.state.score++;this.roundStreak++;
       const result=Adaptive.recordCorrect('comparison');
       Sounds.powerUp();this._correctEffects(result==='level_up');
+      this._showNumberCard(correct);
       if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
       this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול!`)},1200);
     } else {
@@ -1710,6 +1768,7 @@ const Game = {
       this.state.score++;this.roundStreak++;
       const result=Adaptive.recordCorrect(skill);
       Sounds.powerUp();this._correctEffects(result==='level_up');
+      this._showNumberCard(correct);
       if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
       // Puzzle mode: reveal piece
       if(this.currentMode==='puzzle'&&this.state.puzzleRevealed){
@@ -1724,9 +1783,12 @@ const Game = {
       this.roundStreak=0;const wr=Adaptive.recordWrong(skill);Sounds.wrong();this._wrongEffects();
       if(wr==='level_down') this._t(()=>Decorations.showAdaptiveBanner('!בוא ננסה משהו קצת יותר קל','#64B5F6'),400);
       this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`התשובה היא ${nh}`)},1200);
+      // Elaborated scaffolding for counting mode
+      this._t(()=>this._showScaffolding(correct),1600);
     }
     this._updatePowerMeter();
-    this._t(()=>this._nextQuestion(),2800);
+    const wrongDelay=this.currentMode==='counting'?4500:2800;
+    this._t(()=>this._nextQuestion(),wrongDelay);
   },
 
   // ===== READ ALOUD MODE =====
@@ -1815,6 +1877,9 @@ const Game = {
 
   // ===== EFFECTS =====
   _correctEffects(isLevelUp){
+    // Remove focusing state — let decorations return for celebration
+    const gs=document.getElementById('game-screen');
+    if(gs) gs.classList.remove('focusing');
     const heroArea=document.getElementById('hero-area');
     heroArea.classList.add('celebrate');
     const flash=document.getElementById('screen-flash');
@@ -1830,12 +1895,64 @@ const Game = {
   },
 
   _wrongEffects(){
+    // Remove focusing state on wrong answer too
+    const gs=document.getElementById('game-screen');
+    if(gs) gs.classList.remove('focusing');
     const heroArea=document.getElementById('hero-area');
     heroArea.classList.add('sad');
     const flash=document.getElementById('screen-flash');
     flash.style.background='rgba(255,100,0,0.15)';flash.style.opacity='1';
     setTimeout(()=>{flash.style.opacity='0'},200);
     this._speakEncourage();
+  },
+
+  // Multi-representation number card (dots + digit + Hebrew word)
+  _showNumberCard(num){
+    const card=document.getElementById('number-card');
+    if(!card||num===undefined||num===null) return;
+    const heWord=HEBREW_NUMBERS[num]||String(num);
+    const dotRows=this._getDotLayout(num);
+    let dotsHtml='<div class="number-card-dots">';
+    dotRows.forEach(row=>{dotsHtml+=`<div>${Array(row).fill('●').map(d=>`<span>${d}</span>`).join('')}</div>`});
+    dotsHtml+='</div>';
+    card.innerHTML=`${dotsHtml}<div class="number-card-digit">${num}</div><div class="number-card-word">${heWord}</div>`;
+    card.className='number-card show';
+    this._t(()=>{card.className='number-card hide'},1800);
+    this._t(()=>{card.className='number-card'},2200);
+  },
+  _getDotLayout(n){
+    if(n<=0) return [1];
+    if(n<=3) return [n];
+    if(n===4) return [2,2];
+    if(n===5) return [2,1,2];
+    if(n===6) return [3,3];
+    if(n===7) return [4,3];
+    if(n===8) return [4,4];
+    if(n===9) return [5,4];
+    if(n===10) return [5,5];
+    if(n<=15) return [5,5,n-10];
+    if(n<=20) return [5,5,5,n-15];
+    return [5,5,5,5];
+  },
+
+  // Elaborated wrong-answer scaffolding
+  _showScaffolding(correct){
+    if(this.currentMode==='counting'){
+      const items=document.querySelectorAll('.count-item');
+      if(!items.length) return;
+      items.forEach((item,i)=>{
+        this._t(()=>{
+          item.style.transform='scale(1.3)';item.style.transition='transform 0.2s';
+          item.style.filter='drop-shadow(0 0 8px rgba(255,215,0,0.8))';
+          item.style.position='relative';
+          const badge=document.createElement('span');
+          badge.style.cssText='position:absolute;top:-8px;right:-8px;background:#FFD700;color:#000;border-radius:50%;width:22px;height:22px;font-size:0.75rem;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:Russo One,sans-serif;border:2px solid #000';
+          badge.textContent=i+1;item.appendChild(badge);
+          Speech.speak(HEBREW_NUMBERS[i+1]||String(i+1));
+        },i*450);
+      });
+      this._t(()=>Speech.speak(`${HEBREW_NUMBERS[correct]||correct}!`),items.length*450+300);
+    }
   },
 
   _showActionWord(){
@@ -1904,12 +2021,20 @@ const Game = {
   _updatePowerMeter(){
     const meter=document.getElementById('power-meter');if(!meter) return;
     const hero=this.currentHero;const {score}=this.state;
-    let h='';for(let i=0;i<this.QUESTIONS;i++){
+    const total=this.QUESTIONS;
+    const pct=total>0?Math.round((score/total)*100):0;
+    const nodes=Array.from({length:total},(_,i)=>{
+      const pos=Math.round(((i+1)/total)*100);
       const filled=i<score;
-      h+=`<span class="power-orb ${filled?'filled':''}"
-        style="${filled?'background:'+hero.color+';border-color:'+hero.color:''}">
-        ${filled?hero.powerEmoji:'○'}</span>`}
-    meter.innerHTML=h;
+      return `<span class="power-node ${filled?'filled':''}" style="left:${pos}%;${filled?'border-color:'+hero.color+';background:'+hero.color:''}">
+        ${filled?'✓':(i+1)}</span>`}).join('');
+    meter.innerHTML=`<span class="power-start">${hero.powerEmoji}</span>
+      <div class="power-line">
+        <div class="power-line-fill" style="width:${pct}%;background:${hero.gradient}"></div>
+        <span class="power-hero-marker" style="left:${pct}%">${hero.emoji}</span>
+        ${nodes}
+      </div>
+      <span class="power-goal">⭐</span>`;
   },
 
   // ===== RESULTS =====
@@ -1956,7 +2081,7 @@ const Game = {
     let starsHtml='';
     for(let i=0;i<total;i++){
       const earned=i<score;
-      starsHtml+=`<span class="star ${earned?'':'empty'}" style="animation-delay:${i*0.15}s">⭐</span>`;
+      starsHtml+=`<span class="star ${earned?'':'empty'}" style="animation-delay:${i*0.25}s">⭐</span>`;
     }
     document.getElementById('results-stars').innerHTML=starsHtml;
     document.getElementById('results-score').textContent=`${score} מתוך ${total}`;
