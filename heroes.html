@@ -910,6 +910,16 @@ const Decorations = {
     banner.textContent=`${num} שלב`;
     screenEl.appendChild(banner);
     setTimeout(()=>{banner.remove();if(cb) cb()},900);
+  },
+  showAdaptiveBanner(text,color){
+    const gs=document.getElementById('game-screen');if(!gs) return;
+    const banner=document.createElement('div');
+    banner.className='round-banner';
+    banner.style.color=color||'#FFD700';
+    banner.style.fontSize='2.5rem';
+    banner.textContent=text;
+    gs.appendChild(banner);
+    setTimeout(()=>banner.remove(),1500);
   }
 };
 
@@ -1094,7 +1104,7 @@ const Storage = {
 
 // ===== ADAPTIVE DIFFICULTY ENGINE (STARTS BELOW 10!) =====
 const Adaptive = {
-  _defaultSkill(){return {level:1,streak:0,wrongStreak:0,totalCorrect:0,totalWrong:0}},
+  _defaultSkill(){return {level:1,streak:0,wrongStreak:0,totalCorrect:0,totalWrong:0,recentWindow:[],recoveryLeft:0}},
   _state:null,
   getState(){
     if(!this._state){this._state=Storage.getHeroMathAdaptive()||{
@@ -1108,17 +1118,42 @@ const Adaptive = {
     if(!this._state.memory) this._state.memory=this._defaultSkill();
     if(!this._state.cardinality) this._state.cardinality=this._defaultSkill();
     if(!this._state.ordinality) this._state.ordinality=this._defaultSkill();
+    // migrate: add recentWindow and recoveryLeft to existing skills
+    ['counting','addition','subtraction','comparison','puzzle','memory','cardinality','ordinality'].forEach(sk=>{
+      if(this._state[sk]&&!this._state[sk].recentWindow){this._state[sk].recentWindow=[];this._state[sk].recoveryLeft=0}});
     return this._state},
   save(){Storage.saveHeroMathAdaptive(this._state)},
+  _pushWindow(s,correct){if(!s.recentWindow) s.recentWindow=[];
+    s.recentWindow.push(correct);if(s.recentWindow.length>6) s.recentWindow.shift()},
+  _windowAccuracy(s){if(!s.recentWindow||s.recentWindow.length<6) return 1;
+    return s.recentWindow.filter(Boolean).length/s.recentWindow.length},
   recordCorrect(skill){const s=this.getState()[skill];if(!s) return;
-    s.streak++;s.wrongStreak=0;s.totalCorrect++;
-    if(s.streak>=3&&s.level<5){s.level++;s.streak=0;this.save();return 'level_up'}
+    s.streak++;s.wrongStreak=0;s.totalCorrect++;this._pushWindow(s,true);
+    // Decrement recovery counter
+    if(s.recoveryLeft>0){s.recoveryLeft--;
+      if(s.recoveryLeft===0){this.save();return 'recovery_done'}}
+    // Level up: 3 streak, not in recovery, respect safety cap
+    const maxLv=(s.totalCorrect<30)?3:5;
+    if(s.streak>=3&&s.level<maxLv&&s.recoveryLeft===0){
+      s.level++;s.streak=0;s.recentWindow=[];this.save();return 'level_up'}
     this.save();return 'correct'},
   recordWrong(skill){const s=this.getState()[skill];if(!s) return;
-    s.streak=0;s.wrongStreak++;s.totalWrong++;
-    if(s.wrongStreak>=2&&s.level>1){s.level--;s.wrongStreak=0;this.save();return 'level_down'}
+    s.streak=0;s.wrongStreak++;s.totalWrong++;this._pushWindow(s,false);
+    // Level down: 2 consecutive wrong OR sliding window <40% accuracy
+    const windowDrop=this._windowAccuracy(s)<=0.4;
+    if((s.wrongStreak>=2||windowDrop)&&s.level>1){
+      s.level--;s.wrongStreak=0;s.recentWindow=[];s.recoveryLeft=3;
+      this.save();return 'level_down'}
+    // Decrement recovery even on wrong
+    if(s.recoveryLeft>0) s.recoveryLeft--;
     this.save();return 'wrong'},
-  getLevel(skill){return this.getState()[skill]?.level||1},
+  getLevel(skill){const s=this.getState()[skill];if(!s) return 1;
+    let lv=s.level;
+    // Safety cap: levels 4-5 locked until 30+ lifetime correct
+    if(s.totalCorrect<30&&lv>3) lv=3;
+    // Recovery mode: use one level lower for comfort
+    if(s.recoveryLeft>0) lv=Math.max(1,lv-1);
+    return lv},
   unlockNextHero(){const st=this.getState();st.roundsCompleted++;
     if(st.roundsCompleted%2===0){const allIds=HEROES_DATA.map(h=>h.id);
       const locked=allIds.filter(id=>!st.heroesUnlocked.includes(id));
@@ -1568,9 +1603,11 @@ const Game = {
       this.state.score++;this.roundStreak++;
       const result=Adaptive.recordCorrect('comparison');
       Sounds.powerUp();this._correctEffects(result==='level_up');
+      if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
       this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול!`)},1200);
     } else {
-      this.roundStreak=0;Adaptive.recordWrong('comparison');Sounds.wrong();this._wrongEffects();
+      this.roundStreak=0;const wr=Adaptive.recordWrong('comparison');Sounds.wrong();this._wrongEffects();
+      if(wr==='level_down') this._t(()=>Decorations.showAdaptiveBanner('!בוא ננסה משהו קצת יותר קל','#64B5F6'),400);
       this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול`)},1200);
     }
     this._updatePowerMeter();
@@ -1596,6 +1633,7 @@ const Game = {
       this.state.score++;this.roundStreak++;
       const result=Adaptive.recordCorrect(skill);
       Sounds.powerUp();this._correctEffects(result==='level_up');
+      if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
       // Puzzle mode: reveal piece
       if(this.currentMode==='puzzle'&&this.state.puzzleRevealed){
         const pieceIdx=this.state.questionIndex;
@@ -1606,7 +1644,8 @@ const Game = {
       }
       this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh}!`)},1000);
     } else {
-      this.roundStreak=0;Adaptive.recordWrong(skill);Sounds.wrong();this._wrongEffects();
+      this.roundStreak=0;const wr=Adaptive.recordWrong(skill);Sounds.wrong();this._wrongEffects();
+      if(wr==='level_down') this._t(()=>Decorations.showAdaptiveBanner('!בוא ננסה משהו קצת יותר קל','#64B5F6'),400);
       this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`התשובה היא ${nh}`)},1200);
     }
     this._updatePowerMeter();
@@ -1944,10 +1983,12 @@ const Game = {
             el.classList.add('correct-pick');this.state.score++;this.roundStreak++;
             const result=Adaptive.recordCorrect('ordinality');
             Sounds.powerUp();this._correctEffects(result==='level_up');
+            if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
             this._t(()=>Speech.speak(`${targetHero.name_he} עומד במקום ה${ordName}!`),800);
           } else {
             el.classList.add('wrong-pick');this.roundStreak=0;
-            Adaptive.recordWrong('ordinality');Sounds.wrong();this._wrongEffects();
+            const wr=Adaptive.recordWrong('ordinality');Sounds.wrong();this._wrongEffects();
+            if(wr==='level_down') this._t(()=>Decorations.showAdaptiveBanner('!בוא ננסה משהו קצת יותר קל','#64B5F6'),400);
             // Highlight correct
             qArea.querySelectorAll('.lineup-hero').forEach(lh=>{
               if(lh.dataset.heroId===targetHero.id) lh.classList.add('correct-pick')});
@@ -1986,11 +2027,13 @@ const Game = {
             btn.classList.add('correct');this.state.score++;this.roundStreak++;
             const result=Adaptive.recordCorrect('ordinality');
             Sounds.powerUp();this._correctEffects(result==='level_up');
+            if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
             const ordN=HEBREW_ORDINALS[pos]||pos;
             this._t(()=>Speech.speak(`נכון! ${targetHero.name_he} במקום ה${ordN}`),800);
           } else {
             btn.classList.add('wrong');this.roundStreak=0;
-            Adaptive.recordWrong('ordinality');Sounds.wrong();this._wrongEffects();
+            const wr=Adaptive.recordWrong('ordinality');Sounds.wrong();this._wrongEffects();
+            if(wr==='level_down') this._t(()=>Decorations.showAdaptiveBanner('!בוא ננסה משהו קצת יותר קל','#64B5F6'),400);
             aArea.querySelectorAll('.ordinal-btn').forEach(b=>{if(parseInt(b.dataset.num)===pos) b.classList.add('correct')});
             const ordN=HEBREW_ORDINALS[pos]||pos;
             this._t(()=>Speech.speak(`${targetHero.name_he} במקום ה${ordN}`),800);
