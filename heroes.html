@@ -137,6 +137,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-puzzle{background:linear-gradient(135deg,#1565C0,#0D47A1)}
 .mode-btn-memory{background:linear-gradient(135deg,#00897B,#004D40)}
 .mode-btn-order{background:linear-gradient(135deg,#C62828,#6A1B9A)}
+.mode-btn-readaloud{background:linear-gradient(135deg,#9C27B0,#E040FB)}
 .mode-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
   background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.04) 4px,rgba(255,255,255,0.04) 6px);
   pointer-events:none}
@@ -615,6 +616,20 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   pointer-events:none;opacity:0.3;z-index:-1;animation:sparkleFlash 1s ease forwards}
 @keyframes sparkleFlash{0%{transform:scale(0.5);opacity:0}30%{transform:scale(1.2);opacity:0.4}
   100%{transform:scale(1.5);opacity:0}}
+
+/* ===== READ ALOUD MODE ===== */
+.mic-btn{width:120px;height:120px;border-radius:50%;border:4px solid #fff;
+  background:radial-gradient(circle,#E040FB,#9C27B0);color:#fff;font-size:3.5rem;
+  cursor:pointer;transition:transform 0.2s;box-shadow:0 4px 15px rgba(156,39,176,0.5)}
+.mic-btn.listening{animation:micPulse 1s ease-in-out infinite;box-shadow:0 0 30px rgba(224,64,251,0.6)}
+.mic-btn:active{transform:scale(0.95)}
+@keyframes micPulse{0%,100%{transform:scale(1);box-shadow:0 0 20px rgba(224,64,251,0.4)}
+  50%{transform:scale(1.08);box-shadow:0 0 40px rgba(224,64,251,0.8)}}
+.read-number{font-family:'Bangers',cursive;font-size:8rem;color:#FFD700;
+  text-shadow:3px 3px 0 #000,-1px -1px 0 #000;margin:10px 0;line-height:1}
+.read-feedback{font-size:1.5rem;color:#fff;min-height:2em;margin-top:10px;text-align:center}
+.mic-hint{color:rgba(255,255,255,0.8);margin-top:8px;font-size:1.1rem}
+.mic-not-supported{color:#FFD700;font-size:1.3rem;text-align:center;padding:20px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -687,6 +702,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
     <button class="mode-btn mode-btn-order" id="btn-order" data-speak="מספרים בסדר, ספירה ומיקום">
       <span class="mode-btn-icon">🏆</span>
       <span class="mode-btn-text"><span class="mode-btn-title">מספרים בסדר</span><span class="mode-btn-desc">ספירה ומיקום</span></span>
+    </button>
+    <button class="mode-btn mode-btn-readaloud" id="btn-readaloud" data-speak="קריאת מספרים, קרא את המספר בקול">
+      <span class="mode-btn-icon">🎤</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">קריאת מספרים</span><span class="mode-btn-desc">אמור את המספר בקול</span></span>
     </button>
   </div>
 
@@ -867,7 +886,8 @@ const MODE_WATERMARKS = {
   battle:'pngwing.com (14).png',    // yellow splat
   puzzle:'pngwing.com (1).png',     // cracks
   memory:'pngwing.com (37).png',    // spider-man mask
-  order:'pngwing.com (60).png'      // x-men logo
+  order:'pngwing.com (60).png',     // x-men logo
+  readaloud:'pngwing.com (25).png'  // speech bubble
 };
 
 // ===== DECORATION SYSTEM =====
@@ -892,7 +912,7 @@ const Decorations = {
     });
   },
   addModeWatermarks(){
-    const modes=['counting','mission','battle','puzzle','memory','order'];
+    const modes=['counting','mission','battle','puzzle','memory','order','readaloud'];
     modes.forEach(mode=>{
       const btn=document.getElementById('btn-'+mode);
       if(!btn||btn.querySelector('.btn-watermark')) return;
@@ -1042,6 +1062,50 @@ const Speech = {
   _clearSequence(){this._isSpeaking=false;this._sequenceTimeouts.forEach(t=>clearTimeout(t));this._sequenceTimeouts=[]},
   _stopFallbackAudio(){if(this._fallbackAudio){this._fallbackAudio.pause();this._fallbackAudio.currentTime=0;this._fallbackAudio=null}},
   stop(){this._clearSequence();if(window.speechSynthesis) speechSynthesis.cancel();this._stopFallbackAudio()}
+};
+
+// ===== SPEECH RECOGNIZER MODULE =====
+const SpeechRecognizer = {
+  _supported:!!(window.SpeechRecognition||window.webkitSpeechRecognition),
+  _recognition:null,
+  init(){
+    if(!this._supported) return;
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    this._recognition=new SR();
+    this._recognition.lang='he-IL';
+    this._recognition.continuous=false;
+    this._recognition.interimResults=false;
+    this._recognition.maxAlternatives=5;
+  },
+  listen(onResult,onError,timeoutMs){
+    if(!this._supported){onError('not_supported');return}
+    const r=this._recognition;
+    let done=false;
+    const finish=(fn,arg)=>{if(done) return;done=true;clearTimeout(timer);fn(arg)};
+    const timer=setTimeout(()=>{try{r.abort()}catch(e){} finish(onError,'timeout')},timeoutMs||6000);
+    r.onresult=(e)=>{
+      const alts=[];
+      for(let i=0;i<e.results[0].length;i++) alts.push(e.results[0][i].transcript.trim());
+      finish(onResult,alts);
+    };
+    r.onerror=(e)=>finish(onError,e.error);
+    r.onend=()=>{if(!done){done=true;clearTimeout(timer);onError('no_speech')}};
+    try{r.start()}catch(e){finish(onError,'busy')}
+  },
+  matchNumber(spoken,expected){
+    const expectedWord=HEBREW_NUMBERS[expected];
+    if(!expectedWord) return false;
+    const norm=s=>s.replace(/[\u0591-\u05C7]/g,'').replace(/[^\u0590-\u05FFa-zA-Z0-9\s]/g,'').trim();
+    const expNorm=norm(expectedWord);
+    for(const alt of spoken){
+      const altNorm=norm(alt);
+      if(altNorm===expNorm) return true;
+      if(altNorm.includes(expNorm)) return true;
+      if(alt.includes(String(expected))) return true;
+    }
+    return false;
+  },
+  stop(){if(this._recognition) try{this._recognition.abort()}catch(e){}}
 };
 
 // ===== SOUNDS MODULE =====
@@ -1351,6 +1415,7 @@ const Game = {
     document.getElementById('btn-puzzle').addEventListener('click',()=>this.startMode('puzzle'));
     document.getElementById('btn-memory').addEventListener('click',()=>this.startMode('memory'));
     document.getElementById('btn-order').addEventListener('click',()=>this.startMode('order'));
+    document.getElementById('btn-readaloud').addEventListener('click',()=>this.startMode('readaloud'));
     document.getElementById('back-btn').addEventListener('click',()=>this.showMenu());
     document.getElementById('btn-retry').addEventListener('click',()=>this.startMode(this.currentMode));
     document.getElementById('btn-results-menu').addEventListener('click',()=>this.showMenu());
@@ -1358,7 +1423,7 @@ const Game = {
     this.showMenu();
   },
 
-  cleanup(){this.timeouts.forEach(t=>clearTimeout(t));this.timeouts=[];Speech.stop()},
+  cleanup(){this.timeouts.forEach(t=>clearTimeout(t));this.timeouts=[];Speech.stop();SpeechRecognizer.stop()},
   _t(fn,ms){const t=setTimeout(fn,ms);this.timeouts.push(t);return t},
 
   // ===== MENU =====
@@ -1445,7 +1510,7 @@ const Game = {
     this.cleanup();this.currentMode=mode;this.currentHero=this._pickHero();this.roundStreak=0;
     this.state={questionIndex:0,score:0,questions:[],answered:false};
     const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים',
-      puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר'};
+      puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר',readaloud:'קריאת מספרים'};
     Speech.speak(modeNames[mode]);
     Sounds.whoosh();
 
@@ -1473,6 +1538,17 @@ const Game = {
       } else if(mode==='battle') this.state.questions.push(Adaptive.generateComparison());
       else if(mode==='puzzle') this.state.questions.push(Adaptive.generatePuzzleQuestion(i));
       else if(mode==='order') this.state.questions.push(Adaptive.generateOrdinalQuestion());
+      else if(mode==='readaloud'){
+        const lv=Adaptive.getLevel('counting');let num;
+        switch(lv){
+          case 1:num=1+Math.floor(Math.random()*9);break;
+          case 2:num=1+Math.floor(Math.random()*15);break;
+          case 3:num=1+Math.floor(Math.random()*20);break;
+          case 4:num=5+Math.floor(Math.random()*25);break;
+          case 5:num=10+Math.floor(Math.random()*40);break;
+          default:num=1+Math.floor(Math.random()*9)}
+        this.state.questions.push({answer:num});
+      }
     }
 
     this._showScreen('game-screen');
@@ -1515,6 +1591,7 @@ const Game = {
     else if(this.currentMode==='battle') this._showBattle(q,qArea,aArea);
     else if(this.currentMode==='puzzle') this._showPuzzleQuestion(q,qArea,aArea);
     else if(this.currentMode==='order') this._showOrderQuestion(q,qArea,aArea);
+    else if(this.currentMode==='readaloud') this._showReadAloud(q,qArea,aArea);
   },
 
   // ===== COUNTING MODE =====
@@ -1652,6 +1729,90 @@ const Game = {
     this._t(()=>this._nextQuestion(),2800);
   },
 
+  // ===== READ ALOUD MODE =====
+  _showReadAloud(q,qArea,aArea){
+    const num=q.answer;
+    const hebrewWord=HEBREW_NUMBERS[num]||String(num);
+    this._readRetried=false;
+
+    qArea.innerHTML=`
+      <div class="speech-bubble"><div class="prompt-text" data-speak="מה המספר הזה">מה המספר הזה?</div></div>
+      <div class="read-number">${num}</div>
+      <div class="read-feedback" id="read-feedback"></div>`;
+
+    if(!SpeechRecognizer._supported){
+      aArea.innerHTML=`<div class="mic-not-supported">
+        המצב הזה דורש דפדפן כרום עם מיקרופון<br>
+        <span style="font-size:3rem">🎤❌</span></div>`;
+      Speech.speak('המצב הזה דורש דפדפן כרום עם מיקרופון');
+      this._t(()=>this.showMenu(),3000);
+      return;
+    }
+
+    aArea.innerHTML=`<button class="mic-btn" id="mic-btn">🎤</button>
+      <div class="mic-hint">לחץ ואמור את המספר</div>`;
+    const micBtn=document.getElementById('mic-btn');
+    const feedback=document.getElementById('read-feedback');
+
+    const self=this;
+    micBtn.addEventListener('click',function onMicClick(){
+      if(self.state.answered) return;
+      micBtn.classList.add('listening');
+      feedback.textContent='...מקשיב';
+      feedback.style.color='#fff';
+
+      SpeechRecognizer.listen(
+        (alts)=>{
+          micBtn.classList.remove('listening');
+          const correct=SpeechRecognizer.matchNumber(alts,num);
+          if(correct){
+            self.state.answered=true;
+            self.state.score++;self.roundStreak++;
+            const result=Adaptive.recordCorrect('counting');
+            feedback.textContent=`⭐ !נכון! ${hebrewWord}`;
+            feedback.style.color='#4CAF50';
+            Sounds.powerUp();self._correctEffects(result==='level_up');
+            if(result==='recovery_done') self._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
+            self._t(()=>Speech.speak(`!נכון! ${hebrewWord}`),300);
+            self._t(()=>self._nextQuestion(),2200);
+          } else {
+            if(!self._readRetried){
+              self._readRetried=true;
+              feedback.textContent=`${hebrewWord} :לא נכון. המספר הוא`;
+              feedback.style.color='#FF9800';
+              Speech.speak(`לא נכון. המספר הוא ${hebrewWord}. נסה שוב`);
+              self._t(()=>{feedback.textContent='נסה שוב!';feedback.style.color='#FFD700'},2500);
+            } else {
+              self.state.answered=true;
+              self.roundStreak=0;
+              const wr=Adaptive.recordWrong('counting');
+              feedback.textContent=`${hebrewWord} :המספר הוא`;
+              feedback.style.color='#FF9800';
+              Sounds.wrong();self._wrongEffects();
+              if(wr==='level_down') self._t(()=>Decorations.showAdaptiveBanner('!בוא ננסה משהו קצת יותר קל','#64B5F6'),400);
+              Speech.speak(`המספר הוא ${hebrewWord}`);
+              self._t(()=>self._nextQuestion(),2800);
+            }
+          }
+        },
+        (err)=>{
+          micBtn.classList.remove('listening');
+          if(err==='not-allowed'){
+            feedback.textContent='יש לאשר גישה למיקרופון';
+            feedback.style.color='#FF9800';
+            Speech.speak('יש לאשר גישה למיקרופון');
+          } else {
+            feedback.textContent='לא שמעתי, נסה שוב';
+            feedback.style.color='#FF9800';
+          }
+        },
+        6000
+      );
+    });
+
+    this._t(()=>Speech.speak('מה המספר הזה? לחץ על המיקרופון ואמור את המספר בקול'),300);
+  },
+
   // ===== EFFECTS =====
   _correctEffects(isLevelUp){
     const heroArea=document.getElementById('hero-area');
@@ -1724,6 +1885,17 @@ const Game = {
       } else if(this.currentMode==='battle') this.state.questions[idx]=Adaptive.generateComparison();
       else if(this.currentMode==='puzzle') this.state.questions[idx]=Adaptive.generatePuzzleQuestion(idx);
       else if(this.currentMode==='order') this.state.questions[idx]=Adaptive.generateOrdinalQuestion();
+      else if(this.currentMode==='readaloud'){
+        const lv=Adaptive.getLevel('counting');let num;
+        switch(lv){
+          case 1:num=1+Math.floor(Math.random()*9);break;
+          case 2:num=1+Math.floor(Math.random()*15);break;
+          case 3:num=1+Math.floor(Math.random()*20);break;
+          case 4:num=5+Math.floor(Math.random()*25);break;
+          case 5:num=10+Math.floor(Math.random()*40);break;
+          default:num=1+Math.floor(Math.random()*9)}
+        this.state.questions[idx]={answer:num};
+      }
     }
     this._showQuestion();
   },
@@ -2068,6 +2240,7 @@ const Game = {
 document.addEventListener('DOMContentLoaded',()=>{
   // Start Speech init eagerly (voice loading)
   Speech.init();
+  SpeechRecognizer.init();
   let inited=false;
   const initOnce=()=>{
     if(inited) return;inited=true;
