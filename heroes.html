@@ -177,7 +177,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   text-shadow:2px 2px 0 rgba(0,0,0,0.4);position:relative;z-index:2}
 
 /* Power Meter — Linear Number Line */
-.power-meter{display:flex;align-items:center;gap:0;padding:6px 16px;position:relative;z-index:2;width:100%;max-width:420px}
+.power-meter{display:flex;align-items:center;gap:0;padding:6px 16px;position:relative;z-index:2;width:100%;max-width:420px;direction:ltr}
 .power-line{flex:1;height:6px;border-radius:3px;position:relative;background:rgba(255,255,255,0.15);margin:0 12px}
 .power-line-fill{height:100%;border-radius:3px;transition:width 0.6s ease;position:absolute;top:0;left:0}
 .power-node{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);
@@ -236,7 +236,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .count-items.grid-tenframe{display:grid;grid-template-columns:repeat(5,auto);justify-content:center;justify-items:center;
   border:3px dashed rgba(255,215,0,0.3);padding:12px}
 /* Concrete→Abstract progression */
-.count-items.abstract .count-item{font-size:2rem}
+.count-items.abstract .count-item{font-size:2rem;opacity:0.85}
 .digit-hint{font-family:'Russo One',sans-serif;font-size:1.2rem;color:rgba(255,215,0,0.5);text-align:center;margin-top:6px;
   letter-spacing:2px}
 .count-item{font-size:2.6rem;animation:itemBounceIn 0.4s ease both;
@@ -414,6 +414,11 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   .collection-badge img{width:36px;height:36px}
   .power-node{width:18px;height:18px;font-size:0.5rem}
   .power-hero-marker{font-size:1rem;top:-16px}
+  .number-card{padding:12px 20px;max-width:85vw}
+  .number-card-digit{font-size:3rem}
+  .number-card-word{font-size:1.4rem}
+  .number-card-dots span{font-size:1.1rem}
+  .digit-hint{font-size:1rem;margin-top:4px}
   #action-word{font-size:4rem}
   #countdown-number{font-size:9rem}
   .streak-banner{font-size:2.2rem}
@@ -605,7 +610,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .game-screen:not(.focusing) .hero-area::before{transition:opacity 0.3s}
 
 /* ===== MULTI-REPRESENTATION NUMBER CARD ===== */
-.number-card{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:180;
+.number-card{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:160;direction:ltr;
   background:rgba(0,0,20,0.92);backdrop-filter:blur(12px);border:5px solid #FFD700;border-radius:24px;
   padding:20px 32px;display:flex;flex-direction:column;align-items:center;gap:8px;
   box-shadow:0 0 40px rgba(255,215,0,0.4),8px 8px 0 rgba(0,0,0,0.5);pointer-events:none;opacity:0;
@@ -1144,7 +1149,7 @@ const SpeechRecognizer = {
     for(const alt of spoken){
       const altNorm=norm(alt);
       if(altNorm===expNorm) return true;
-      if(altNorm.includes(expNorm)) return true;
+      if(altNorm.split(/\s+/).some(w=>w===expNorm)) return true;
       if(alt.includes(String(expected))) return true;
     }
     return false;
@@ -1819,6 +1824,7 @@ const Game = {
     const self=this;
     micBtn.addEventListener('click',function onMicClick(){
       if(self.state.answered) return;
+      if(micBtn.classList.contains('listening')) return;
       micBtn.classList.add('listening');
       feedback.textContent='...מקשיב';
       feedback.style.color='#fff';
