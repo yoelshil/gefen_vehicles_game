@@ -138,7 +138,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-memory{background:linear-gradient(135deg,#00897B,#004D40)}
 .mode-btn-order{background:linear-gradient(135deg,#C62828,#6A1B9A)}
 .mode-btn-readaloud{background:linear-gradient(135deg,#9C27B0,#E040FB)}
-.mode-btn:last-child{grid-column:1/-1}
+.mode-btn:nth-child(7){grid-column:auto}
+.mode-btn:nth-child(8){grid-column:auto}
 .mode-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
   background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.04) 4px,rgba(255,255,255,0.04) 6px);
   pointer-events:none}
@@ -677,6 +678,118 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .read-feedback{font-size:1.5rem;color:#fff;min-height:2em;margin-top:10px;text-align:center}
 .mic-hint{color:rgba(255,255,255,0.8);margin-top:8px;font-size:1.1rem}
 .mic-not-supported{color:#FFD700;font-size:1.3rem;text-align:center;padding:20px;line-height:1.8}
+
+/* ===== CRUSH MODE ===== */
+/* Crush Level Select */
+.crush-select-header{display:flex;align-items:center;gap:12px;padding:12px 16px;width:100%;max-width:480px}
+.crush-select-title{font-family:'Bangers',cursive;font-size:2.4rem;color:#FFD700;
+  -webkit-text-stroke:2px #000;flex:1;text-align:center;letter-spacing:3px}
+.crush-levels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px;
+  width:100%;max-width:420px}
+.crush-level-btn{aspect-ratio:1;border:4px solid #000;border-radius:16px;
+  font-family:'Bangers',cursive;font-size:1.8rem;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  box-shadow:4px 4px 0 #000;transition:transform 0.15s;position:relative;touch-action:manipulation}
+.crush-level-btn:active{transform:scale(0.93);box-shadow:2px 2px 0 #000}
+.crush-level-btn.locked{opacity:0.4;pointer-events:none;filter:grayscale(0.6)}
+.crush-level-btn .level-stars{font-size:0.7rem;letter-spacing:1px}
+
+/* Crush Top Bar */
+.crush-top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;position:relative;z-index:2;max-width:480px}
+.crush-score-display{display:flex;flex-direction:column;align-items:center;gap:4px}
+.crush-score{font-family:'Bangers',cursive;font-size:1.6rem;color:#FFD700;
+  -webkit-text-stroke:1px #000;letter-spacing:2px}
+.crush-star-bar{width:120px;height:8px;background:rgba(255,255,255,0.15);border-radius:4px;
+  border:2px solid #000;overflow:hidden}
+.crush-star-fill{height:100%;background:linear-gradient(90deg,#FFD700,#FFA000);
+  transition:width 0.4s ease;width:0%}
+.crush-moves{font-family:'Bangers',cursive;font-size:1.4rem;color:#fff;
+  background:linear-gradient(135deg,#E23636,#B71C1C);border:3px solid #000;
+  border-radius:12px;padding:4px 14px;box-shadow:3px 3px 0 #000}
+
+/* Crush Grid */
+.crush-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:8px;
+  width:100%;max-width:420px;background:rgba(0,0,0,0.3);border-radius:16px;
+  border:4px solid #000;box-shadow:6px 6px 0 rgba(0,0,0,0.4);position:relative;z-index:2;
+  touch-action:manipulation;direction:ltr}
+.crush-tile{aspect-ratio:1;border-radius:12px;border:3px solid #000;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  position:relative;overflow:hidden;box-shadow:2px 2px 0 rgba(0,0,0,0.4);
+  transition:transform 0.15s,box-shadow 0.15s;touch-action:manipulation}
+.crush-tile img{width:85%;height:85%;border-radius:50%;object-fit:cover;
+  object-position:center top;pointer-events:none}
+.crush-tile.selected{transform:scale(1.12);border-color:#FFD700;
+  box-shadow:0 0 12px rgba(255,215,0,0.7),3px 3px 0 #000;z-index:1}
+.crush-tile.hint{animation:crushHint 0.8s ease-in-out infinite}
+@keyframes crushHint{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.crush-tile.matched{animation:crushPop 0.4s ease forwards}
+@keyframes crushPop{0%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:0.7}100%{transform:scale(0);opacity:0}}
+.crush-tile.falling{transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+.crush-tile.spawning{animation:crushSpawn 0.3s ease}
+@keyframes crushSpawn{0%{transform:scale(0) translateY(-20px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+
+/* Power-Up Tiles */
+.crush-tile.power-hero::after{content:'💥';position:absolute;font-size:0.9rem;
+  bottom:0;right:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.8))}
+.crush-tile.power-hero{box-shadow:0 0 10px rgba(255,215,0,0.6),2px 2px 0 #000;
+  animation:crushPowerGlow 1.5s ease-in-out infinite}
+.crush-tile.power-infinity::after{content:'💎';position:absolute;font-size:0.9rem;
+  bottom:0;right:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.8))}
+.crush-tile.power-infinity{box-shadow:0 0 15px rgba(156,39,176,0.6),2px 2px 0 #000;
+  animation:crushPowerGlow 1.2s ease-in-out infinite}
+@keyframes crushPowerGlow{0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.4),2px 2px 0 #000}
+  50%{box-shadow:0 0 20px rgba(255,215,0,0.8),2px 2px 0 #000}}
+
+/* Crush Math Popup */
+.crush-math-popup{position:fixed;top:0;left:0;width:100%;height:100%;z-index:250;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
+.crush-math-popup.active{display:flex}
+.crush-math-bubble{background:linear-gradient(135deg,rgba(40,20,80,0.95),rgba(20,10,60,0.95));border:5px solid #000;
+  border-radius:24px;padding:20px;
+  box-shadow:6px 6px 0 rgba(0,0,0,0.5);max-width:380px;width:90%;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  animation:crushBubbleIn 0.3s ease}
+@keyframes crushBubbleIn{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.crush-timer-bar{width:100%;height:8px;background:rgba(0,0,0,0.3);border-radius:4px;overflow:hidden}
+.crush-timer-fill{height:100%;background:linear-gradient(90deg,#FF6347,#FFD700);
+  border-radius:4px;transition:width 0.1s linear;width:100%}
+.crush-math-question{font-family:'Bangers',cursive;font-size:2rem;color:#fff;
+  text-align:center;-webkit-text-stroke:1px rgba(0,0,0,0.5);letter-spacing:2px;direction:rtl}
+.crush-math-answers{display:flex;gap:12px;justify-content:center;width:100%}
+.crush-math-answers .answer-btn{flex:1;min-height:70px;font-size:2.4rem}
+
+/* Crush Results */
+.crush-results-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:250;
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+  background:rgba(0,0,0,0.8);backdrop-filter:blur(8px)}
+.crush-results-overlay.active{display:flex}
+.crush-results-title{font-family:'Bangers',cursive;font-size:2.5rem;color:#FFD700;
+  -webkit-text-stroke:2px #000;letter-spacing:3px}
+.crush-results-score{font-family:'Bangers',cursive;font-size:1.4rem;color:#fff}
+.crush-results-stars{display:flex;gap:8px;font-size:2.5rem}
+.crush-results-stars .star{opacity:0;animation:starPop 0.5s ease forwards}
+.crush-results-stars .star.empty{filter:grayscale(1);opacity:0.3}
+@keyframes starPop{to{opacity:1;transform:scale(1.1)}}
+.crush-results-buttons{display:flex;gap:12px}
+.crush-results-buttons button{font-family:'Bangers',cursive;font-size:1.2rem;color:#fff;
+  border:4px solid #000;border-radius:14px;padding:12px 24px;cursor:pointer;
+  box-shadow:4px 4px 0 #000;touch-action:manipulation;letter-spacing:1px}
+
+/* Mobile */
+@media(max-width:600px){
+  .crush-grid{gap:3px;padding:6px;max-width:100%;border-radius:12px}
+  .crush-tile{border-radius:8px;border-width:2px}
+  .crush-tile img{width:80%;height:80%}
+  .crush-math-answers .answer-btn{min-height:60px;font-size:2rem}
+  .crush-levels-grid{grid-template-columns:repeat(5,1fr);gap:8px}
+  .crush-level-btn{font-size:1.4rem}
+  .crush-select-title{font-size:1.8rem}
+}
+
+/* Crush mode button */
+.mode-btn-crush{background:linear-gradient(135deg,#E040FB,#7B1FA2)}
 </style>
 </head>
 <body>
@@ -756,6 +869,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
       <span class="mode-btn-icon">🎤</span>
       <span class="mode-btn-text"><span class="mode-btn-title">קריאת מספרים</span><span class="mode-btn-desc">אמור את המספר בקול</span></span>
     </button>
+    <button class="mode-btn mode-btn-crush" id="btn-crush" data-speak="גיבורי קראש, התאם גיבורים ופתור תרגילים">
+      <span class="mode-btn-icon">💎</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">גיבורי קראש</span><span class="mode-btn-desc">התאם גיבורים ופתור תרגילים</span></span>
+    </button>
   </div>
 
   <div class="collection-row" id="collection-row"></div>
@@ -787,6 +904,49 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   <div class="results-buttons">
     <button class="results-btn results-btn-retry" id="btn-retry" data-speak="שחק שוב">🔄 שחק שוב</button>
     <button class="results-btn results-btn-menu" id="btn-results-menu" data-speak="תפריט">🏠 תפריט</button>
+  </div>
+</div>
+
+<!-- ===== CRUSH LEVEL SELECT ===== -->
+<div id="crush-select" class="screen">
+  <div class="crush-select-header">
+    <button class="back-btn" id="crush-back-menu">🏠</button>
+    <h2 class="crush-select-title">גיבורי קראש</h2>
+  </div>
+  <div class="crush-levels-grid" id="crush-levels-grid"></div>
+</div>
+
+<!-- ===== CRUSH GAME SCREEN ===== -->
+<div id="crush-screen" class="screen">
+  <div class="crush-top-bar">
+    <button class="back-btn" id="crush-back-select">🏠</button>
+    <div class="crush-score-display">
+      <span class="crush-score" id="crush-score">0</span>
+      <div class="crush-star-bar"><div class="crush-star-fill" id="crush-star-fill"></div></div>
+    </div>
+    <div class="crush-moves" id="crush-moves">20</div>
+  </div>
+  <div class="crush-grid" id="crush-grid"></div>
+</div>
+
+<!-- ===== CRUSH MATH POPUP ===== -->
+<div id="crush-math-popup" class="crush-math-popup">
+  <div class="crush-math-bubble">
+    <div class="crush-timer-bar"><div class="crush-timer-fill" id="crush-timer-fill"></div></div>
+    <div id="crush-math-question" class="crush-math-question"></div>
+    <div id="crush-math-answers" class="crush-math-answers"></div>
+  </div>
+</div>
+
+<!-- ===== CRUSH RESULTS ===== -->
+<div id="crush-results" class="crush-results-overlay">
+  <div class="crush-results-title" id="crush-results-title"></div>
+  <div class="crush-results-stars" id="crush-results-stars"></div>
+  <div class="crush-results-score" id="crush-results-score"></div>
+  <div class="crush-results-buttons">
+    <button style="background:linear-gradient(135deg,#E040FB,#7B1FA2)" id="crush-retry" data-speak="שחק שוב">🔄 שחק שוב</button>
+    <button style="background:linear-gradient(135deg,#FFD700,#FFA000);color:#000" id="crush-next" data-speak="שלב הבא">▶ שלב הבא</button>
+    <button style="background:linear-gradient(135deg,#424242,#212121)" id="crush-to-menu" data-speak="תפריט">🏠 תפריט</button>
   </div>
 </div>
 
@@ -1465,6 +1625,7 @@ const Game = {
     document.getElementById('btn-memory').addEventListener('click',()=>this.startMode('memory'));
     document.getElementById('btn-order').addEventListener('click',()=>this.startMode('order'));
     document.getElementById('btn-readaloud').addEventListener('click',()=>this.startMode('readaloud'));
+    document.getElementById('btn-crush').addEventListener('click',()=>CrushGame.showLevelSelect());
     document.getElementById('back-btn').addEventListener('click',()=>this.showMenu());
     document.getElementById('btn-retry').addEventListener('click',()=>this.startMode(this.currentMode));
     document.getElementById('btn-results-menu').addEventListener('click',()=>this.showMenu());
@@ -1478,6 +1639,9 @@ const Game = {
   // ===== MENU =====
   showMenu(){
     this.cleanup();
+    CrushGame.cleanup();
+    document.getElementById('crush-results').classList.remove('active');
+    document.getElementById('crush-math-popup').classList.remove('active');
     this._showScreen('menu-screen');
     this._updateMenuStats();
     this._buildTeams();
@@ -2367,6 +2531,648 @@ const Game = {
   }
 };
 
+// ===== CRUSH GAME =====
+const CRUSH_LEVELS = [
+  {id:1, target:200,  moves:20, skills:['counting'],              maxNum:5,  heroCount:5, name_he:'שלב 1'},
+  {id:2, target:350,  moves:20, skills:['counting'],              maxNum:7,  heroCount:5, name_he:'שלב 2'},
+  {id:3, target:500,  moves:18, skills:['counting','addition'],   maxNum:8,  heroCount:6, name_he:'שלב 3'},
+  {id:4, target:650,  moves:18, skills:['addition'],              maxNum:10, heroCount:6, name_he:'שלב 4'},
+  {id:5, target:800,  moves:18, skills:['addition','comparison'], maxNum:10, heroCount:6, name_he:'שלב 5'},
+  {id:6, target:1000, moves:16, skills:['addition','subtraction'],maxNum:12, heroCount:6, name_he:'שלב 6'},
+  {id:7, target:1200, moves:16, skills:['subtraction','comparison'],maxNum:15,heroCount:7, name_he:'שלב 7'},
+  {id:8, target:1500, moves:15, skills:['addition','subtraction'],maxNum:15, heroCount:7, name_he:'שלב 8'},
+  {id:9, target:1800, moves:15, skills:['addition','subtraction','comparison'],maxNum:18,heroCount:7, name_he:'שלב 9'},
+  {id:10,target:2200, moves:15, skills:['addition','subtraction','comparison'],maxNum:20,heroCount:7, name_he:'שלב 10'}
+];
+
+const CrushGame = {
+  ROWS:7, COLS:7,
+  grid:[],        // [row][col] = {heroIdx, power:null|'hero'|'infinity'}
+  heroes:[],      // heroes used in this level
+  selected:null,  // {r,c} or null
+  score:0, moves:0, chain:0,
+  level:null, levelNum:0,
+  locked:false,
+  mathPending:null,
+  timerInterval:null,
+  timeouts:[],
+
+  _t(fn,ms){const t=setTimeout(fn,ms);this.timeouts.push(t);return t},
+  _delay(ms){return new Promise(r=>this._t(r,ms))},
+  cleanup(){this.timeouts.forEach(t=>clearTimeout(t));this.timeouts=[];
+    if(this.timerInterval){clearInterval(this.timerInterval);this.timerInterval=null}},
+
+  // ===== SCREENS =====
+  _showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('crush-results').classList.remove('active');
+    document.getElementById('crush-math-popup').classList.remove('active');
+  },
+
+  // ===== LEVEL SELECT =====
+  showLevelSelect(){
+    this.cleanup();
+    this._showScreen('crush-select');
+    this._renderLevels();
+    Sounds.whoosh();
+    this._t(()=>Speech.speak('גיבורי קראש! בחר שלב'),500);
+  },
+
+  _getLevelState(n){
+    try{const d=JSON.parse(localStorage.getItem('crushProgress')||'{}');return d[n]||{stars:0,completed:false}}
+    catch(e){return{stars:0,completed:false}}
+  },
+  _saveLevelProgress(n,stars){
+    try{
+      const d=JSON.parse(localStorage.getItem('crushProgress')||'{}');
+      const prev=d[n]||{stars:0,completed:false,bestScore:0};
+      d[n]={stars:Math.max(prev.stars,stars),completed:true,bestScore:Math.max(prev.bestScore||0,this.score)};
+      localStorage.setItem('crushProgress',JSON.stringify(d));
+    }catch(e){}
+  },
+
+  _renderLevels(){
+    const grid=document.getElementById('crush-levels-grid');
+    const colors=['#E23636','#FF6F00','#1565C0','#2E7D32','#9C27B0','#C62828','#00897B','#E040FB','#FFD700','#4A148C'];
+    grid.innerHTML=CRUSH_LEVELS.map((lv,i)=>{
+      const st=this._getLevelState(lv.id);
+      const unlocked=lv.id===1||this._getLevelState(lv.id-1).completed;
+      const starStr=st.stars>0?'⭐'.repeat(st.stars)+(st.stars<3?'☆'.repeat(3-st.stars):''):'';
+      return `<button class="crush-level-btn ${unlocked?'':'locked'}" data-level="${lv.id}"
+        style="background:linear-gradient(135deg,${colors[i]},${colors[(i+3)%10]})"
+        data-speak="${lv.name_he}">
+        <span>${lv.id}</span>
+        <span class="level-stars">${unlocked?(starStr||'☆☆☆'):'🔒'}</span>
+      </button>`;
+    }).join('');
+    grid.querySelectorAll('.crush-level-btn:not(.locked)').forEach(btn=>{
+      btn.addEventListener('click',()=>this.startLevel(parseInt(btn.dataset.level)));
+    });
+  },
+
+  // ===== START LEVEL =====
+  startLevel(n){
+    this.cleanup();
+    this.levelNum=n;
+    this.level=CRUSH_LEVELS[n-1];
+    this.score=0;this.moves=this.level.moves;this.chain=0;
+    this.selected=null;this.locked=false;this.mathPending=null;
+
+    // Pick random heroes for this level
+    const shuffled=[...HEROES_DATA].sort(()=>Math.random()-0.5);
+    this.heroes=shuffled.slice(0,this.level.heroCount);
+
+    this._initGrid();
+    this._showScreen('crush-screen');
+    this._renderGrid();
+    this._updateUI();
+    Sounds.whoosh();
+    this._t(()=>Speech.speak(this.level.name_he+' התחיל!'),400);
+  },
+
+  _initGrid(){
+    this.grid=[];
+    for(let r=0;r<this.ROWS;r++){
+      this.grid[r]=[];
+      for(let c=0;c<this.COLS;c++){
+        this.grid[r][c]={heroIdx:Math.floor(Math.random()*this.heroes.length),power:null};
+      }
+    }
+    // Remove initial matches
+    let safety=0;
+    while(this._findMatches().length>0&&safety<200){
+      safety++;
+      const matches=this._findMatches();
+      for(const m of matches){
+        const t=m.tiles[m.tiles.length-1];
+        this.grid[t.r][t.c].heroIdx=Math.floor(Math.random()*this.heroes.length);
+      }
+    }
+  },
+
+  // ===== RENDER =====
+  _renderGrid(){
+    const gridEl=document.getElementById('crush-grid');
+    gridEl.innerHTML='';
+    for(let r=0;r<this.ROWS;r++){
+      for(let c=0;c<this.COLS;c++){
+        const cell=this.grid[r][c];
+        const hero=this.heroes[cell.heroIdx];
+        const tile=document.createElement('div');
+        tile.className='crush-tile';
+        tile.dataset.row=r;tile.dataset.col=c;
+        if(cell.power==='hero') tile.classList.add('power-hero');
+        if(cell.power==='infinity') tile.classList.add('power-infinity');
+        if(hero){
+          tile.style.background=hero.gradient;
+          tile.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}"
+            onerror="this.outerHTML='<span style=\\'font-size:1.4rem\\'>${hero.emoji}</span>'">`;
+        }
+        tile.addEventListener('click',()=>this._onTileClick(r,c));
+        gridEl.appendChild(tile);
+      }
+    }
+  },
+
+  _getTileEl(r,c){
+    return document.querySelector(`#crush-grid .crush-tile[data-row="${r}"][data-col="${c}"]`);
+  },
+
+  _updateUI(){
+    document.getElementById('crush-score').textContent=this.score;
+    document.getElementById('crush-moves').textContent=this.moves;
+    // Star bar: fill based on score/target ratio
+    const pct=Math.min(100,Math.round((this.score/this.level.target)*100));
+    document.getElementById('crush-star-fill').style.width=pct+'%';
+  },
+
+  // ===== INPUT =====
+  _onTileClick(r,c){
+    if(this.locked) return;
+    if(!this.selected){
+      this.selected={r,c};
+      const el=this._getTileEl(r,c);
+      if(el) el.classList.add('selected');
+      Sounds.correct();
+      return;
+    }
+    // Second click
+    const s=this.selected;
+    // Deselect if same tile
+    if(s.r===r&&s.c===c){
+      const el=this._getTileEl(r,c);
+      if(el) el.classList.remove('selected');
+      this.selected=null;return;
+    }
+    // Must be adjacent
+    const dist=Math.abs(s.r-r)+Math.abs(s.c-c);
+    if(dist!==1){
+      // Select new tile instead
+      const oldEl=this._getTileEl(s.r,s.c);if(oldEl) oldEl.classList.remove('selected');
+      this.selected={r,c};
+      const el=this._getTileEl(r,c);if(el) el.classList.add('selected');
+      Sounds.correct();return;
+    }
+    // Try swap
+    const oldEl=this._getTileEl(s.r,s.c);if(oldEl) oldEl.classList.remove('selected');
+    this.selected=null;
+    this._trySwap(s.r,s.c,r,c);
+  },
+
+  // ===== SWAP =====
+  async _trySwap(r1,c1,r2,c2){
+    this.locked=true;
+    // Swap in data
+    const tmp=this.grid[r1][c1];
+    this.grid[r1][c1]=this.grid[r2][c2];
+    this.grid[r2][c2]=tmp;
+
+    // Check for matches
+    const matches=this._findMatches();
+    if(matches.length===0){
+      // No match — reverse swap
+      const tmp2=this.grid[r1][c1];
+      this.grid[r1][c1]=this.grid[r2][c2];
+      this.grid[r2][c2]=tmp2;
+      // Animate shake
+      this._renderGrid();
+      Sounds.wrong();
+      this.locked=false;
+      return;
+    }
+
+    // Check if power-up is involved (free, no math question)
+    const cell1=this.grid[r1][c1];
+    const cell2=this.grid[r2][c2];
+    if(cell2.power||cell1.power){
+      // Power-up activation — free!
+      this._renderGrid();
+      await this._delay(150);
+      if(cell2.power){await this._activatePowerUp(r2,c2,cell2.power);cell2.power=null}
+      if(cell1.power){await this._activatePowerUp(r1,c1,cell1.power);cell1.power=null}
+      this.moves--;
+      this._updateUI();
+      this._renderGrid();
+      await this._delay(200);
+      this.chain=0;
+      await this._checkCascade();
+      return;
+    }
+
+    // Has matches — show math popup
+    this._renderGrid();
+    this.mathPending={matches,from:{r:r1,c:c1},to:{r:r2,c:c2}};
+    this._showMathPopup();
+  },
+
+  // ===== MATCH DETECTION =====
+  _findMatches(){
+    const matches=[];
+    // Horizontal
+    for(let r=0;r<this.ROWS;r++){
+      let run=[{r,c:0}];
+      for(let c=1;c<this.COLS;c++){
+        if(this.grid[r][c].heroIdx===this.grid[r][c-1].heroIdx&&this.grid[r][c].heroIdx>=0){
+          run.push({r,c});
+        }else{
+          if(run.length>=3) matches.push({tiles:[...run],dir:'h',length:run.length});
+          run=[{r,c}];
+        }
+      }
+      if(run.length>=3) matches.push({tiles:[...run],dir:'h',length:run.length});
+    }
+    // Vertical
+    for(let c=0;c<this.COLS;c++){
+      let run=[{r:0,c}];
+      for(let r=1;r<this.ROWS;r++){
+        if(this.grid[r][c].heroIdx===this.grid[r-1][c].heroIdx&&this.grid[r][c].heroIdx>=0){
+          run.push({r,c});
+        }else{
+          if(run.length>=3) matches.push({tiles:[...run],dir:'v',length:run.length});
+          run=[{r,c}];
+        }
+      }
+      if(run.length>=3) matches.push({tiles:[...run],dir:'v',length:run.length});
+    }
+    return matches;
+  },
+
+  // ===== MATH POPUP =====
+  _showMathPopup(){
+    const popup=document.getElementById('crush-math-popup');
+    popup.classList.add('active');
+    const q=this._generateQuestion();
+    this._currentQuestion=q;
+
+    const qEl=document.getElementById('crush-math-question');
+    const aEl=document.getElementById('crush-math-answers');
+
+    // Build question text
+    let qText='';
+    if(q.mode==='counting') qText='?כמה זה '+q.answer;
+    else if(q.mode==='comparison') qText='?מי גדול יותר: '+q.numA+' או '+q.numB;
+    else qText=q.a+' '+q.operation+' '+q.b+' = ?';
+
+    qEl.textContent=qText;
+    Speech.speak(qText.replace('?',''));
+
+    // Build answer buttons
+    let options;
+    if(q.mode==='comparison'){
+      options=[q.numA,q.numB].sort(()=>Math.random()-0.5);
+    }else{
+      options=[q.answer,...q.distractors.slice(0,2)].sort(()=>Math.random()-0.5);
+    }
+
+    aEl.innerHTML=options.map(o=>
+      `<button class="answer-btn" data-val="${o}" data-speak="${o}"
+        style="background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
+        border:4px solid #000;border-radius:16px;color:#fff;cursor:pointer;
+        box-shadow:4px 4px 0 #000;font-family:'Bangers',cursive">${o}</button>`
+    ).join('');
+
+    aEl.querySelectorAll('.answer-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const val=parseInt(btn.dataset.val);
+        this._handleMathAnswer(val,q.answer,q.mode);
+      });
+    });
+
+    // Start timer (6 seconds)
+    this._startTimer(6);
+  },
+
+  _generateQuestion(){
+    const skills=this.level.skills;
+    const skill=skills[Math.floor(Math.random()*skills.length)];
+    if(skill==='counting'){const q=Adaptive.generateCounting();return{...q,mode:'counting'}}
+    if(skill==='addition'){const q=Adaptive.generateAddition();return{...q,mode:'addition'}}
+    if(skill==='subtraction'){const q=Adaptive.generateSubtraction();return{...q,mode:'subtraction'}}
+    if(skill==='comparison'){const q=Adaptive.generateComparison();return{...q,mode:'comparison'}}
+    return{...Adaptive.generateCounting(),mode:'counting'};
+  },
+
+  _startTimer(seconds){
+    if(this.timerInterval){clearInterval(this.timerInterval);this.timerInterval=null}
+    const fill=document.getElementById('crush-timer-fill');
+    let remaining=seconds*10;
+    const total=remaining;
+    fill.style.width='100%';
+    this.timerInterval=setInterval(()=>{
+      remaining--;
+      fill.style.width=Math.max(0,(remaining/total)*100)+'%';
+      if(remaining<=0){
+        clearInterval(this.timerInterval);this.timerInterval=null;
+        this._handleMathAnswer(-999,this._currentQuestion.answer,this._currentQuestion.mode);
+      }
+    },100);
+  },
+
+  _handleMathAnswer(chosen,correct,mode){
+    if(this.timerInterval){clearInterval(this.timerInterval);this.timerInterval=null}
+    const popup=document.getElementById('crush-math-popup');
+
+    if(chosen===correct){
+      // Correct!
+      popup.classList.remove('active');
+      Sounds.powerUp();
+      this.moves--;
+      const matches=this.mathPending.matches;
+      this._scoreMatches(matches);
+      this._createPowerUps(matches);
+      this._executeMatches(matches);
+      this._updateUI();
+
+      // Record correct in adaptive
+      const skill=mode==='comparison'?'comparison':mode==='subtraction'?'subtraction':
+        mode==='addition'?'addition':'counting';
+      Adaptive.recordCorrect(skill);
+
+      // Gravity + cascade
+      this._t(async()=>{
+        this._applyGravity();
+        this._renderGrid();
+        await this._delay(350);
+        this.chain=0;
+        await this._checkCascade();
+      },450);
+    }else{
+      // Wrong — reverse swap, no move lost
+      popup.classList.remove('active');
+      Sounds.wrong();
+      const p=this.mathPending;
+      const tmp=this.grid[p.from.r][p.from.c];
+      this.grid[p.from.r][p.from.c]=this.grid[p.to.r][p.to.c];
+      this.grid[p.to.r][p.to.c]=tmp;
+      this._renderGrid();
+
+      const skill=mode==='comparison'?'comparison':mode==='subtraction'?'subtraction':
+        mode==='addition'?'addition':'counting';
+      Adaptive.recordWrong(skill);
+
+      this.locked=false;
+    }
+    this.mathPending=null;
+  },
+
+  // ===== MATCH EXECUTION =====
+  _executeMatches(matches){
+    const cleared=new Set();
+    for(const m of matches){
+      for(const t of m.tiles){
+        cleared.add(t.r+','+t.c);
+      }
+    }
+    // Animate matched tiles
+    for(const key of cleared){
+      const[r,c]=key.split(',').map(Number);
+      const el=this._getTileEl(r,c);
+      if(el) el.classList.add('matched');
+      this.grid[r][c]={heroIdx:-1,power:null};
+      // Particles at tile position
+      if(el){
+        const rect=el.getBoundingClientRect();
+        Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#FFD700',6);
+      }
+    }
+  },
+
+  _scoreMatches(matches){
+    for(const m of matches){
+      let base=m.length===3?30:m.length===4?60:100;
+      const mult=1+this.chain*0.5;
+      this.score+=Math.round(base*mult);
+    }
+  },
+
+  _createPowerUps(matches){
+    for(const m of matches){
+      if(m.length===4){
+        // Hero Power at middle tile
+        const mid=m.tiles[Math.floor(m.tiles.length/2)];
+        if(this.grid[mid.r][mid.c].heroIdx>=0){
+          this.grid[mid.r][mid.c].power='hero';
+        }
+      }else if(m.length>=5){
+        // Infinity Stone at middle tile
+        const mid=m.tiles[Math.floor(m.tiles.length/2)];
+        if(this.grid[mid.r][mid.c].heroIdx>=0){
+          this.grid[mid.r][mid.c].power='infinity';
+        }
+      }
+    }
+  },
+
+  async _activatePowerUp(r,c,type){
+    if(type==='hero'){
+      // Clear entire row OR column (whichever has more same-hero tiles)
+      const heroIdx=this.grid[r][c].heroIdx;
+      let rowCount=0,colCount=0;
+      for(let cc=0;cc<this.COLS;cc++) if(this.grid[r][cc].heroIdx>=0) rowCount++;
+      for(let rr=0;rr<this.ROWS;rr++) if(this.grid[rr][c].heroIdx>=0) colCount++;
+      if(rowCount>=colCount){
+        for(let cc=0;cc<this.COLS;cc++){
+          const el=this._getTileEl(r,cc);if(el) el.classList.add('matched');
+          if(el){const rect=el.getBoundingClientRect();Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#FFD700',4)}
+          this.grid[r][cc]={heroIdx:-1,power:null};
+        }
+      }else{
+        for(let rr=0;rr<this.ROWS;rr++){
+          const el=this._getTileEl(rr,c);if(el) el.classList.add('matched');
+          if(el){const rect=el.getBoundingClientRect();Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#FFD700',4)}
+          this.grid[rr][c]={heroIdx:-1,power:null};
+        }
+      }
+      this.score+=50;
+      Sounds.combo();
+    }else if(type==='infinity'){
+      // Clear all tiles of the swapped hero type
+      const heroIdx=this.grid[r][c].heroIdx;
+      for(let rr=0;rr<this.ROWS;rr++){
+        for(let cc=0;cc<this.COLS;cc++){
+          if(this.grid[rr][cc].heroIdx===heroIdx){
+            const el=this._getTileEl(rr,cc);if(el) el.classList.add('matched');
+            if(el){const rect=el.getBoundingClientRect();Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#9C27B0',3)}
+            this.grid[rr][cc]={heroIdx:-1,power:null};
+          }
+        }
+      }
+      this.score+=100;
+      Sounds.celebration();
+    }
+    this._updateUI();
+    await this._delay(400);
+  },
+
+  // ===== GRAVITY =====
+  _applyGravity(){
+    for(let c=0;c<this.COLS;c++){
+      let writeRow=this.ROWS-1;
+      for(let r=this.ROWS-1;r>=0;r--){
+        if(this.grid[r][c].heroIdx>=0){
+          if(r!==writeRow){
+            this.grid[writeRow][c]=this.grid[r][c];
+            this.grid[r][c]={heroIdx:-1,power:null};
+          }
+          writeRow--;
+        }
+      }
+      // Fill empty at top
+      for(let r=writeRow;r>=0;r--){
+        this.grid[r][c]={heroIdx:Math.floor(Math.random()*this.heroes.length),power:null};
+      }
+    }
+  },
+
+  // ===== CASCADE =====
+  async _checkCascade(){
+    this.chain++;
+    const matches=this._findMatches();
+    if(matches.length===0){
+      this.chain=0;this.locked=false;
+      this._checkGameOver();
+      return;
+    }
+    // Auto-execute cascades — free reward!
+    if(this.chain>1) Sounds.combo();
+    this._scoreMatches(matches);
+    this._createPowerUps(matches);
+    this._executeMatches(matches);
+    this._updateUI();
+    await this._delay(450);
+    this._applyGravity();
+    this._renderGrid();
+    await this._delay(350);
+    await this._checkCascade();
+  },
+
+  // ===== GAME OVER =====
+  _checkGameOver(){
+    if(this.moves<=0){
+      this._t(()=>this._showResults(),500);
+      return;
+    }
+    // Check if any valid moves exist
+    if(!this._hasValidMoves()){
+      // Reshuffle
+      this._shuffleGrid();
+      this._renderGrid();
+      Speech.speak('ערבוב!');
+    }
+  },
+
+  _hasValidMoves(){
+    for(let r=0;r<this.ROWS;r++){
+      for(let c=0;c<this.COLS;c++){
+        // Try swap right
+        if(c<this.COLS-1){
+          this._swapData(r,c,r,c+1);
+          if(this._findMatches().length>0){this._swapData(r,c,r,c+1);return true}
+          this._swapData(r,c,r,c+1);
+        }
+        // Try swap down
+        if(r<this.ROWS-1){
+          this._swapData(r,c,r+1,c);
+          if(this._findMatches().length>0){this._swapData(r,c,r+1,c);return true}
+          this._swapData(r,c,r+1,c);
+        }
+      }
+    }
+    return false;
+  },
+
+  _swapData(r1,c1,r2,c2){
+    const tmp=this.grid[r1][c1];this.grid[r1][c1]=this.grid[r2][c2];this.grid[r2][c2]=tmp;
+  },
+
+  _shuffleGrid(){
+    // Collect all heroIdx values and redistribute randomly
+    const vals=[];
+    for(let r=0;r<this.ROWS;r++)
+      for(let c=0;c<this.COLS;c++) vals.push(this.grid[r][c].heroIdx);
+    vals.sort(()=>Math.random()-0.5);
+    let i=0;
+    for(let r=0;r<this.ROWS;r++)
+      for(let c=0;c<this.COLS;c++){this.grid[r][c].heroIdx=vals[i++];this.grid[r][c].power=null}
+    // Remove any initial matches created by shuffle
+    let safety=0;
+    while(this._findMatches().length>0&&safety<200){
+      safety++;
+      const matches=this._findMatches();
+      for(const m of matches){
+        const t=m.tiles[m.tiles.length-1];
+        this.grid[t.r][t.c].heroIdx=Math.floor(Math.random()*this.heroes.length);
+      }
+    }
+  },
+
+  // ===== RESULTS =====
+  _showResults(){
+    this.locked=true;
+    const target=this.level.target;
+    let stars=0;
+    if(this.score>=target*2) stars=3;
+    else if(this.score>=target*1.5) stars=2;
+    else if(this.score>=target) stars=1;
+
+    this._saveLevelProgress(this.levelNum,stars);
+    if(stars>0) Adaptive.addStars(stars);
+
+    const resultsEl=document.getElementById('crush-results');
+    resultsEl.classList.add('active');
+
+    let title,emoji;
+    if(stars===3){title='!מושלם';emoji='🏆';Sounds.celebration();Particles.spawnConfetti(80)}
+    else if(stars===2){title='!מעולה';emoji='🌟';Sounds.celebration();Particles.spawnConfetti(40)}
+    else if(stars===1){title='!כל הכבוד';emoji='⭐';Sounds.powerUp()}
+    else{title='!ניסיון טוב';emoji='💪';Sounds.correct();}
+
+    document.getElementById('crush-results-title').textContent=emoji+' '+title;
+    document.getElementById('crush-results-score').textContent='ניקוד: '+this.score+' / '+target;
+
+    let starsHtml='';
+    for(let i=0;i<3;i++){
+      const earned=i<stars;
+      starsHtml+=`<span class="star ${earned?'':'empty'}" style="animation-delay:${i*0.3}s">⭐</span>`;
+    }
+    document.getElementById('crush-results-stars').innerHTML=starsHtml;
+
+    // Show/hide next level button
+    const nextBtn=document.getElementById('crush-next');
+    if(stars>0&&this.levelNum<CRUSH_LEVELS.length){
+      nextBtn.style.display='';
+    }else{
+      nextBtn.style.display='none';
+    }
+
+    this._t(()=>{
+      if(stars>=2) Speech.speak('מדהים! הצלחת');
+      else if(stars===1) Speech.speak('כל הכבוד! עברת את השלב');
+      else Speech.speak('ניסיון טוב, נסה שוב');
+    },600);
+  },
+
+  // ===== INIT =====
+  init(){
+    document.getElementById('crush-back-menu').addEventListener('click',()=>Game.showMenu());
+    document.getElementById('crush-back-select').addEventListener('click',()=>this.showLevelSelect());
+    document.getElementById('crush-retry').addEventListener('click',()=>{
+      document.getElementById('crush-results').classList.remove('active');
+      this.startLevel(this.levelNum);
+    });
+    document.getElementById('crush-next').addEventListener('click',()=>{
+      document.getElementById('crush-results').classList.remove('active');
+      if(this.levelNum<CRUSH_LEVELS.length) this.startLevel(this.levelNum+1);
+      else this.showLevelSelect();
+    });
+    document.getElementById('crush-to-menu').addEventListener('click',()=>{
+      document.getElementById('crush-results').classList.remove('active');
+      Game.showMenu();
+    });
+  }
+};
+
 // ===== INIT ON LOAD =====
 document.addEventListener('DOMContentLoaded',()=>{
   // Start Speech init eagerly (voice loading)
@@ -2387,6 +3193,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(el&&el.dataset.speak) Speech.speak(el.dataset.speak);
   });
   Game.init();
+  CrushGame.init();
 });
 
 </script>
