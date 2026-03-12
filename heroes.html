@@ -39,7 +39,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 @keyframes speedLinesMove{0%{background-position:0 0}100%{background-position:60px 60px}}
 
 /* ===== FULLSCREEN BUTTON ===== */
-.fullscreen-btn{position:fixed;top:10px;right:10px;z-index:500;width:44px;height:44px;
+.fullscreen-btn{position:fixed;top:10px;left:10px;z-index:500;width:44px;height:44px;
   border-radius:12px;border:3px solid #000;background:linear-gradient(135deg,#FFD700,#FFA000);
   font-size:1.3rem;cursor:pointer;touch-action:manipulation;color:#000;font-weight:900;
   box-shadow:3px 3px 0 #000;transition:transform 0.15s;display:flex;align-items:center;justify-content:center}
@@ -176,6 +176,13 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .progress-text{font-family:'Bangers',cursive;font-size:1.3rem;color:#fff;
   -webkit-text-stroke:1px rgba(0,0,0,0.5);letter-spacing:2px;
   text-shadow:2px 2px 0 rgba(0,0,0,0.4);position:relative;z-index:2}
+.level-down-btn{width:44px;height:44px;border-radius:12px;border:3px solid #000;
+  background:linear-gradient(135deg,#64B5F6,#1565C0);font-size:1.3rem;cursor:pointer;
+  touch-action:manipulation;display:flex;align-items:center;justify-content:center;
+  box-shadow:3px 3px 0 #000;transition:transform 0.15s}
+.level-down-btn:active{transform:scale(0.9);box-shadow:1px 1px 0 #000}
+.level-down-btn.flash{animation:levelDownFlash 0.6s ease}
+@keyframes levelDownFlash{0%{transform:scale(1)}30%{transform:scale(1.2);background:linear-gradient(135deg,#4CAF50,#2E7D32)}100%{transform:scale(1)}}
 
 /* Power Meter — Linear Number Line */
 .power-meter{display:flex;align-items:center;gap:0;padding:6px 16px;position:relative;z-index:2;width:100%;max-width:420px;direction:ltr}
@@ -885,6 +892,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   <div class="game-header">
     <button class="back-btn" id="back-btn">🏠</button>
     <span class="progress-text" id="progress-text">1/8</span>
+    <button class="level-down-btn" id="level-down-btn" data-speak="הורד רמה">⬇️</button>
   </div>
   <div class="power-meter" id="power-meter"></div>
   <div class="hero-area" id="hero-area"></div>
@@ -1420,6 +1428,15 @@ const Adaptive = {
     // Decrement recovery even on wrong
     if(s.recoveryLeft>0) s.recoveryLeft--;
     this.save();return 'wrong'},
+  lowerAllLevels(){
+    const st=this.getState();
+    let lowered=false;
+    ['counting','addition','subtraction','comparison','puzzle','memory','cardinality','ordinality'].forEach(sk=>{
+      if(st[sk]&&st[sk].level>1){st[sk].level--;st[sk].streak=0;st[sk].recentWindow=[];lowered=true}
+    });
+    this.save();return lowered;
+  },
+
   getLevel(skill){const s=this.getState()[skill];if(!s) return 1;
     let lv=s.level;
     // Safety cap: levels 4-5 locked until 30+ lifetime correct
@@ -1523,12 +1540,27 @@ const Adaptive = {
   // MEMORY: generates equation+answer pairs
   generateMemoryPairs(count){
     const pairs=[];const used=new Set();
+    // Cap memory difficulty: max level 2 so numbers stay small (sums ≤ 12)
+    const memLv=Math.min(2,this.getLevel('addition'));
     for(let i=0;i<count;i++){
       let q,eq,ans;let att=0;
       do{
         att++;
-        if(Math.random()<0.6){q=this.generateAddition();eq=`${q.a} + ${q.b}`;ans=q.answer}
-        else{q=this.generateSubtraction();eq=`${q.a} - ${q.b}`;ans=q.answer}
+        // Generate simple questions capped at level 2
+        if(Math.random()<0.65){
+          // Simple addition: sum ≤ 12
+          let a,b;
+          if(memLv<=1){b=1+Math.floor(Math.random()*2);a=2+Math.floor(Math.random()*(8-b-2+1))}
+          else{b=1+Math.floor(Math.random()*4);a=2+Math.floor(Math.random()*(12-b-2+1))}
+          q={a,b,answer:a+b,operation:'+'};eq=`${a} + ${b}`;ans=a+b;
+        }else{
+          // Simple subtraction: minuend ≤ 10
+          let a,b;
+          if(memLv<=1){b=1+Math.floor(Math.random()*2);a=4+Math.floor(Math.random()*5)}
+          else{b=1+Math.floor(Math.random()*3);a=5+Math.floor(Math.random()*6)}
+          if(a-b<1) a=b+1+Math.floor(Math.random()*2);
+          q={a,b,answer:a-b,operation:'-'};eq=`${a} - ${b}`;ans=a-b;
+        }
       }while(used.has(ans)&&att<20);
       used.add(ans);
       pairs.push({equation:eq,answer:ans,hebrewEq:`${HEBREW_NUMBERS[q.a]||q.a} ${q.operation==='+'?'ועוד':'פחות'} ${HEBREW_NUMBERS[q.b]||q.b}`,
@@ -1627,6 +1659,20 @@ const Game = {
     document.getElementById('btn-readaloud').addEventListener('click',()=>this.startMode('readaloud'));
     document.getElementById('btn-crush').addEventListener('click',()=>CrushGame.showLevelSelect());
     document.getElementById('back-btn').addEventListener('click',()=>this.showMenu());
+    document.getElementById('level-down-btn').addEventListener('click',()=>{
+      const lowered=Adaptive.lowerAllLevels();
+      const btn=document.getElementById('level-down-btn');
+      if(lowered){
+        Speech.speak('הרמה ירדה');
+        btn.classList.add('flash');setTimeout(()=>btn.classList.remove('flash'),700);
+        // Regenerate current question if in an active game
+        if(this.currentMode&&this.state&&this.state.currentQ<this.state.questions.length){
+          this._regenerateCurrentQuestion();
+        }
+      }else{
+        Speech.speak('כבר ברמה הכי קלה');
+      }
+    });
     document.getElementById('btn-retry').addEventListener('click',()=>this.startMode(this.currentMode));
     document.getElementById('btn-results-menu').addEventListener('click',()=>this.showMenu());
     Particles.init();
@@ -2155,6 +2201,33 @@ const Game = {
       banner.style.animation='streakPop 1.2s ease forwards';
       this._t(()=>{banner.style.display='none'},1300);
       this._t(()=>Speech.speak(text.replace(/[🔥🏆]/g,'').replace('!','')),200);
+    }
+  },
+
+  _regenerateCurrentQuestion(){
+    if(!this.state||!this.state.questions) return;
+    const idx=this.state.questionIndex||this.state.currentQ||0;
+    const total=this.state.questions.length;
+    for(let i=idx;i<total;i++){
+      if(this.currentMode==='counting') this.state.questions[i]=Adaptive.generateCounting();
+      else if(this.currentMode==='mission'){
+        const sl=Adaptive.getLevel('subtraction');
+        if(sl>=2&&Math.random()<0.4) this.state.questions[i]=Adaptive.generateSubtraction();
+        else this.state.questions[i]=Adaptive.generateAddition();
+      } else if(this.currentMode==='battle') this.state.questions[i]=Adaptive.generateComparison();
+      else if(this.currentMode==='puzzle') this.state.questions[i]=Adaptive.generatePuzzleQuestion(i);
+      else if(this.currentMode==='order') this.state.questions[i]=Adaptive.generateOrdinalQuestion();
+      else if(this.currentMode==='readaloud'){
+        const lv=Adaptive.getLevel('counting');let num;
+        if(lv<=2) num=1+Math.floor(Math.random()*10);
+        else if(lv<=3) num=1+Math.floor(Math.random()*20);
+        else num=1+Math.floor(Math.random()*50);
+        this.state.questions[i]={number:num};
+      }
+    }
+    // Re-show current question
+    if(this.state.questions[idx]){
+      this._showQuestion();
     }
   },
 
