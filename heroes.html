@@ -138,8 +138,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-memory{background:linear-gradient(135deg,#00897B,#004D40)}
 .mode-btn-order{background:linear-gradient(135deg,#C62828,#6A1B9A)}
 .mode-btn-readaloud{background:linear-gradient(135deg,#9C27B0,#E040FB)}
-.mode-btn:nth-child(7){grid-column:auto}
-.mode-btn:nth-child(8){grid-column:auto}
+.mode-btn:nth-child(9){grid-column:1/-1}
 .mode-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
   background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.04) 4px,rgba(255,255,255,0.04) 6px);
   pointer-events:none}
@@ -736,17 +735,35 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .crush-tile.spawning{animation:crushSpawn 0.3s ease}
 @keyframes crushSpawn{0%{transform:scale(0) translateY(-20px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
 
-/* Power-Up Tiles */
-.crush-tile.power-hero::after{content:'💥';position:absolute;font-size:0.9rem;
-  bottom:0;right:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.8))}
-.crush-tile.power-hero{box-shadow:0 0 10px rgba(255,215,0,0.6),2px 2px 0 #000;
-  animation:crushPowerGlow 1.5s ease-in-out infinite}
-.crush-tile.power-infinity::after{content:'💎';position:absolute;font-size:0.9rem;
-  bottom:0;right:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.8))}
-.crush-tile.power-infinity{box-shadow:0 0 15px rgba(156,39,176,0.6),2px 2px 0 #000;
-  animation:crushPowerGlow 1.2s ease-in-out infinite}
-@keyframes crushPowerGlow{0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.4),2px 2px 0 #000}
-  50%{box-shadow:0 0 20px rgba(255,215,0,0.8),2px 2px 0 #000}}
+/* Power-Up Tiles — Striped H (clears row) */
+.crush-tile.power-striped-h{box-shadow:0 0 8px rgba(255,215,0,0.5),2px 2px 0 #000;position:relative}
+.crush-tile.power-striped-h::after{content:'';position:absolute;width:100%;height:3px;
+  background:linear-gradient(90deg,transparent 5%,#FFD700 30%,#FFD700 70%,transparent 95%);top:50%;left:0;pointer-events:none}
+.crush-tile.power-striped-h::before{content:'';position:absolute;width:100%;height:2px;
+  background:rgba(255,215,0,0.35);top:30%;left:0;pointer-events:none;
+  box-shadow:0 calc(0.4 * var(--tile-h,48px)) 0 rgba(255,215,0,0.35)}
+/* Striped V (clears column) */
+.crush-tile.power-striped-v{box-shadow:0 0 8px rgba(255,215,0,0.5),2px 2px 0 #000;position:relative}
+.crush-tile.power-striped-v::after{content:'';position:absolute;height:100%;width:3px;
+  background:linear-gradient(180deg,transparent 5%,#FFD700 30%,#FFD700 70%,transparent 95%);left:50%;top:0;pointer-events:none}
+.crush-tile.power-striped-v::before{content:'';position:absolute;height:100%;width:2px;
+  background:rgba(255,215,0,0.35);left:30%;top:0;pointer-events:none;
+  box-shadow:calc(0.4 * var(--tile-w,48px)) 0 0 rgba(255,215,0,0.35)}
+/* Wrapped (3×3 explosion) */
+.crush-tile.power-wrapped{border-color:#FF6347;
+  box-shadow:0 0 12px rgba(255,99,71,0.6),2px 2px 0 #000;
+  animation:crushWrappedPulse 1s ease-in-out infinite}
+@keyframes crushWrappedPulse{0%,100%{box-shadow:0 0 8px rgba(255,99,71,0.4),2px 2px 0 #000}
+  50%{box-shadow:0 0 20px rgba(255,99,71,0.9),2px 2px 0 #000}}
+.crush-tile.power-wrapped::after{content:'💥';position:absolute;font-size:0.7rem;
+  bottom:0;right:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8));pointer-events:none}
+/* Color Bomb (clears all of a hero type) */
+.crush-tile.power-colorbomb{background:conic-gradient(#E23636,#FF6F00,#FFD700,#2E7D32,#1565C0,#9C27B0,#E23636)!important;
+  animation:crushRainbow 2s linear infinite;border-color:#FFD700}
+.crush-tile.power-colorbomb img{display:none}
+.crush-tile.power-colorbomb::after{content:'💫';position:absolute;font-size:1.2rem;pointer-events:none;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,0.8))}
+@keyframes crushRainbow{to{filter:hue-rotate(360deg)}}
 
 /* Crush Math Popup */
 .crush-math-popup{position:fixed;top:0;left:0;width:100%;height:100%;z-index:250;
@@ -797,6 +814,65 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 /* Crush mode button */
 .mode-btn-crush{background:linear-gradient(135deg,#E040FB,#7B1FA2)}
+
+/* ===== MAZE MODE ===== */
+.mode-btn-maze{background:linear-gradient(135deg,#1A237E,#0D47A1)}
+/* Maze Level Select (reuse crush pattern) */
+.maze-select-header{display:flex;align-items:center;gap:12px;padding:12px 16px;width:100%;max-width:480px}
+.maze-select-title{font-family:'Bangers',cursive;font-size:2.4rem;color:#FFD700;
+  -webkit-text-stroke:2px #000;flex:1;text-align:center;letter-spacing:3px}
+.maze-levels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px;width:100%;max-width:420px}
+/* Maze Top Bar */
+.maze-top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;position:relative;z-index:2;max-width:480px}
+.maze-stars-count{font-family:'Bangers',cursive;font-size:1.4rem;color:#FFD700;
+  -webkit-text-stroke:1px #000;letter-spacing:2px}
+.maze-lives{font-size:1.3rem;letter-spacing:2px}
+/* Maze Container */
+.maze-container{position:relative;width:100%;max-width:420px;aspect-ratio:1;
+  background:rgba(0,0,0,0.4);border:4px solid #000;border-radius:12px;
+  box-shadow:6px 6px 0 rgba(0,0,0,0.4);overflow:hidden;direction:ltr}
+.maze-grid{display:grid;width:100%;height:100%;position:relative}
+.maze-cell{display:flex;align-items:center;justify-content:center;position:relative}
+.maze-wall{background:linear-gradient(135deg,#2D1B4E,#1A0E33);border:1px solid rgba(100,50,150,0.3)}
+.maze-path{background:#0D1B3E}
+.maze-star{background:#0D1B3E;font-size:0.8rem;animation:mazeSpin 3s linear infinite}
+@keyframes mazeSpin{to{transform:rotate(360deg)}}
+.maze-gate{background:linear-gradient(135deg,#C62828,#B71C1C);border:2px solid #FFD700;
+  font-size:0.7rem;animation:mazeGatePulse 1.5s ease-in-out infinite}
+@keyframes mazeGatePulse{0%,100%{box-shadow:inset 0 0 5px rgba(255,215,0,0.3)}50%{box-shadow:inset 0 0 12px rgba(255,215,0,0.7)}}
+.maze-exit{background:linear-gradient(135deg,#1B5E20,#2E7D32);animation:mazeExitGlow 1.5s ease-in-out infinite;
+  font-size:0.8rem}
+@keyframes mazeExitGlow{0%,100%{box-shadow:inset 0 0 6px rgba(76,175,80,0.4)}50%{box-shadow:inset 0 0 15px rgba(76,175,80,0.8)}}
+/* Maze Hero (overlaid on grid) */
+.maze-hero{position:absolute;border-radius:50%;border:2px solid #FFD700;
+  box-shadow:0 0 10px rgba(255,215,0,0.5);z-index:5;transition:top 0.15s ease,left 0.15s ease;
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.maze-hero img{width:90%;height:90%;border-radius:50%;object-fit:cover;object-position:center top}
+.maze-hero.moving{animation:mazeHeroBounce 0.15s ease}
+@keyframes mazeHeroBounce{50%{transform:scale(1.1)}}
+/* Maze Villain */
+.maze-villain{position:absolute;border-radius:50%;border:2px solid #E23636;
+  box-shadow:0 0 8px rgba(226,54,54,0.5);z-index:4;transition:top 0.4s ease,left 0.4s ease;
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.maze-villain img{width:90%;height:90%;border-radius:50%;object-fit:cover;object-position:center top}
+/* D-Pad */
+.maze-dpad{display:grid;grid-template-areas:'_ u _' 'l _ r' '_ d _';gap:6px;
+  padding:12px;width:200px;margin:8px auto 0}
+.dpad-btn{width:56px;height:56px;border-radius:14px;border:3px solid #000;
+  background:linear-gradient(135deg,#424242,#212121);font-size:1.5rem;cursor:pointer;
+  touch-action:manipulation;display:flex;align-items:center;justify-content:center;
+  box-shadow:3px 3px 0 #000;color:#fff}
+.dpad-btn:active{transform:scale(0.9);box-shadow:1px 1px 0 #000}
+.dpad-up{grid-area:u}.dpad-left{grid-area:l}.dpad-right{grid-area:r}.dpad-down{grid-area:d}
+/* Maze results reuse crush-results-overlay */
+/* Mobile */
+@media(max-width:600px){
+  .maze-container{border-radius:8px;border-width:3px}
+  .dpad-btn{width:50px;height:50px;font-size:1.3rem}
+  .maze-dpad{width:170px;gap:4px}
+  .maze-select-title{font-size:1.8rem}
+}
 </style>
 </head>
 <body>
@@ -880,6 +956,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
       <span class="mode-btn-icon">💎</span>
       <span class="mode-btn-text"><span class="mode-btn-title">גיבורי קראש</span><span class="mode-btn-desc">התאם גיבורים ופתור תרגילים</span></span>
     </button>
+    <button class="mode-btn mode-btn-maze" id="btn-maze" data-speak="מבוך הגיבורים, נווט במבוך ואסוף כוכבים">
+      <span class="mode-btn-icon">🏃</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">מבוך הגיבורים</span><span class="mode-btn-desc">נווט במבוך ואסוף כוכבים</span></span>
+    </button>
   </div>
 
   <div class="collection-row" id="collection-row"></div>
@@ -955,6 +1035,51 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
     <button style="background:linear-gradient(135deg,#E040FB,#7B1FA2)" id="crush-retry" data-speak="שחק שוב">🔄 שחק שוב</button>
     <button style="background:linear-gradient(135deg,#FFD700,#FFA000);color:#000" id="crush-next" data-speak="שלב הבא">▶ שלב הבא</button>
     <button style="background:linear-gradient(135deg,#424242,#212121)" id="crush-to-menu" data-speak="תפריט">🏠 תפריט</button>
+  </div>
+</div>
+
+<!-- ===== MAZE LEVEL SELECT ===== -->
+<div id="maze-select" class="screen">
+  <div class="maze-select-header">
+    <button class="back-btn" id="maze-back-menu">🏠</button>
+    <h2 class="maze-select-title">מבוך הגיבורים</h2>
+  </div>
+  <div class="maze-levels-grid" id="maze-levels-grid"></div>
+</div>
+
+<!-- ===== MAZE GAME SCREEN ===== -->
+<div id="maze-screen" class="screen">
+  <div class="maze-top-bar">
+    <button class="back-btn" id="maze-back-select">🏠</button>
+    <div class="maze-stars-count" id="maze-stars-count">⭐ 0</div>
+    <div class="maze-lives" id="maze-lives">❤️❤️❤️</div>
+  </div>
+  <div class="maze-container" id="maze-container"></div>
+  <div class="maze-dpad" id="maze-dpad">
+    <button class="dpad-btn dpad-up" data-dir="up">⬆️</button>
+    <button class="dpad-btn dpad-left" data-dir="left">⬅️</button>
+    <button class="dpad-btn dpad-right" data-dir="right">➡️</button>
+    <button class="dpad-btn dpad-down" data-dir="down">⬇️</button>
+  </div>
+</div>
+
+<!-- ===== MAZE GATE POPUP ===== -->
+<div id="maze-gate-popup" class="crush-math-popup">
+  <div class="crush-math-bubble">
+    <div id="maze-gate-question" class="crush-math-question"></div>
+    <div id="maze-gate-answers" class="crush-math-answers"></div>
+  </div>
+</div>
+
+<!-- ===== MAZE RESULTS ===== -->
+<div id="maze-results" class="crush-results-overlay">
+  <div class="crush-results-title" id="maze-results-title"></div>
+  <div class="crush-results-stars" id="maze-results-stars"></div>
+  <div class="crush-results-score" id="maze-results-score"></div>
+  <div class="crush-results-buttons">
+    <button style="background:linear-gradient(135deg,#1A237E,#0D47A1)" id="maze-retry" data-speak="שחק שוב">🔄 שחק שוב</button>
+    <button style="background:linear-gradient(135deg,#FFD700,#FFA000);color:#000" id="maze-next" data-speak="שלב הבא">▶ שלב הבא</button>
+    <button style="background:linear-gradient(135deg,#424242,#212121)" id="maze-to-menu" data-speak="תפריט">🏠 תפריט</button>
   </div>
 </div>
 
@@ -1658,6 +1783,7 @@ const Game = {
     document.getElementById('btn-order').addEventListener('click',()=>this.startMode('order'));
     document.getElementById('btn-readaloud').addEventListener('click',()=>this.startMode('readaloud'));
     document.getElementById('btn-crush').addEventListener('click',()=>CrushGame.showLevelSelect());
+    document.getElementById('btn-maze').addEventListener('click',()=>MazeGame.showLevelSelect());
     document.getElementById('back-btn').addEventListener('click',()=>this.showMenu());
     document.getElementById('level-down-btn').addEventListener('click',()=>{
       const lowered=Adaptive.lowerAllLevels();
@@ -1685,9 +1811,11 @@ const Game = {
   // ===== MENU =====
   showMenu(){
     this.cleanup();
-    CrushGame.cleanup();
+    CrushGame.cleanup();MazeGame.cleanup();
     document.getElementById('crush-results').classList.remove('active');
     document.getElementById('crush-math-popup').classList.remove('active');
+    document.getElementById('maze-results').classList.remove('active');
+    document.getElementById('maze-gate-popup').classList.remove('active');
     this._showScreen('menu-screen');
     this._updateMenuStats();
     this._buildTeams();
@@ -2735,8 +2863,7 @@ const CrushGame = {
         const tile=document.createElement('div');
         tile.className='crush-tile';
         tile.dataset.row=r;tile.dataset.col=c;
-        if(cell.power==='hero') tile.classList.add('power-hero');
-        if(cell.power==='infinity') tile.classList.add('power-infinity');
+        if(cell.power) tile.classList.add('power-'+cell.power.replace(/_/g,'-'));
         if(hero){
           tile.style.background=hero.gradient;
           tile.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}"
@@ -2796,6 +2923,28 @@ const CrushGame = {
   // ===== SWAP =====
   async _trySwap(r1,c1,r2,c2){
     this.locked=true;
+    const p1before=this.grid[r1][c1].power;
+    const p2before=this.grid[r2][c2].power;
+
+    // Color bomb can swap with ANY tile (no match needed)
+    if(p1before==='colorbomb'||p2before==='colorbomb'){
+      // Swap data
+      const tmp=this.grid[r1][c1];this.grid[r1][c1]=this.grid[r2][c2];this.grid[r2][c2]=tmp;
+      this._renderGrid();await this._delay(150);
+      if(p1before&&p2before){
+        await this._activateCombo(r1,c1,r2,c2);
+      }else{
+        const cbR=p1before==='colorbomb'?r2:r1;const cbC=p1before==='colorbomb'?c2:c1;
+        const otherR=p1before==='colorbomb'?r1:r2;const otherC=p1before==='colorbomb'?c1:c2;
+        await this._activatePowerUp(cbR,cbC,'colorbomb',this.grid[otherR][otherC].heroIdx);
+        this.grid[cbR][cbC]={heroIdx:-1,power:null};
+      }
+      this.moves--;this._updateUI();this._renderGrid();await this._delay(200);
+      this.chain=0;this._applyGravity();this._renderGrid();await this._delay(300);
+      await this._checkCascade();
+      return;
+    }
+
     // Swap in data
     const tmp=this.grid[r1][c1];
     this.grid[r1][c1]=this.grid[r2][c2];
@@ -2803,37 +2952,37 @@ const CrushGame = {
 
     // Check for matches
     const matches=this._findMatches();
-    if(matches.length===0){
-      // No match — reverse swap
-      const tmp2=this.grid[r1][c1];
-      this.grid[r1][c1]=this.grid[r2][c2];
-      this.grid[r2][c2]=tmp2;
-      // Animate shake
-      this._renderGrid();
-      Sounds.wrong();
-      this.locked=false;
-      return;
-    }
 
-    // Check if power-up is involved (free, no math question)
-    const cell1=this.grid[r1][c1];
-    const cell2=this.grid[r2][c2];
-    if(cell2.power||cell1.power){
-      // Power-up activation — free!
-      this._renderGrid();
-      await this._delay(150);
-      if(cell2.power){await this._activatePowerUp(r2,c2,cell2.power);cell2.power=null}
-      if(cell1.power){await this._activatePowerUp(r1,c1,cell1.power);cell1.power=null}
-      this.moves--;
-      this._updateUI();
-      this._renderGrid();
-      await this._delay(200);
-      this.chain=0;
+    // Two specials swapped together → combo (free, even without matches)
+    if(p1before&&p2before){
+      this._renderGrid();await this._delay(150);
+      await this._activateCombo(r1,c1,r2,c2);
+      this.moves--;this._updateUI();this._renderGrid();await this._delay(200);
+      this.chain=0;this._applyGravity();this._renderGrid();await this._delay(300);
       await this._checkCascade();
       return;
     }
 
-    // Has matches — show math popup
+    if(matches.length===0){
+      // No match — reverse swap
+      const tmp2=this.grid[r1][c1];this.grid[r1][c1]=this.grid[r2][c2];this.grid[r2][c2]=tmp2;
+      this._renderGrid();Sounds.wrong();this.locked=false;return;
+    }
+
+    // One power-up involved → free activation + execute matches
+    if(p1before||p2before){
+      this._renderGrid();await this._delay(150);
+      if(p2before){await this._activatePowerUp(r2,c2,p2before,this.grid[r1][c1].heroIdx);this.grid[r2][c2].power=null}
+      if(p1before){await this._activatePowerUp(r1,c1,p1before,this.grid[r2][c2].heroIdx);this.grid[r1][c1].power=null}
+      this._createPowerUps(matches);
+      this._executeMatches(matches);
+      this.moves--;this._updateUI();this._renderGrid();await this._delay(200);
+      this.chain=0;this._applyGravity();this._renderGrid();await this._delay(300);
+      await this._checkCascade();
+      return;
+    }
+
+    // Regular matches — show math popup
     this._renderGrid();
     this.mathPending={matches,from:{r:r1,c:c1},to:{r:r2,c:c2}};
     this._showMathPopup();
@@ -2841,7 +2990,7 @@ const CrushGame = {
 
   // ===== MATCH DETECTION =====
   _findMatches(){
-    const matches=[];
+    const hMatches=[];const vMatches=[];
     // Horizontal
     for(let r=0;r<this.ROWS;r++){
       let run=[{r,c:0}];
@@ -2849,11 +2998,11 @@ const CrushGame = {
         if(this.grid[r][c].heroIdx===this.grid[r][c-1].heroIdx&&this.grid[r][c].heroIdx>=0){
           run.push({r,c});
         }else{
-          if(run.length>=3) matches.push({tiles:[...run],dir:'h',length:run.length});
+          if(run.length>=3) hMatches.push({tiles:[...run],dir:'h',length:run.length});
           run=[{r,c}];
         }
       }
-      if(run.length>=3) matches.push({tiles:[...run],dir:'h',length:run.length});
+      if(run.length>=3) hMatches.push({tiles:[...run],dir:'h',length:run.length});
     }
     // Vertical
     for(let c=0;c<this.COLS;c++){
@@ -2862,12 +3011,35 @@ const CrushGame = {
         if(this.grid[r][c].heroIdx===this.grid[r-1][c].heroIdx&&this.grid[r][c].heroIdx>=0){
           run.push({r,c});
         }else{
-          if(run.length>=3) matches.push({tiles:[...run],dir:'v',length:run.length});
+          if(run.length>=3) vMatches.push({tiles:[...run],dir:'v',length:run.length});
           run=[{r,c}];
         }
       }
-      if(run.length>=3) matches.push({tiles:[...run],dir:'v',length:run.length});
+      if(run.length>=3) vMatches.push({tiles:[...run],dir:'v',length:run.length});
     }
+    // Detect L/T shapes: h+v matches sharing a tile with same heroIdx
+    const matches=[];const usedH=new Set();const usedV=new Set();
+    for(let hi=0;hi<hMatches.length;hi++){
+      for(let vi=0;vi<vMatches.length;vi++){
+        const hm=hMatches[hi];const vm=vMatches[vi];
+        // Must be same hero
+        if(this.grid[hm.tiles[0].r][hm.tiles[0].c].heroIdx!==this.grid[vm.tiles[0].r][vm.tiles[0].c].heroIdx) continue;
+        // Find shared tile
+        const shared=hm.tiles.find(ht=>vm.tiles.some(vt=>vt.r===ht.r&&vt.c===ht.c));
+        if(shared){
+          // Merge into L/T shape
+          const allTiles=new Map();
+          hm.tiles.forEach(t=>allTiles.set(t.r+','+t.c,t));
+          vm.tiles.forEach(t=>allTiles.set(t.r+','+t.c,t));
+          const merged=[...allTiles.values()];
+          matches.push({tiles:merged,dir:'lt',length:merged.length,intersection:shared});
+          usedH.add(hi);usedV.add(vi);
+        }
+      }
+    }
+    // Add remaining unmerged h/v matches
+    hMatches.forEach((m,i)=>{if(!usedH.has(i)) matches.push(m)});
+    vMatches.forEach((m,i)=>{if(!usedV.has(i)) matches.push(m)});
     return matches;
   },
 
@@ -2993,17 +3165,15 @@ const CrushGame = {
   _executeMatches(matches){
     const cleared=new Set();
     for(const m of matches){
-      for(const t of m.tiles){
-        cleared.add(t.r+','+t.c);
-      }
+      for(const t of m.tiles) cleared.add(t.r+','+t.c);
     }
-    // Animate matched tiles
     for(const key of cleared){
       const[r,c]=key.split(',').map(Number);
+      // Don't clear tiles that just received a power-up
+      if(this.grid[r][c].power) continue;
       const el=this._getTileEl(r,c);
       if(el) el.classList.add('matched');
       this.grid[r][c]={heroIdx:-1,power:null};
-      // Particles at tile position
       if(el){
         const rect=el.getBoundingClientRect();
         Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#FFD700',6);
@@ -3021,58 +3191,115 @@ const CrushGame = {
 
   _createPowerUps(matches){
     for(const m of matches){
-      if(m.length===4){
-        // Hero Power at middle tile
-        const mid=m.tiles[Math.floor(m.tiles.length/2)];
-        if(this.grid[mid.r][mid.c].heroIdx>=0){
-          this.grid[mid.r][mid.c].power='hero';
-        }
+      if(m.dir==='lt'){
+        // L/T shape → wrapped candy at intersection
+        const pos=m.intersection||m.tiles[Math.floor(m.tiles.length/2)];
+        if(this.grid[pos.r][pos.c].heroIdx>=0) this.grid[pos.r][pos.c].power='wrapped';
       }else if(m.length>=5){
-        // Infinity Stone at middle tile
+        // 5+ in a line → color bomb at middle
+        const mid=m.tiles[Math.floor(m.tiles.length/2)];
+        if(this.grid[mid.r][mid.c].heroIdx>=0) this.grid[mid.r][mid.c].power='colorbomb';
+      }else if(m.length===4){
+        // 4 in a line → striped (direction matches the match direction)
         const mid=m.tiles[Math.floor(m.tiles.length/2)];
         if(this.grid[mid.r][mid.c].heroIdx>=0){
-          this.grid[mid.r][mid.c].power='infinity';
+          this.grid[mid.r][mid.c].power=(m.dir==='h')?'striped_h':'striped_v';
         }
       }
     }
   },
 
-  async _activatePowerUp(r,c,type){
-    if(type==='hero'){
-      // Clear entire row OR column (whichever has more same-hero tiles)
-      const heroIdx=this.grid[r][c].heroIdx;
-      let rowCount=0,colCount=0;
-      for(let cc=0;cc<this.COLS;cc++) if(this.grid[r][cc].heroIdx>=0) rowCount++;
-      for(let rr=0;rr<this.ROWS;rr++) if(this.grid[rr][c].heroIdx>=0) colCount++;
-      if(rowCount>=colCount){
-        for(let cc=0;cc<this.COLS;cc++){
-          const el=this._getTileEl(r,cc);if(el) el.classList.add('matched');
-          if(el){const rect=el.getBoundingClientRect();Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#FFD700',4)}
-          this.grid[r][cc]={heroIdx:-1,power:null};
-        }
-      }else{
-        for(let rr=0;rr<this.ROWS;rr++){
-          const el=this._getTileEl(rr,c);if(el) el.classList.add('matched');
-          if(el){const rect=el.getBoundingClientRect();Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#FFD700',4)}
-          this.grid[rr][c]={heroIdx:-1,power:null};
-        }
-      }
-      this.score+=50;
-      Sounds.combo();
-    }else if(type==='infinity'){
-      // Clear all tiles of the swapped hero type
-      const heroIdx=this.grid[r][c].heroIdx;
-      for(let rr=0;rr<this.ROWS;rr++){
-        for(let cc=0;cc<this.COLS;cc++){
-          if(this.grid[rr][cc].heroIdx===heroIdx){
-            const el=this._getTileEl(rr,cc);if(el) el.classList.add('matched');
-            if(el){const rect=el.getBoundingClientRect();Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#9C27B0',3)}
-            this.grid[rr][cc]={heroIdx:-1,power:null};
+  _clearTile(r,c,color){
+    if(r<0||r>=this.ROWS||c<0||c>=this.COLS) return;
+    if(this.grid[r][c].heroIdx<0) return;
+    const el=this._getTileEl(r,c);
+    if(el){el.classList.add('matched');
+      const rect=el.getBoundingClientRect();
+      Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,color||'#FFD700',3)}
+    this.grid[r][c]={heroIdx:-1,power:null};
+  },
+
+  _clearRow(r,color){for(let cc=0;cc<this.COLS;cc++) this._clearTile(r,cc,color)},
+  _clearCol(c,color){for(let rr=0;rr<this.ROWS;rr++) this._clearTile(rr,c,color)},
+  _clearArea(r,c,size,color){
+    const half=Math.floor(size/2);
+    for(let dr=-half;dr<=half;dr++) for(let dc=-half;dc<=half;dc++) this._clearTile(r+dr,c+dc,color);
+  },
+  _clearAllOfHero(heroIdx,color){
+    for(let rr=0;rr<this.ROWS;rr++) for(let cc=0;cc<this.COLS;cc++)
+      if(this.grid[rr][cc].heroIdx===heroIdx) this._clearTile(rr,cc,color);
+  },
+
+  async _activatePowerUp(r,c,type,otherHeroIdx){
+    if(type==='striped_h'){
+      this._clearRow(r,'#FFD700');this.score+=50;Sounds.combo();
+    }else if(type==='striped_v'){
+      this._clearCol(c,'#FFD700');this.score+=50;Sounds.combo();
+    }else if(type==='wrapped'){
+      this._clearArea(r,c,3,'#FF6347');this.score+=60;Sounds.combo();
+    }else if(type==='colorbomb'){
+      const target=(otherHeroIdx!=null&&otherHeroIdx>=0)?otherHeroIdx:
+        Math.floor(Math.random()*this.heroes.length);
+      this._clearAllOfHero(target,'#9C27B0');this.score+=100;Sounds.celebration();
+    }
+    this._updateUI();
+    await this._delay(400);
+  },
+
+  // ===== COMBO: two specials swapped together =====
+  async _activateCombo(r1,c1,r2,c2){
+    const p1=this.grid[r1][c1].power;
+    const p2=this.grid[r2][c2].power;
+    const isStriped=t=>t==='striped_h'||t==='striped_v';
+
+    // Clear the power-up tiles themselves first
+    this.grid[r1][c1].power=null;
+    this.grid[r2][c2].power=null;
+
+    if(p1==='colorbomb'&&p2==='colorbomb'){
+      // Double color bomb = clear entire board!
+      for(let rr=0;rr<this.ROWS;rr++) for(let cc=0;cc<this.COLS;cc++) this._clearTile(rr,cc,'#FFD700');
+      this.score+=500;Sounds.celebration();
+    }else if(p1==='colorbomb'||p2==='colorbomb'){
+      const cbR=p1==='colorbomb'?r1:r2;const cbC=p1==='colorbomb'?c1:c2;
+      const otherR=p1==='colorbomb'?r2:r1;const otherC=p1==='colorbomb'?c2:c1;
+      const otherPower=p1==='colorbomb'?p2:p1;
+      const targetHero=this.grid[otherR][otherC].heroIdx;
+      if(isStriped(otherPower)){
+        // Color bomb + striped = all of that color become striped & activate
+        for(let rr=0;rr<this.ROWS;rr++) for(let cc=0;cc<this.COLS;cc++){
+          if(this.grid[rr][cc].heroIdx===targetHero){
+            if(Math.random()<0.5) this._clearRow(rr,'#FFD700');
+            else this._clearCol(cc,'#FFD700');
           }
         }
+        this.score+=200;Sounds.celebration();
+      }else if(otherPower==='wrapped'){
+        // Color bomb + wrapped = all of color → 3×3 explosions
+        const positions=[];
+        for(let rr=0;rr<this.ROWS;rr++) for(let cc=0;cc<this.COLS;cc++)
+          if(this.grid[rr][cc].heroIdx===targetHero) positions.push({r:rr,c:cc});
+        positions.forEach(p=>this._clearArea(p.r,p.c,3,'#FF6347'));
+        this.score+=250;Sounds.celebration();
+      }else{
+        // Color bomb + regular tile = clear all of that color
+        this._clearAllOfHero(targetHero,'#9C27B0');
+        this.score+=100;Sounds.celebration();
       }
-      this.score+=100;
-      Sounds.celebration();
+    }else if(isStriped(p1)&&isStriped(p2)){
+      // Striped + striped = cross (row + column)
+      this._clearRow(r2,'#FFD700');this._clearCol(c2,'#FFD700');
+      this.score+=80;Sounds.combo();
+    }else if((isStriped(p1)&&p2==='wrapped')||(p1==='wrapped'&&isStriped(p2))){
+      // Striped + wrapped = giant cross (3 rows + 3 columns)
+      const cr=p1==='wrapped'?r1:r2;const cc=p1==='wrapped'?c1:c2;
+      this._clearRow(cr-1,'#FF6347');this._clearRow(cr,'#FF6347');this._clearRow(cr+1,'#FF6347');
+      this._clearCol(cc-1,'#FF6347');this._clearCol(cc,'#FF6347');this._clearCol(cc+1,'#FF6347');
+      this.score+=150;Sounds.celebration();
+    }else if(p1==='wrapped'&&p2==='wrapped'){
+      // Wrapped + wrapped = 5×5 explosion
+      this._clearArea(r2,c2,5,'#FF6347');
+      this.score+=120;Sounds.celebration();
     }
     this._updateUI();
     await this._delay(400);
@@ -3246,6 +3473,508 @@ const CrushGame = {
   }
 };
 
+// ===== MAZE GAME =====
+const MAZE_LEVELS = [
+  {id:1, name_he:'שלב 1', skills:['counting'], lives:3, villainCount:0, maze:[
+    '#############',
+    '#S..*...*..*#',
+    '#.###.###.#.#',
+    '#.#...*...#.#',
+    '#.#.#####.#.#',
+    '#...*...*...#',
+    '#.#######.#.#',
+    '#.#..*....#.#',
+    '#.#.####.##.#',
+    '#.*....*....#',
+    '#.########.##',
+    '#..*...*..*E#',
+    '#############']},
+  {id:2, name_he:'שלב 2', skills:['counting'], lives:3, villainCount:1, maze:[
+    '#############',
+    '#S..*...*...#',
+    '#.###.#.###.#',
+    '#...*G#..*..#',
+    '#.###.#.#.#.#',
+    '#.*.....*.#.#',
+    '###.#####.#.#',
+    '#.*.#...*...#',
+    '#.#.#.#####.#',
+    '#.#...*...*.#',
+    '#.#########.#',
+    '#...*...*..E#',
+    '#############']},
+  {id:3, name_he:'שלב 3', skills:['counting','addition'], lives:3, villainCount:1, maze:[
+    '#############',
+    '#S.*...*..*.#',
+    '#.##.####.#.#',
+    '#..*...G..#.#',
+    '#.####.##.#.#',
+    '#.*........*#',
+    '#.#.######.##',
+    '#.#.*....*..#',
+    '#.#.##.####.#',
+    '#...*..G..*.#',
+    '##.########.#',
+    '#..*...*..*E#',
+    '#############']},
+  {id:4, name_he:'שלב 4', skills:['addition','subtraction'], lives:3, villainCount:2, maze:[
+    '#############',
+    '#S.*...*..*.#',
+    '##.#.####.#.#',
+    '#..*...G..#.#',
+    '#.####.##.*.#',
+    '#.*.........#',
+    '#.#.######.##',
+    '#.#.*....*..#',
+    '#.###.####.##',
+    '#...*..G..*.#',
+    '#.#.######.##',
+    '#..*...*...E#',
+    '#############']},
+  {id:5, name_he:'שלב 5', skills:['addition','subtraction','comparison'], lives:3, villainCount:2, maze:[
+    '#############',
+    '#S.*G.*..**.#',
+    '#.##.####.#.#',
+    '#..*....*...#',
+    '#.####.##.#.#',
+    '#.*..G....*.#',
+    '#.#.######.##',
+    '#.#.*....*..#',
+    '#.#.##.####.#',
+    '#...*..G..*.#',
+    '##.########.#',
+    '#..*...*.**E#',
+    '#############']}
+];
+
+const MazeGame = {
+  maze:[], rows:0, cols:0,
+  heroPos:{r:0,c:0}, hero:null,
+  villains:[], stars:0, totalStars:0, lives:3,
+  level:null, levelNum:0,
+  moving:false, locked:false,
+  villainInterval:null, timeouts:[],
+  cellSize:0,
+
+  _t(fn,ms){const t=setTimeout(fn,ms);this.timeouts.push(t);return t},
+  _delay(ms){return new Promise(r=>this._t(r,ms))},
+  cleanup(){
+    this.timeouts.forEach(t=>clearTimeout(t));this.timeouts=[];
+    if(this.villainInterval){clearInterval(this.villainInterval);this.villainInterval=null}
+    document.removeEventListener('keydown',this._keyHandler);
+  },
+
+  _showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('maze-results').classList.remove('active');
+    document.getElementById('maze-gate-popup').classList.remove('active');
+  },
+
+  // ===== LEVEL SELECT =====
+  showLevelSelect(){
+    this.cleanup();
+    this._showScreen('maze-select');
+    this._renderLevels();
+    Sounds.whoosh();
+    this._t(()=>Speech.speak('מבוך הגיבורים! בחר שלב'),500);
+  },
+
+  _getLevelState(n){
+    try{const d=JSON.parse(localStorage.getItem('mazeProgress')||'{}');return d[n]||{stars:0,completed:false}}
+    catch(e){return{stars:0,completed:false}}
+  },
+  _saveLevelProgress(n,stars){
+    try{
+      const d=JSON.parse(localStorage.getItem('mazeProgress')||'{}');
+      const prev=d[n]||{stars:0,completed:false};
+      d[n]={stars:Math.max(prev.stars,stars),completed:true};
+      localStorage.setItem('mazeProgress',JSON.stringify(d));
+    }catch(e){}
+  },
+
+  _renderLevels(){
+    const grid=document.getElementById('maze-levels-grid');
+    const colors=['#1A237E','#0D47A1','#1565C0','#1976D2','#1E88E5'];
+    grid.innerHTML=MAZE_LEVELS.map((lv,i)=>{
+      const st=this._getLevelState(lv.id);
+      const unlocked=lv.id===1||this._getLevelState(lv.id-1).completed;
+      const starStr=st.stars>0?'⭐'.repeat(st.stars)+(st.stars<3?'☆'.repeat(3-st.stars):''):'';
+      return `<button class="crush-level-btn ${unlocked?'':'locked'}" data-level="${lv.id}"
+        style="background:linear-gradient(135deg,${colors[i]},${colors[(i+2)%5]})"
+        data-speak="${lv.name_he}">
+        <span>${lv.id}</span>
+        <span class="level-stars">${unlocked?(starStr||'☆☆☆'):'🔒'}</span>
+      </button>`;
+    }).join('');
+    grid.querySelectorAll('.crush-level-btn:not(.locked)').forEach(btn=>{
+      btn.addEventListener('click',()=>this.startLevel(parseInt(btn.dataset.level)));
+    });
+  },
+
+  // ===== START LEVEL =====
+  startLevel(n){
+    this.cleanup();
+    this.levelNum=n;
+    this.level=MAZE_LEVELS[n-1];
+    this.stars=0;this.lives=this.level.lives;
+    this.locked=false;this.moving=false;
+
+    // Pick random hero
+    const unlocked=Adaptive.getState().heroesUnlocked;
+    const pool=HEROES_DATA.filter(h=>unlocked.includes(h.id));
+    this.hero=pool.length>0?pool[Math.floor(Math.random()*pool.length)]:HEROES_DATA[0];
+
+    this._parseMaze();
+    this._showScreen('maze-screen');
+    this._renderMaze();
+    this._updateUI();
+    this._initControls();
+    if(this.level.villainCount>0) this._startVillainPatrol();
+    Sounds.whoosh();
+    this._t(()=>Speech.speak(this.level.name_he+' מתחיל! אסוף את הכוכבים'),400);
+  },
+
+  _parseMaze(){
+    const lines=this.level.maze;
+    this.rows=lines.length;this.cols=lines[0].length;
+    this.maze=[];this.totalStars=0;this.villains=[];
+    let villainIdx=0;
+    // Get villain heroes (from villains team)
+    const villainHeroes=HEROES_DATA.filter(h=>['thanos','venom','green_goblin','ultron','loki'].includes(h.id));
+    for(let r=0;r<this.rows;r++){
+      this.maze[r]=[];
+      for(let c=0;c<this.cols;c++){
+        const ch=lines[r][c];
+        this.maze[r][c]=ch;
+        if(ch==='S') this.heroPos={r,c};
+        if(ch==='*') this.totalStars++;
+        if(ch==='V'||ch==='.'&&villainIdx<this.level.villainCount){
+          // Place villain on path cells
+        }
+      }
+    }
+    // Place villains on random path cells away from start
+    const pathCells=[];
+    for(let r=0;r<this.rows;r++) for(let c=0;c<this.cols;c++){
+      if((this.maze[r][c]==='.'||this.maze[r][c]==='*')&&
+         (Math.abs(r-this.heroPos.r)+Math.abs(c-this.heroPos.c))>4)
+        pathCells.push({r,c});
+    }
+    pathCells.sort(()=>Math.random()-0.5);
+    for(let i=0;i<this.level.villainCount&&i<pathCells.length;i++){
+      const vh=villainHeroes[i%villainHeroes.length]||HEROES_DATA[5];
+      this.villains.push({pos:{...pathCells[i]},hero:vh,dir:'right'});
+    }
+  },
+
+  _renderMaze(){
+    const container=document.getElementById('maze-container');
+    this.cellSize=Math.floor(Math.min(container.clientWidth,container.clientHeight||400)/this.cols);
+    const gridW=this.cellSize*this.cols;const gridH=this.cellSize*this.rows;
+
+    let html=`<div class="maze-grid" style="grid-template-columns:repeat(${this.cols},${this.cellSize}px);grid-template-rows:repeat(${this.rows},${this.cellSize}px);width:${gridW}px;height:${gridH}px">`;
+    for(let r=0;r<this.rows;r++){
+      for(let c=0;c<this.cols;c++){
+        const ch=this.maze[r][c];
+        let cls='maze-cell ';let content='';
+        if(ch==='#'){cls+='maze-wall'}
+        else if(ch==='*'){cls+='maze-path maze-star';content='⭐'}
+        else if(ch==='G'){cls+='maze-gate';content='❓'}
+        else if(ch==='E'){cls+='maze-exit';content='🌀'}
+        else{cls+='maze-path'}
+        html+=`<div class="${cls}" data-r="${r}" data-c="${c}" style="width:${this.cellSize}px;height:${this.cellSize}px">${content}</div>`;
+      }
+    }
+    html+='</div>';
+
+    // Hero overlay
+    const hs=this.cellSize-4;
+    html+=`<div class="maze-hero" id="maze-hero" style="width:${hs}px;height:${hs}px;top:${this.heroPos.r*this.cellSize+2}px;left:${this.heroPos.c*this.cellSize+2}px">
+      <img src="${this.hero.image}" alt="${this.hero.name_he}" onerror="this.outerHTML='<span style=\\'font-size:1.2rem\\'>${this.hero.emoji}</span>'">
+    </div>`;
+
+    // Villain overlays
+    this.villains.forEach((v,i)=>{
+      const vs=this.cellSize-4;
+      html+=`<div class="maze-villain" id="maze-villain-${i}" style="width:${vs}px;height:${vs}px;top:${v.pos.r*this.cellSize+2}px;left:${v.pos.c*this.cellSize+2}px">
+        <img src="${v.hero.image}" alt="${v.hero.name_he}" onerror="this.outerHTML='<span style=\\'font-size:1rem\\'>${v.hero.emoji}</span>'">
+      </div>`;
+    });
+
+    container.innerHTML=html;
+  },
+
+  _updateUI(){
+    document.getElementById('maze-stars-count').textContent='⭐ '+this.stars+'/'+this.totalStars;
+    let livesStr='';for(let i=0;i<this.level.lives;i++) livesStr+=(i<this.lives?'❤️':'🖤');
+    document.getElementById('maze-lives').textContent=livesStr;
+  },
+
+  // ===== CONTROLS =====
+  _initControls(){
+    // D-pad buttons
+    document.querySelectorAll('.dpad-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>this._onDirection(btn.dataset.dir));
+    });
+    // Keyboard
+    this._keyHandler=(e)=>{
+      if(this.locked) return;
+      const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+      if(map[e.key]){e.preventDefault();this._onDirection(map[e.key])}
+    };
+    document.addEventListener('keydown',this._keyHandler);
+  },
+
+  _onDirection(dir){
+    if(this.locked||this.moving) return;
+    let nr=this.heroPos.r,nc=this.heroPos.c;
+    if(dir==='up') nr--;
+    else if(dir==='down') nr++;
+    else if(dir==='left') nc--;
+    else if(dir==='right') nc++;
+
+    if(nr<0||nr>=this.rows||nc<0||nc>=this.cols) return;
+    const cell=this.maze[nr][nc];
+    if(cell==='#') return; // wall
+    if(cell==='G'){this._hitGate(nr,nc);return} // gate
+
+    this.moving=true;
+    this.heroPos={r:nr,c:nc};
+    const heroEl=document.getElementById('maze-hero');
+    heroEl.style.top=(nr*this.cellSize+2)+'px';
+    heroEl.style.left=(nc*this.cellSize+2)+'px';
+    heroEl.classList.add('moving');
+    this._t(()=>heroEl.classList.remove('moving'),150);
+
+    this._t(()=>{
+      this.moving=false;
+      this._checkCell(nr,nc);
+    },160);
+  },
+
+  _checkCell(r,c){
+    const cell=this.maze[r][c];
+    if(cell==='*'){
+      // Collect star
+      this.maze[r][c]='.';
+      this.stars++;
+      const cellEl=document.querySelector(`.maze-cell[data-r="${r}"][data-c="${c}"]`);
+      if(cellEl){cellEl.classList.remove('maze-star');cellEl.textContent=''}
+      Sounds.powerUp();
+      const heroEl=document.getElementById('maze-hero');
+      if(heroEl){const rect=heroEl.getBoundingClientRect();
+        Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#FFD700',5)}
+      this._updateUI();
+    }else if(cell==='E'){
+      // Exit!
+      this.locked=true;
+      Sounds.celebration();
+      Particles.spawnConfetti(60);
+      this._t(()=>this._showResults(),800);
+      return;
+    }
+    // Check villain collision
+    this._checkVillainCollision();
+  },
+
+  // ===== GATES =====
+  _hitGate(r,c){
+    this.locked=true;
+    const popup=document.getElementById('maze-gate-popup');
+    popup.classList.add('active');
+    const q=this._generateGateQuestion();
+    this._gateQuestion=q;
+    this._gatePos={r,c};
+
+    const qEl=document.getElementById('maze-gate-question');
+    const aEl=document.getElementById('maze-gate-answers');
+
+    let qText='';
+    if(q.mode==='counting') qText='?כמה זה '+q.answer;
+    else if(q.mode==='comparison') qText='?מי גדול יותר: '+q.numA+' או '+q.numB;
+    else qText=q.a+' '+q.operation+' '+q.b+' = ?';
+
+    qEl.textContent=qText;
+    Speech.speak(qText.replace('?',''));
+
+    let options;
+    if(q.mode==='comparison') options=[q.numA,q.numB].sort(()=>Math.random()-0.5);
+    else options=[q.answer,...q.distractors.slice(0,2)].sort(()=>Math.random()-0.5);
+
+    aEl.innerHTML=options.map(o=>
+      `<button class="answer-btn" data-val="${o}" data-speak="${o}"
+        style="background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
+        border:4px solid #000;border-radius:16px;color:#fff;cursor:pointer;
+        box-shadow:4px 4px 0 #000;font-family:'Bangers',cursive">${o}</button>`).join('');
+
+    aEl.querySelectorAll('.answer-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const val=parseInt(btn.dataset.val);
+        this._handleGateAnswer(val,q.answer,r,c);
+      });
+    });
+  },
+
+  _generateGateQuestion(){
+    const skills=this.level.skills;
+    const skill=skills[Math.floor(Math.random()*skills.length)];
+    if(skill==='counting') return{...Adaptive.generateCounting(),mode:'counting'};
+    if(skill==='addition') return{...Adaptive.generateAddition(),mode:'addition'};
+    if(skill==='subtraction') return{...Adaptive.generateSubtraction(),mode:'subtraction'};
+    if(skill==='comparison') return{...Adaptive.generateComparison(),mode:'comparison'};
+    return{...Adaptive.generateCounting(),mode:'counting'};
+  },
+
+  _handleGateAnswer(chosen,correct,r,c){
+    const popup=document.getElementById('maze-gate-popup');
+    if(chosen===correct){
+      popup.classList.remove('active');
+      Sounds.powerUp();
+      // Open gate
+      this.maze[r][c]='.';
+      const cellEl=document.querySelector(`.maze-cell[data-r="${r}"][data-c="${c}"]`);
+      if(cellEl){cellEl.classList.remove('maze-gate');cellEl.textContent='';cellEl.classList.add('maze-path')}
+      Speech.speak('נפתח!');
+      this.locked=false;
+      // Move hero through the gate
+      this._t(()=>this._onDirection(
+        r<this.heroPos.r?'up':r>this.heroPos.r?'down':c<this.heroPos.c?'left':'right'),300);
+    }else{
+      popup.classList.remove('active');
+      Sounds.wrong();
+      Speech.speak('נסה שוב');
+      this.locked=false;
+    }
+  },
+
+  // ===== VILLAINS =====
+  _startVillainPatrol(){
+    this.villainInterval=setInterval(()=>{
+      if(this.locked) return;
+      this.villains.forEach((v,i)=>this._moveVillain(i));
+      this._checkVillainCollision();
+    },600);
+  },
+
+  _moveVillain(idx){
+    const v=this.villains[idx];
+    const dirs=['up','down','left','right'];
+    // Try current direction first, then random
+    const tryDirs=[v.dir,...dirs.filter(d=>d!==v.dir).sort(()=>Math.random()-0.5)];
+    for(const dir of tryDirs){
+      let nr=v.pos.r,nc=v.pos.c;
+      if(dir==='up') nr--;else if(dir==='down') nr++;
+      else if(dir==='left') nc--;else if(dir==='right') nc++;
+      if(nr>=0&&nr<this.rows&&nc>=0&&nc<this.cols&&this.maze[nr][nc]!=='#'&&this.maze[nr][nc]!=='G'){
+        v.pos={r:nr,c:nc};v.dir=dir;
+        const el=document.getElementById('maze-villain-'+idx);
+        if(el){el.style.top=(nr*this.cellSize+2)+'px';el.style.left=(nc*this.cellSize+2)+'px'}
+        return;
+      }
+    }
+    // Stuck — reverse
+    const revMap={up:'down',down:'up',left:'right',right:'left'};
+    v.dir=revMap[v.dir]||'right';
+  },
+
+  _checkVillainCollision(){
+    for(const v of this.villains){
+      if(v.pos.r===this.heroPos.r&&v.pos.c===this.heroPos.c){
+        this._loseLife();return;
+      }
+    }
+  },
+
+  _loseLife(){
+    this.lives--;
+    Sounds.wrong();
+    this._updateUI();
+    if(this.lives<=0){
+      this.locked=true;
+      this._t(()=>this._showResults(),500);
+      return;
+    }
+    // Respawn hero at start
+    Speech.speak('אוי! נסה שוב');
+    const startPos=this._findCell('S');
+    if(startPos) this.heroPos={...startPos};
+    const heroEl=document.getElementById('maze-hero');
+    if(heroEl){
+      heroEl.style.top=(this.heroPos.r*this.cellSize+2)+'px';
+      heroEl.style.left=(this.heroPos.c*this.cellSize+2)+'px';
+    }
+  },
+
+  _findCell(ch){
+    for(let r=0;r<this.rows;r++) for(let c=0;c<this.cols;c++)
+      if(this.level.maze[r][c]===ch) return{r,c};
+    return null;
+  },
+
+  // ===== RESULTS =====
+  _showResults(){
+    this.locked=true;
+    this.cleanup();
+    const pct=this.totalStars>0?this.stars/this.totalStars:0;
+    let stars=0;
+    if(this.lives>0&&pct>=0.9) stars=3;
+    else if(this.lives>0&&pct>=0.6) stars=2;
+    else if(this.lives>0&&pct>=0.3) stars=1;
+
+    this._saveLevelProgress(this.levelNum,stars);
+    if(stars>0) Adaptive.addStars(stars);
+
+    const resultsEl=document.getElementById('maze-results');
+    resultsEl.classList.add('active');
+
+    let title,emoji;
+    if(stars===3){title='!גיבור המבוך';emoji='🏆';Sounds.celebration();Particles.spawnConfetti(80)}
+    else if(stars===2){title='!מעולה';emoji='🌟';Sounds.celebration();Particles.spawnConfetti(40)}
+    else if(stars===1){title='!כל הכבוד';emoji='⭐';Sounds.powerUp()}
+    else if(this.lives<=0){title='!נגמרו החיים';emoji='💔';Sounds.wrong()}
+    else{title='!ניסיון טוב';emoji='💪';Sounds.correct()}
+
+    document.getElementById('maze-results-title').textContent=emoji+' '+title;
+    document.getElementById('maze-results-score').textContent='⭐ '+this.stars+' / '+this.totalStars;
+
+    let starsHtml='';
+    for(let i=0;i<3;i++){
+      starsHtml+=`<span class="star ${i<stars?'':'empty'}" style="animation-delay:${i*0.3}s">⭐</span>`;
+    }
+    document.getElementById('maze-results-stars').innerHTML=starsHtml;
+
+    const nextBtn=document.getElementById('maze-next');
+    nextBtn.style.display=(stars>0&&this.levelNum<MAZE_LEVELS.length)?'':'none';
+
+    this._t(()=>{
+      if(stars>=2) Speech.speak('מדהים! הצלחת לצאת מהמבוך');
+      else if(stars===1) Speech.speak('כל הכבוד! עברת את המבוך');
+      else if(this.lives<=0) Speech.speak('נגמרו החיים, נסה שוב');
+      else Speech.speak('ניסיון טוב');
+    },600);
+  },
+
+  // ===== INIT =====
+  init(){
+    document.getElementById('maze-back-menu').addEventListener('click',()=>Game.showMenu());
+    document.getElementById('maze-back-select').addEventListener('click',()=>this.showLevelSelect());
+    document.getElementById('maze-retry').addEventListener('click',()=>{
+      document.getElementById('maze-results').classList.remove('active');
+      this.startLevel(this.levelNum);
+    });
+    document.getElementById('maze-next').addEventListener('click',()=>{
+      document.getElementById('maze-results').classList.remove('active');
+      if(this.levelNum<MAZE_LEVELS.length) this.startLevel(this.levelNum+1);
+      else this.showLevelSelect();
+    });
+    document.getElementById('maze-to-menu').addEventListener('click',()=>{
+      document.getElementById('maze-results').classList.remove('active');
+      Game.showMenu();
+    });
+  }
+};
+
 // ===== INIT ON LOAD =====
 document.addEventListener('DOMContentLoaded',()=>{
   // Start Speech init eagerly (voice loading)
@@ -3267,6 +3996,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   Game.init();
   CrushGame.init();
+  MazeGame.init();
 });
 
 </script>
