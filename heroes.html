@@ -138,7 +138,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-memory{background:linear-gradient(135deg,#00897B,#004D40)}
 .mode-btn-order{background:linear-gradient(135deg,#C62828,#6A1B9A)}
 .mode-btn-readaloud{background:linear-gradient(135deg,#9C27B0,#E040FB)}
-.mode-btn:nth-child(9){grid-column:1/-1}
+/* 10 buttons → 5×2 grid, no special spanning needed */
 .mode-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
   background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,0.04) 4px,rgba(255,255,255,0.04) 6px);
   pointer-events:none}
@@ -479,6 +479,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   color:#222;-webkit-text-stroke:0.5px rgba(0,0,0,0.2);text-align:center;line-height:1.2;
   direction:ltr;unicode-bidi:bidi-override}
 .memory-card-face .card-text.card-answer{font-size:2rem;color:#E23636}
+.memory-card-face .card-text.card-symbols{font-size:1rem;line-height:1.3;word-break:break-all;letter-spacing:2px}
 .memory-card.matched .memory-card-face{border-color:#FFD700;
   box-shadow:0 0 15px rgba(255,215,0,0.5),4px 4px 0 #000}
 .memory-card.matched{pointer-events:none}
@@ -554,6 +555,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .team-xmen{background:linear-gradient(135deg,#F9A825,#E65100)}
 .team-villains{background:linear-gradient(135deg,#4A148C,#1a0033)}
 .team-cosmic{background:linear-gradient(135deg,#00695C,#004D40)}
+.team-fantastic4{background:linear-gradient(135deg,#1565C0,#0D47A1)}
 .team-marvel{background:linear-gradient(180deg,#E23636,#B71C1C)}
 
 /* Team complete glow */
@@ -702,7 +704,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 /* Crush Top Bar */
 .crush-top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;
-  padding:8px 12px;position:relative;z-index:2;max-width:480px}
+  padding:8px 12px;position:relative;z-index:2;max-width:min(95vw,78vh)}
 .crush-score-display{display:flex;flex-direction:column;align-items:center;gap:4px}
 .crush-score{font-family:'Bangers',cursive;font-size:1.6rem;color:#FFD700;
   -webkit-text-stroke:1px #000;letter-spacing:2px}
@@ -716,9 +718,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 /* Crush Grid */
 .crush-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:8px;
-  width:100%;max-width:420px;background:rgba(0,0,0,0.3);border-radius:16px;
+  width:100%;max-width:min(95vw,78vh);background:rgba(0,0,0,0.3);border-radius:16px;
   border:4px solid #000;box-shadow:6px 6px 0 rgba(0,0,0,0.4);position:relative;z-index:2;
-  touch-action:manipulation;direction:ltr}
+  touch-action:manipulation;direction:ltr;margin:0 auto}
 .crush-tile{aspect-ratio:1;border-radius:12px;border:3px solid #000;
   display:flex;align-items:center;justify-content:center;cursor:pointer;
   position:relative;overflow:hidden;box-shadow:2px 2px 0 rgba(0,0,0,0.4);
@@ -812,6 +814,56 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   .crush-select-title{font-size:1.8rem}
 }
 
+/* Settings / Reset buttons on menu */
+.menu-settings{display:flex;gap:10px;justify-content:center;align-items:center;padding:6px;position:relative;z-index:1}
+.menu-settings-btn{font-family:'Bangers',cursive;font-size:0.95rem;color:rgba(255,255,255,0.7);
+  border:2px solid rgba(255,255,255,0.2);border-radius:12px;padding:6px 14px;cursor:pointer;
+  background:rgba(255,255,255,0.06);touch-action:manipulation;letter-spacing:1px;
+  transition:all 0.2s;backdrop-filter:blur(4px)}
+.menu-settings-btn:hover{border-color:rgba(255,255,255,0.4);color:#fff;background:rgba(255,255,255,0.1)}
+.menu-settings-btn:active{transform:scale(0.94)}
+/* Reset confirm dialog */
+.reset-confirm{position:fixed;top:0;left:0;width:100%;height:100%;z-index:400;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(6px)}
+.reset-confirm.active{display:flex}
+.reset-confirm-box{background:linear-gradient(135deg,rgba(40,20,80,0.95),rgba(20,10,60,0.95));border:5px solid #000;
+  border-radius:24px;padding:24px;box-shadow:6px 6px 0 rgba(0,0,0,0.5);max-width:340px;width:90%;
+  display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;
+  animation:crushBubbleIn 0.3s ease}
+.reset-confirm-box h3{font-family:'Bangers',cursive;font-size:1.6rem;color:#FFD700;
+  -webkit-text-stroke:1px #000;letter-spacing:2px}
+.reset-confirm-box p{font-size:1rem;color:rgba(255,255,255,0.8);direction:rtl}
+.reset-confirm-btns{display:flex;gap:12px}
+.reset-confirm-btns button{font-family:'Bangers',cursive;font-size:1.1rem;color:#fff;
+  border:3px solid #000;border-radius:14px;padding:10px 20px;cursor:pointer;
+  box-shadow:3px 3px 0 #000;touch-action:manipulation;letter-spacing:1px}
+.reset-confirm-btns .confirm-yes{background:linear-gradient(135deg,#E23636,#B71C1C)}
+.reset-confirm-btns .confirm-no{background:linear-gradient(135deg,#43A047,#2E7D32)}
+
+/* ===== NUMBER LINE GAME ===== */
+.numberline-container{width:100%;max-width:500px;position:relative;z-index:2;padding:20px 10px;
+  background:rgba(0,0,0,0.3);border-radius:20px;border:4px solid rgba(255,255,255,0.15);direction:ltr}
+.numberline-svg{width:100%;height:120px;overflow:visible}
+.nl-tick{stroke:rgba(255,255,255,0.5);stroke-width:2}
+.nl-line{stroke:rgba(255,255,255,0.4);stroke-width:3;stroke-linecap:round}
+.nl-label{fill:rgba(255,255,255,0.7);font-family:'Russo One',sans-serif;font-size:14px;text-anchor:middle;
+  dominant-baseline:hanging}
+.nl-label.hidden{fill:transparent}
+.nl-target{stroke:#FFD700;stroke-width:3;fill:rgba(255,215,0,0.15);cursor:pointer;transition:all 0.2s}
+.nl-target:hover,.nl-target.active{fill:rgba(255,215,0,0.4);stroke-width:4}
+.nl-target.correct{fill:rgba(76,175,80,0.5);stroke:#4CAF50}
+.nl-target.wrong{fill:rgba(244,67,54,0.3);stroke:#F44336}
+.nl-hero-marker{transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+.nl-arrow{fill:#FFD700;opacity:0.8;animation:nlArrowPulse 1s ease-in-out infinite}
+@keyframes nlArrowPulse{0%,100%{opacity:0.6;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.nl-jump-path{stroke:#FFD700;stroke-width:2;fill:none;stroke-dasharray:6 4;opacity:0.5}
+.mode-btn-numberline{background:linear-gradient(135deg,#00BCD4,#006064)}
+
+/* Crush & Maze screens — fill viewport */
+#crush-screen{justify-content:center;gap:6px;padding:6px}
+#maze-screen{justify-content:center;gap:6px;padding:6px}
+
 /* Crush mode button */
 .mode-btn-crush{background:linear-gradient(135deg,#E040FB,#7B1FA2)}
 
@@ -824,14 +876,14 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .maze-levels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px;width:100%;max-width:420px}
 /* Maze Top Bar */
 .maze-top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;
-  padding:8px 12px;position:relative;z-index:2;max-width:480px}
+  padding:8px 12px;position:relative;z-index:2;max-width:min(95vw,68vh)}
 .maze-stars-count{font-family:'Bangers',cursive;font-size:1.4rem;color:#FFD700;
   -webkit-text-stroke:1px #000;letter-spacing:2px}
 .maze-lives{font-size:1.3rem;letter-spacing:2px}
 /* Maze Container */
-.maze-container{position:relative;width:100%;max-width:420px;aspect-ratio:1;
+.maze-container{position:relative;width:100%;max-width:min(95vw,68vh);aspect-ratio:1;
   background:rgba(0,0,0,0.4);border:4px solid #000;border-radius:12px;
-  box-shadow:6px 6px 0 rgba(0,0,0,0.4);overflow:hidden;direction:ltr}
+  box-shadow:6px 6px 0 rgba(0,0,0,0.4);overflow:hidden;direction:ltr;margin:0 auto}
 .maze-grid{display:grid;width:100%;height:100%;position:relative}
 .maze-cell{display:flex;align-items:center;justify-content:center;position:relative}
 .maze-wall{background:linear-gradient(135deg,#2D1B4E,#1A0E33);border:1px solid rgba(100,50,150,0.3)}
@@ -896,6 +948,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 <div id="menu-screen" class="screen active">
   <div class="ray-burst"></div>
   <img src="images/comics/spiderman-logo.png" alt="" style="position:absolute;top:8px;right:60px;width:50px;opacity:0.2;pointer-events:none;z-index:0">
+  <button class="menu-settings-btn" id="music-toggle" style="position:absolute;top:10px;right:60px;z-index:5;font-size:1.3rem;padding:6px 10px;border-radius:50%;width:40px;height:40px">🔊</button>
   <h1 class="menu-title" data-speak="גיבורי על">גיבורי על</h1>
   <p class="menu-subtitle" data-speak="מארוול מאת'">MARVEL MATH</p>
 
@@ -960,10 +1013,63 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
       <span class="mode-btn-icon">🏃</span>
       <span class="mode-btn-text"><span class="mode-btn-title">מבוך הגיבורים</span><span class="mode-btn-desc">נווט במבוך ואסוף כוכבים</span></span>
     </button>
+    <button class="mode-btn mode-btn-numberline" id="btn-numberline" data-speak="ציר המספרים, מצא את המספר על הציר">
+      <span class="mode-btn-icon">📏</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">ציר המספרים</span><span class="mode-btn-desc">מצא את המספר על הציר</span></span>
+    </button>
   </div>
 
   <div class="collection-row" id="collection-row"></div>
+
+  <div class="menu-settings">
+    <button class="menu-settings-btn" id="btn-level-down-menu" data-speak="הורד רמה">⬇️ הורד רמה</button>
+    <button class="menu-settings-btn" id="btn-reset-progress" data-speak="אפס התקדמות">🔄 אפס התקדמות</button>
+  </div>
+
   <div style="font-family:'Bangers',cursive;font-size:0.9rem;color:rgba(255,255,255,0.3);letter-spacing:2px;padding:10px 0;position:relative;z-index:1">MARVEL MATH HEROES</div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:4px 16px 16px;max-width:480px;direction:rtl">
+    <p style="font-size:0.75rem;color:rgba(255,255,255,0.35);font-family:sans-serif;line-height:1.5;margin:0">
+      קרדיט: המשחק נוצר ע"י יואל וגפן שילט בעזרת Claude Code
+    </p>
+    <details style="margin-top:4px">
+      <summary style="font-size:0.65rem;color:rgba(255,255,255,0.25);cursor:pointer;font-family:sans-serif">מקורות מדעיים וקרדיטים</summary>
+      <div style="font-size:0.6rem;color:rgba(255,255,255,0.2);font-family:sans-serif;line-height:1.6;text-align:right;margin-top:4px;direction:ltr">
+        <p style="direction:rtl;margin-bottom:4px">כל התמונות במשחק הן Free for personal & commercial use או Non-commercial use בלבד.</p>
+        <p>Clements, D.H., & Sarama, J. (2014). <i>Learning and teaching early math.</i> Routledge.</p>
+        <p>NCTM. (2000). <i>Principles and standards for school mathematics.</i></p>
+        <p>Moyer-Packenham, P.S., & Westenskow, A. (2013). Effects of virtual manipulatives. <i>IJVPLE, 4</i>(3).</p>
+      </div>
+    </details>
+    <a href="mailto:yoelziblatshay@gmail.com" style="font-size:0.65rem;color:rgba(255,255,255,0.3);text-decoration:none;font-family:sans-serif">
+      📧 יצירת קשר
+    </a>
+  </div>
+</div>
+
+<!-- Memory Mode Selection Popup -->
+<div id="memory-mode-select" class="reset-confirm">
+  <div class="reset-confirm-box" style="gap:12px">
+    <h3>בחר רמה</h3>
+    <button class="confirm-no" id="memory-mode-easy" style="width:100%;font-size:1.3rem;padding:14px">
+      ⭐ רמה קלה<br><span style="font-size:0.8rem;-webkit-text-stroke:0;font-family:sans-serif">התאם ספרה לכמות</span>
+    </button>
+    <button class="confirm-yes" id="memory-mode-medium" style="width:100%;font-size:1.3rem;padding:14px">
+      💪 רמה בינונית<br><span style="font-size:0.8rem;-webkit-text-stroke:0;font-family:sans-serif">התאם תרגיל לתשובה</span>
+    </button>
+  </div>
+</div>
+
+<!-- Reset Confirmation Dialog -->
+<div id="reset-confirm" class="reset-confirm">
+  <div class="reset-confirm-box">
+    <h3>?אפס התקדמות</h3>
+    <p>כל הכוכבים, הדמויות שנפתחו והרמות יימחקו. האם אתה בטוח?</p>
+    <div class="reset-confirm-btns">
+      <button class="confirm-yes" id="reset-confirm-yes">כן, אפס</button>
+      <button class="confirm-no" id="reset-confirm-no">לא, חזור</button>
+    </div>
+  </div>
 </div>
 
 <!-- ===== GAME SCREEN ===== -->
@@ -1173,7 +1279,19 @@ const HEROES_DATA = [
   {id:'wasp',name_he:'הצרעה',emoji:'🐝',color:'#F9A825',colorLight:'#FFF9C4',
    gradient:'linear-gradient(135deg,#FBC02D,#F57F17)',powerEmoji:'✨',powerName_he:'עקיצות',
    image:'images/heroes/wasp.png',
-   phrases:{correct:['!הצרעה מתרשמת','!עקיצה מושלמת','!קטנה אבל חזקה'],wrong:['!הצרעה אומרת נסי שוב','!כמעט'],intro:'הצרעה צריכה את עזרתך'}}
+   phrases:{correct:['!הצרעה מתרשמת','!עקיצה מושלמת','!קטנה אבל חזקה'],wrong:['!הצרעה אומרת נסי שוב','!כמעט'],intro:'הצרעה צריכה את עזרתך'}},
+  {id:'starlord',name_he:'סטארלורד',emoji:'🎧',color:'#D84315',colorLight:'#FFCCBC',
+   gradient:'linear-gradient(135deg,#D84315,#BF360C)',powerEmoji:'🔫',powerName_he:'אקדחים',
+   image:'images/heroes/starlord.png',
+   phrases:{correct:['!סטארלורד מרוצה','!מוזיקה מעולה','!ריקוד ניצחון'],wrong:['!סטארלורד אומר נסה שוב','!עוד פעם'],intro:'סטארלורד צריך את עזרתך'}},
+  {id:'gamora',name_he:'גמורה',emoji:'⚔️',color:'#2E7D32',colorLight:'#C8E6C9',
+   gradient:'linear-gradient(135deg,#388E3C,#1B5E20)',powerEmoji:'🗡️',powerName_he:'חרבות',
+   image:'images/heroes/gamora.png',
+   phrases:{correct:['!גמורה מתרשמת','!לוחמת מעולה','!חזקה'],wrong:['!גמורה אומרת נסי שוב','!כמעט'],intro:'גמורה צריכה את עזרתך'}},
+  {id:'groot',name_he:'גרוט',emoji:'🌳',color:'#795548',colorLight:'#D7CCC8',
+   gradient:'linear-gradient(135deg,#8D6E63,#4E342E)',powerEmoji:'🌿',powerName_he:'ענפים',
+   image:'images/heroes/groot.png',
+   phrases:{correct:['!אני גרוט','!גרוט שמח','!אני גרוט'],wrong:['!אני גרוט','!אני גרוט'],intro:'אני גרוט'}}
 ];
 
 const HEBREW_NUMBERS = {
@@ -1303,16 +1421,14 @@ const TEAMS_DATA = [
      <line x1="30" y1="10" x2="10" y2="30" stroke="#FFD700" stroke-width="3.5" stroke-linecap="round"/>
      <circle cx="20" cy="20" r="6" fill="none" stroke="#fff" stroke-width="1.5"/>
    </svg>`},
-  {id:'villains',name_he:'הנבלים',cssClass:'team-villains',
-   members:['thanos','venom','doom','juggernaut','octopus'],
+  {id:'fantastic4',name_he:'הארבעה המופלאים',cssClass:'team-fantastic4',
+   members:['thing'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-     <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#9C27B0" stroke-width="2.5"/>
-     <circle cx="14" cy="16" r="4" fill="#fff"/><circle cx="14" cy="16" r="2" fill="#000"/>
-     <circle cx="26" cy="16" r="4" fill="#fff"/><circle cx="26" cy="16" r="2" fill="#000"/>
-     <path d="M13 28 Q20 22 27 28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+     <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#1E88E5" stroke-width="2.5"/>
+     <text x="20" y="29" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="24" font-weight="900" fill="#1E88E5" stroke="#fff" stroke-width="0.5">4</text>
    </svg>`},
   {id:'cosmic',name_he:'שומרי הגלקסיה',cssClass:'team-cosmic',
-   members:['marvel','drax','thing'],
+   members:['starlord','gamora','groot','drax','marvel'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
      <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#00E5FF" stroke-width="2.5"/>
      <circle cx="20" cy="20" r="3" fill="#FFD700"/>
@@ -1320,6 +1436,14 @@ const TEAMS_DATA = [
      <ellipse cx="20" cy="20" rx="12" ry="5" fill="none" stroke="#00E5FF" stroke-width="1.5" transform="rotate(30 20 20)"/>
      <circle cx="12" cy="11" r="1.5" fill="#FFD700"/><circle cx="28" cy="13" r="1" fill="#FFD700"/>
      <circle cx="15" cy="30" r="1.2" fill="#FFD700"/><circle cx="30" cy="27" r="0.8" fill="#FFD700"/>
+   </svg>`},
+  {id:'villains',name_he:'הנבלים',cssClass:'team-villains',
+   members:['thanos','venom','doom','juggernaut','octopus'],
+   logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+     <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#9C27B0" stroke-width="2.5"/>
+     <circle cx="14" cy="16" r="4" fill="#fff"/><circle cx="14" cy="16" r="2" fill="#000"/>
+     <circle cx="26" cy="16" r="4" fill="#fff"/><circle cx="26" cy="16" r="2" fill="#000"/>
+     <path d="M13 28 Q20 22 27 28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
    </svg>`}
 ];
 
@@ -1694,6 +1818,23 @@ const Adaptive = {
     return pairs;
   },
 
+  // EASY MEMORY: digit → symbolic quantity
+  generateMemoryPairsEasy(count){
+    const pairs=[];const used=new Set();
+    const emojis=['🕷️','⭐','💥','🛡️','⚡','🔥','💎','🐾','🌟','🔨'];
+    for(let i=0;i<count;i++){
+      let num;let att=0;
+      do{num=1+Math.floor(Math.random()*9);att++}while(used.has(num)&&att<20);
+      used.add(num);
+      const emoji=emojis[Math.floor(Math.random()*emojis.length)];
+      const symbols=emoji.repeat(num);
+      pairs.push({equation:String(num),answer:num,
+        hebrewEq:HEBREW_NUMBERS[num]||String(num),hebrewAns:symbols,
+        isEasy:true,symbols});
+    }
+    return pairs;
+  },
+
   // ORDINALITY: generate lineup question
   generateOrdinalQuestion(){
     const lv=this.getLevel('ordinality');let lineupSize,askType;
@@ -1779,11 +1920,22 @@ const Game = {
     document.getElementById('btn-mission').addEventListener('click',()=>this.startMode('mission'));
     document.getElementById('btn-battle').addEventListener('click',()=>this.startMode('battle'));
     document.getElementById('btn-puzzle').addEventListener('click',()=>this.startMode('puzzle'));
-    document.getElementById('btn-memory').addEventListener('click',()=>this.startMode('memory'));
+    document.getElementById('btn-memory').addEventListener('click',()=>{
+      document.getElementById('memory-mode-select').classList.add('active');
+    });
+    document.getElementById('memory-mode-easy').addEventListener('click',()=>{
+      document.getElementById('memory-mode-select').classList.remove('active');
+      this.state.memoryMode='easy';this.startMode('memory');
+    });
+    document.getElementById('memory-mode-medium').addEventListener('click',()=>{
+      document.getElementById('memory-mode-select').classList.remove('active');
+      this.state.memoryMode='medium';this.startMode('memory');
+    });
     document.getElementById('btn-order').addEventListener('click',()=>this.startMode('order'));
     document.getElementById('btn-readaloud').addEventListener('click',()=>this.startMode('readaloud'));
     document.getElementById('btn-crush').addEventListener('click',()=>CrushGame.showLevelSelect());
     document.getElementById('btn-maze').addEventListener('click',()=>MazeGame.showLevelSelect());
+    document.getElementById('btn-numberline').addEventListener('click',()=>this.startMode('numberline'));
     document.getElementById('back-btn').addEventListener('click',()=>this.showMenu());
     document.getElementById('level-down-btn').addEventListener('click',()=>{
       const lowered=Adaptive.lowerAllLevels();
@@ -1816,6 +1968,8 @@ const Game = {
     document.getElementById('crush-math-popup').classList.remove('active');
     document.getElementById('maze-results').classList.remove('active');
     document.getElementById('maze-gate-popup').classList.remove('active');
+    document.getElementById('memory-mode-select').classList.remove('active');
+    document.getElementById('reset-confirm').classList.remove('active');
     this._showScreen('menu-screen');
     this._updateMenuStats();
     this._buildTeams();
@@ -1897,7 +2051,8 @@ const Game = {
     this.cleanup();this.currentMode=mode;this.currentHero=this._pickHero();this.roundStreak=0;
     this.state={questionIndex:0,score:0,questions:[],answered:false};
     const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים',
-      puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר',readaloud:'קריאת מספרים'};
+      puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר',readaloud:'קריאת מספרים',
+      numberline:'ציר המספרים'};
     Speech.speak(modeNames[mode]);
     Sounds.whoosh();
 
@@ -1910,6 +2065,20 @@ const Game = {
       this._t(()=>{this._doCountdown(()=>{
         this._t(()=>Speech.speak(this.currentHero.phrases.intro),200);
         this._t(()=>this._startMemory(),800);
+      })},300);
+      return;
+    }
+
+    if(mode==='numberline'){
+      // Number line mode has its own flow
+      this._showScreen('game-screen');
+      const gs=document.getElementById('game-screen');
+      gs.style.background=this.currentHero.gradient;
+      Decorations.addToScreen(gs,3);
+      this.state.nlRound=0;this.state.nlTotal=8;this.state.nlScore=0;
+      this._t(()=>{this._doCountdown(()=>{
+        this._t(()=>Speech.speak(this.currentHero.phrases.intro),200);
+        this._t(()=>this._showNumberLine(),800);
       })},300);
       return;
     }
@@ -2476,6 +2645,128 @@ const Game = {
     },500);
   },
 
+  // ===== NUMBER LINE MODE =====
+  _showNumberLine(){
+    if(this.state.nlRound>=this.state.nlTotal){
+      this.state.score=this.state.nlScore;
+      this.state.questions=new Array(this.state.nlTotal);this.state.questionIndex=this.state.nlTotal;
+      this._showResults();return;
+    }
+    const hero=this.currentHero;
+    const heroArea=document.getElementById('hero-area');
+    heroArea.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}" data-speak="${hero.name_he}"
+      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:5rem\\'>${hero.emoji}</span>')">`;
+    heroArea.className='hero-area';
+    document.getElementById('progress-text').textContent=`${this.state.nlRound+1}/${this.state.nlTotal}`;
+    const aArea=document.getElementById('answers-area');aArea.innerHTML='';
+    const qArea=document.getElementById('question-area');
+
+    const lv=Adaptive.getLevel('counting');
+    const maxNum=lv<=2?10:lv<=3?15:20;
+    const qType=['find','jump','between'][Math.floor(Math.random()*3)];
+    let target,prompt,startPos=null,jumpAmount=null;
+
+    if(qType==='find'){
+      target=1+Math.floor(Math.random()*(maxNum-1));
+      prompt=`?איפה ${HEBREW_NUMBERS[target]||target} על הציר`;
+    }else if(qType==='jump'){
+      jumpAmount=1+Math.floor(Math.random()*Math.min(4,lv+1));
+      const dir=Math.random()<0.7?'forward':'backward';
+      if(dir==='forward'){
+        startPos=1+Math.floor(Math.random()*(maxNum-jumpAmount-1));
+        target=startPos+jumpAmount;
+        prompt=`${HEBREW_NUMBERS[startPos]||startPos} ועוד ${HEBREW_NUMBERS[jumpAmount]||jumpAmount} = ?`;
+      }else{
+        startPos=jumpAmount+1+Math.floor(Math.random()*(maxNum-jumpAmount-1));
+        target=startPos-jumpAmount;
+        prompt=`${HEBREW_NUMBERS[startPos]||startPos} פחות ${HEBREW_NUMBERS[jumpAmount]||jumpAmount} = ?`;
+      }
+    }else{
+      const a=1+Math.floor(Math.random()*(maxNum-2));
+      const b=a+2;target=a+1;
+      prompt=`?מי נמצא בין ${HEBREW_NUMBERS[a]||a} ל-${HEBREW_NUMBERS[b]||b}`;
+    }
+
+    this.state.nlTarget=target;this.state.nlAnswered=false;
+
+    // Build SVG number line
+    const padL=30,padR=30,w=460,h=120;
+    const tickW=(w-padL-padR)/maxNum;
+    let svg=`<div class="numberline-container"><svg class="numberline-svg" viewBox="0 0 ${w} ${h}">`;
+    // Main line
+    svg+=`<line class="nl-line" x1="${padL}" y1="60" x2="${w-padR}" y2="60"/>`;
+
+    // Ticks and labels
+    for(let i=0;i<=maxNum;i++){
+      const x=padL+i*tickW;
+      const isBig=i%5===0;
+      svg+=`<line class="nl-tick" x1="${x}" y1="${isBig?45:50}" x2="${x}" y2="${isBig?75:70}"/>`;
+      // Show label except for target (hide it)
+      const showLabel=i!==target||(qType==='jump');
+      if(isBig||showLabel){
+        svg+=`<text class="nl-label ${i===target&&qType==='find'?'hidden':''}" x="${x}" y="82">${i}</text>`;
+      }
+    }
+
+    // Start position marker for jump mode
+    if(startPos!==null){
+      const sx=padL+startPos*tickW;
+      svg+=`<circle cx="${sx}" cy="60" r="8" fill="${hero.color}" stroke="#FFD700" stroke-width="2"/>`;
+      svg+=`<text x="${sx}" y="35" text-anchor="middle" font-family="Bangers" font-size="12" fill="#FFD700">${hero.emoji}</text>`;
+    }
+
+    // Tappable targets
+    for(let i=0;i<=maxNum;i++){
+      const x=padL+i*tickW;
+      svg+=`<circle class="nl-target" data-num="${i}" cx="${x}" cy="60" r="14" opacity="0"/>`;
+    }
+
+    svg+=`</svg></div>`;
+    qArea.innerHTML=`<div class="speech-bubble"><p class="prompt-text" data-speak="${prompt.replace('?','')}">${prompt}</p></div>${svg}`;
+
+    Speech.speak(prompt.replace('?',''));
+
+    // Make number line tappable
+    qArea.querySelectorAll('.nl-target').forEach(el=>{
+      el.style.opacity='0';el.style.cursor='pointer';
+      el.addEventListener('mouseenter',()=>{if(!this.state.nlAnswered) el.style.opacity='0.3'});
+      el.addEventListener('mouseleave',()=>{if(!this.state.nlAnswered) el.style.opacity='0'});
+      el.addEventListener('click',()=>{
+        if(this.state.nlAnswered) return;
+        const num=parseInt(el.dataset.num);
+        this._handleNumberLineAnswer(num,el);
+      });
+    });
+  },
+
+  _handleNumberLineAnswer(num,el){
+    if(this.state.nlAnswered) return;
+    this.state.nlAnswered=true;
+    const target=this.state.nlTarget;
+
+    if(num===target){
+      el.classList.add('correct');el.style.opacity='1';
+      this.state.nlScore++;this.state.nlRound++;
+      Sounds.powerUp();
+      const praise=HERO_PRAISE[Math.floor(Math.random()*HERO_PRAISE.length)];
+      Speech.speak(praise.replace('!',''));
+      const rect=el.closest('.numberline-container').getBoundingClientRect();
+      Particles.spawnStars(rect.left+rect.width*((num/20)),rect.top+rect.height/2,'#FFD700',8);
+      this._showActionWord();
+      Adaptive.recordCorrect('counting');
+      this._t(()=>this._showNumberLine(),1200);
+    }else{
+      el.classList.add('wrong');el.style.opacity='0.5';
+      Sounds.wrong();Speech.speak(HERO_ENCOURAGE[Math.floor(Math.random()*HERO_ENCOURAGE.length)].replace('!',''));
+      Adaptive.recordWrong('counting');
+      // Show correct answer
+      const correctEl=document.querySelector(`.nl-target[data-num="${target}"]`);
+      if(correctEl){correctEl.classList.add('correct');correctEl.style.opacity='1'}
+      this.state.nlRound++;
+      this._t(()=>this._showNumberLine(),1800);
+    }
+  },
+
   // ===== PUZZLE MODE =====
   _showPuzzleQuestion(q,qArea,aArea){
     const hero=this.currentHero;
@@ -2528,11 +2819,17 @@ const Game = {
   // ===== MEMORY CARD GAME =====
   _startMemory(){
     const hero=this.currentHero;
-    const pairs=Adaptive.generateMemoryPairs(6);
+    const isEasy=this.state.memoryMode==='easy';
+    const pairs=isEasy?Adaptive.generateMemoryPairsEasy(6):Adaptive.generateMemoryPairs(6);
     const cards=[];
     pairs.forEach((p,i)=>{
-      cards.push({id:i,type:'equation',text:p.equation,pairId:i,speak:p.hebrewEq});
-      cards.push({id:i,type:'answer',text:String(p.answer),pairId:i,speak:p.hebrewAns});
+      if(isEasy){
+        cards.push({id:i,type:'equation',text:p.equation,pairId:i,speak:p.hebrewEq});
+        cards.push({id:i,type:'answer',text:p.symbols,pairId:i,speak:HEBREW_NUMBERS[p.answer]||String(p.answer)});
+      }else{
+        cards.push({id:i,type:'equation',text:p.equation,pairId:i,speak:p.hebrewEq});
+        cards.push({id:i,type:'answer',text:String(p.answer),pairId:i,speak:p.hebrewAns});
+      }
     });
     // Shuffle
     for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]]}
@@ -2545,20 +2842,22 @@ const Game = {
     heroArea.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}" data-speak="${hero.name_he}"
       onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:5rem\\'>${hero.emoji}</span>')">`;
     heroArea.className='hero-area';
-    document.getElementById('progress-text').textContent='התאם תרגיל לתשובה';
-    document.getElementById('progress-text').dataset.speak='התאם תרגיל לתשובה';
+    const titleText=isEasy?'התאם ספרה לכמות':'התאם תרגיל לתשובה';
+    document.getElementById('progress-text').textContent=titleText;
+    document.getElementById('progress-text').dataset.speak=titleText;
     let html=`<div class="memory-attempts" data-speak="ניסיונות" id="memory-attempts">ניסיונות: 0</div>
       <div class="memory-grid pairs-6">`;
     cards.forEach((c,idx)=>{
+      const isSymbols=isEasy&&c.type==='answer';
       html+=`<div class="memory-card" data-idx="${idx}" data-speak="${c.speak}">
         <div class="memory-card-inner">
           <div class="memory-card-back"></div>
-          <div class="memory-card-face"><span class="card-text ${c.type==='answer'?'card-answer':''}">${c.text}</span></div>
+          <div class="memory-card-face"><span class="card-text ${c.type==='answer'?'card-answer':''} ${isSymbols?'card-symbols':''}">${c.text}</span></div>
         </div></div>`;
     });
     html+='</div>';
     qArea.innerHTML=html;
-    this._t(()=>Speech.speak('התאם כל תרגיל לתשובה שלו'),300);
+    this._t(()=>Speech.speak(isEasy?'התאם כל ספרה לכמות שלה':'התאם כל תרגיל לתשובה שלו'),300);
     qArea.querySelectorAll('.memory-card').forEach(card=>{
       card.addEventListener('click',()=>this._handleMemoryFlip(parseInt(card.dataset.idx)))});
   },
@@ -2819,6 +3118,7 @@ const CrushGame = {
     this.level=CRUSH_LEVELS[n-1];
     this.score=0;this.moves=this.level.moves;this.chain=0;
     this.selected=null;this.locked=false;this.mathPending=null;
+    this.mathStreak=0;this.movesSinceBonus=0;
 
     // Pick random heroes for this level
     const shuffled=[...HEROES_DATA].sort(()=>Math.random()-0.5);
@@ -3119,9 +3419,16 @@ const CrushGame = {
     const popup=document.getElementById('crush-math-popup');
 
     if(chosen===correct){
-      // Correct!
+      // Correct! — positive reinforcement
+      this.mathStreak++;
+      this.score+=20; // bonus for correct math
       popup.classList.remove('active');
       Sounds.powerUp();
+
+      // Show praise overlay
+      const praise=HERO_PRAISE[Math.floor(Math.random()*HERO_PRAISE.length)];
+      this._showCrushPraise(praise);
+
       this.moves--;
       const matches=this.mathPending.matches;
       this._scoreMatches(matches);
@@ -3133,6 +3440,11 @@ const CrushGame = {
       const skill=mode==='comparison'?'comparison':mode==='subtraction'?'subtraction':
         mode==='addition'?'addition':'counting';
       Adaptive.recordCorrect(skill);
+
+      // Streak bonus: every 3 correct answers, spawn a free power-up
+      if(this.mathStreak%3===0){
+        this._t(()=>this._spawnBonusPowerUp(),500);
+      }
 
       // Gravity + cascade
       this._t(async()=>{
@@ -3146,6 +3458,7 @@ const CrushGame = {
       // Wrong — reverse swap, no move lost
       popup.classList.remove('active');
       Sounds.wrong();
+      this.mathStreak=0;
       const p=this.mathPending;
       const tmp=this.grid[p.from.r][p.from.c];
       this.grid[p.from.r][p.from.c]=this.grid[p.to.r][p.to.c];
@@ -3159,6 +3472,38 @@ const CrushGame = {
       this.locked=false;
     }
     this.mathPending=null;
+  },
+
+  _showCrushPraise(text){
+    const el=document.createElement('div');
+    el.textContent=text+(this.mathStreak>1?' 🔥×'+this.mathStreak:'');
+    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:260;'+
+      'font-family:Bangers,cursive;font-size:2.5rem;color:#FFD700;-webkit-text-stroke:2px #000;'+
+      'paint-order:stroke fill;text-shadow:0 0 20px rgba(255,215,0,0.8);pointer-events:none;'+
+      'animation:streakPop 1.2s ease forwards;white-space:nowrap';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1300);
+  },
+
+  _spawnBonusPowerUp(){
+    // Find a random non-empty, non-powered tile and give it a power-up
+    const candidates=[];
+    for(let r=0;r<this.ROWS;r++) for(let c=0;c<this.COLS;c++){
+      if(this.grid[r][c].heroIdx>=0&&!this.grid[r][c].power) candidates.push({r,c});
+    }
+    if(candidates.length===0) return;
+    const pick=candidates[Math.floor(Math.random()*candidates.length)];
+    const powers=['striped_h','striped_v','wrapped'];
+    this.grid[pick.r][pick.c].power=powers[Math.floor(Math.random()*powers.length)];
+    this.score+=50;
+    this._renderGrid();
+    this._updateUI();
+    const el=this._getTileEl(pick.r,pick.c);
+    if(el){el.style.animation='crushSpawn 0.4s ease';
+      const rect=el.getBoundingClientRect();
+      Particles.spawnStars(rect.left+rect.width/2,rect.top+rect.height/2,'#00E5FF',8);
+    }
+    Speech.speak('בונוס! כוח מיוחד');
   },
 
   // ===== MATCH EXECUTION =====
@@ -3975,15 +4320,75 @@ const MazeGame = {
   }
 };
 
+// ===== MUSIC =====
+const Music = {
+  ctx:null, muted:false, playing:false,
+  init(){
+    try{this.muted=localStorage.getItem('marvelMusicMuted')==='true'}catch(e){}
+    const btn=document.getElementById('music-toggle');
+    if(btn){btn.textContent=this.muted?'🔇':'🔊';
+      btn.addEventListener('click',()=>{this.muted=!this.muted;btn.textContent=this.muted?'🔇':'🔊';
+        try{localStorage.setItem('marvelMusicMuted',this.muted)}catch(e){}
+        if(this.muted) this.stop(); else this.playFanfare()})}
+  },
+  playFanfare(){
+    if(this.muted||this.playing) return;
+    try{
+      this.ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const c=this.ctx;this.playing=true;
+      // Heroic Marvel-like fanfare: brass chord arpeggio
+      const notes=[
+        {f:261.6,t:0,d:0.3},    // C4
+        {f:329.6,t:0.15,d:0.3}, // E4
+        {f:392.0,t:0.3,d:0.4},  // G4
+        {f:523.3,t:0.5,d:0.6},  // C5
+        {f:659.3,t:0.7,d:0.5},  // E5
+        {f:784.0,t:0.9,d:0.8},  // G5
+        {f:1046.5,t:1.2,d:1.0}, // C6 (big finish)
+        // Power chord sustain
+        {f:523.3,t:1.2,d:1.0},  // C5
+        {f:392.0,t:1.2,d:1.0},  // G4
+      ];
+      notes.forEach(n=>{
+        const o=c.createOscillator();const g=c.createGain();const f=c.createBiquadFilter();
+        o.type='sawtooth';o.frequency.value=n.f;
+        f.type='lowpass';f.frequency.value=2000;f.Q.value=1;
+        g.gain.setValueAtTime(0,c.currentTime+n.t);
+        g.gain.linearRampToValueAtTime(0.08,c.currentTime+n.t+0.05);
+        g.gain.setValueAtTime(0.08,c.currentTime+n.t+n.d*0.6);
+        g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+n.t+n.d);
+        o.connect(f);f.connect(g);g.connect(c.destination);
+        o.start(c.currentTime+n.t);o.stop(c.currentTime+n.t+n.d+0.1);
+      });
+      // Timpani drum hits
+      [0,0.5,1.2].forEach(t=>{
+        const o=c.createOscillator();const g=c.createGain();
+        o.type='sine';o.frequency.setValueAtTime(80,c.currentTime+t);
+        o.frequency.exponentialRampToValueAtTime(40,c.currentTime+t+0.3);
+        g.gain.setValueAtTime(0.15,c.currentTime+t);
+        g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+t+0.4);
+        o.connect(g);g.connect(c.destination);
+        o.start(c.currentTime+t);o.stop(c.currentTime+t+0.5);
+      });
+      setTimeout(()=>{this.playing=false},3000);
+    }catch(e){this.playing=false}
+  },
+  stop(){
+    if(this.ctx){try{this.ctx.close()}catch(e){}this.ctx=null;this.playing=false}
+  }
+};
+
 // ===== INIT ON LOAD =====
 document.addEventListener('DOMContentLoaded',()=>{
   // Start Speech init eagerly (voice loading)
   Speech.init();
   SpeechRecognizer.init();
   let inited=false;
+  Music.init();
   const initOnce=()=>{
     if(inited) return;inited=true;
     Sounds.init();
+    Music.playFanfare();
     document.removeEventListener('click',initOnce);
     document.removeEventListener('touchstart',initOnce);
   };
@@ -3997,6 +4402,32 @@ document.addEventListener('DOMContentLoaded',()=>{
   Game.init();
   CrushGame.init();
   MazeGame.init();
+
+  // Menu-level level-down button
+  document.getElementById('btn-level-down-menu').addEventListener('click',()=>{
+    const lowered=Adaptive.lowerAllLevels();
+    const btn=document.getElementById('btn-level-down-menu');
+    if(lowered){Speech.speak('הרמה ירדה');btn.textContent='✅ הרמה ירדה';
+      setTimeout(()=>{btn.textContent='⬇️ הורד רמה'},1500)}
+    else{Speech.speak('כבר ברמה הנמוכה');btn.textContent='כבר ברמה 1';
+      setTimeout(()=>{btn.textContent='⬇️ הורד רמה'},1500)}
+  });
+
+  // Reset progress
+  document.getElementById('btn-reset-progress').addEventListener('click',()=>{
+    document.getElementById('reset-confirm').classList.add('active');
+  });
+  document.getElementById('reset-confirm-no').addEventListener('click',()=>{
+    document.getElementById('reset-confirm').classList.remove('active');
+  });
+  document.getElementById('reset-confirm-yes').addEventListener('click',()=>{
+    localStorage.removeItem('gefen_heroes_standalone_adaptive');
+    localStorage.removeItem('crushProgress');
+    localStorage.removeItem('mazeProgress');
+    localStorage.removeItem('marvelMusicMuted');
+    document.getElementById('reset-confirm').classList.remove('active');
+    location.reload();
+  });
 });
 
 </script>
