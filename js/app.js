@@ -13,6 +13,7 @@ const App = {
     OddOneOut.init();
     CarParts.init();
     Puzzle.init();
+    HeroMath.init();
 
     // Bind menu buttons
     document.querySelectorAll('[data-screen]').forEach(btn => {
@@ -48,6 +49,7 @@ const App = {
     });
     document.getElementById('reset-progress').addEventListener('click', () => {
       Storage.resetAll();
+      HeroMathAdaptive.reset();
       document.getElementById('settings-modal').style.display = 'none';
       Speech.speak('כל ההתקדמות אופסה');
     });
@@ -114,6 +116,7 @@ const App = {
     Matching.cleanup();
     CarParts.cleanup();
     Puzzle.cleanup();
+    HeroMath.cleanup();
 
     // Hide all screens
     document.querySelectorAll('.screen').forEach(screen => {
@@ -150,6 +153,9 @@ const App = {
           break;
         case 'screen-puzzle':
           Puzzle.show();
+          break;
+        case 'screen-hero-math':
+          HeroMath.show();
           break;
       }
     }
