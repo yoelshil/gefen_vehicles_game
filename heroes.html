@@ -1842,19 +1842,19 @@ const Adaptive = {
     return pairs;
   },
 
-  // EASY MEMORY: digit → symbolic quantity
+  // EASY MEMORY: digit → symbolic quantity (dots/objects)
   generateMemoryPairsEasy(count){
     const pairs=[];const used=new Set();
-    const emojis=['🕷️','⭐','💥','🛡️','⚡','🔥','💎','🐾','🌟','🔨'];
+    const symbols=['●','◆','★','■','▲','♦'];
     for(let i=0;i<count;i++){
       let num;let att=0;
-      do{num=1+Math.floor(Math.random()*9);att++}while(used.has(num)&&att<20);
+      do{num=1+Math.floor(Math.random()*7);att++}while(used.has(num)&&att<20);
       used.add(num);
-      const emoji=emojis[Math.floor(Math.random()*emojis.length)];
-      const symbols=emoji.repeat(num);
+      const sym=symbols[i%symbols.length];
+      const dots=Array(num).fill(sym).join(' ');
       pairs.push({equation:String(num),answer:num,
-        hebrewEq:HEBREW_NUMBERS[num]||String(num),hebrewAns:symbols,
-        isEasy:true,symbols});
+        hebrewEq:HEBREW_NUMBERS[num]||String(num),hebrewAns:dots,
+        isEasy:true,symbols:dots});
     }
     return pairs;
   },
@@ -2073,7 +2073,9 @@ const Game = {
   // ===== START MODE =====
   startMode(mode){
     this.cleanup();this.currentMode=mode;this.currentHero=this._pickHero();this.roundStreak=0;
+    const savedMemoryMode=this.state&&this.state.memoryMode;
     this.state={questionIndex:0,score:0,questions:[],answered:false};
+    if(savedMemoryMode) this.state.memoryMode=savedMemoryMode;
     const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים',
       puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר',readaloud:'קריאת מספרים',
       numberline:'ציר המספרים'};
