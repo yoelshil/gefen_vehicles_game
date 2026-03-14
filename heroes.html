@@ -100,7 +100,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 @keyframes rayRotate{0%{transform:translate(-50%,-50%) rotate(0deg)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
 
 /* ===== MENU SCREEN ===== */
-#menu-screen{padding:10px 16px;gap:8px;position:relative}
+#menu-screen{padding:10px 16px;gap:10px;position:relative}
 
 .menu-title{font-family:'Bangers',cursive;font-size:4rem;text-align:center;margin-top:8px;
   color:#FFD700;-webkit-text-stroke:4px #000;paint-order:stroke fill;
@@ -119,7 +119,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   box-shadow:4px 4px 0 #000,inset 0 0 10px rgba(255,215,0,0.15);letter-spacing:2px;position:relative;z-index:1}
 
 /* Mode Buttons - Comic Style */
-.mode-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:480px;padding:0 12px;
+.mode-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:500px;padding:0 12px;
   position:relative;z-index:1}
 .mode-btn{display:flex;align-items:center;gap:10px;padding:14px 14px;border:5px solid #000;border-radius:16px;
   cursor:pointer;touch-action:manipulation;font-size:1.2rem;font-weight:800;color:#fff;
@@ -148,16 +148,15 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 @keyframes btnShine{0%,100%{left:-100%}50%{left:120%}}
 
 /* Hero Collection */
-.collection-row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;align-items:center;padding:4px 8px;
+.collection-row{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;padding:6px 10px;
   max-width:min(98vw,960px);width:100%;position:relative;z-index:1}
-.collection-badge{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  border:2px solid #000;box-shadow:2px 2px 0 rgba(0,0,0,0.5);transition:transform 0.2s;position:relative}
-.collection-badge.unlocked{animation:badgePulse 3s ease-in-out infinite}
-.collection-badge.locked{filter:grayscale(0.8);opacity:0.45}
-.collection-badge.locked::after{content:'🔒';position:absolute;font-size:0.6rem;
-  bottom:-2px;right:-2px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8))}
-.collection-badge img{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center top}
-@keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.collection-badge{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:2.5px solid #000;box-shadow:2px 2px 0 rgba(0,0,0,0.5);transition:transform 0.2s;position:relative}
+.collection-badge.unlocked{box-shadow:2px 2px 0 rgba(0,0,0,0.5),0 0 8px rgba(255,215,0,0.2)}
+.collection-badge.locked{filter:grayscale(0.8);opacity:0.35}
+.collection-badge.locked::after{content:'';position:absolute;width:100%;height:100%;border-radius:50%;
+  background:rgba(0,0,0,0.3)}
+.collection-badge img{width:38px;height:38px;border-radius:50%;object-fit:cover;object-position:center top}
 
 /* ===== GAME SCREEN ===== */
 .game-screen{padding:8px 12px;gap:6px;position:relative}
@@ -187,14 +186,14 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .power-meter{display:flex;align-items:center;gap:0;padding:6px 16px;position:relative;z-index:2;width:100%;max-width:420px;direction:ltr}
 .power-line{flex:1;height:6px;border-radius:3px;position:relative;background:rgba(255,255,255,0.15);margin:0 12px}
 .power-line-fill{height:100%;border-radius:3px;transition:width 0.6s ease;position:absolute;top:0;left:0}
-.power-node{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);
-  background:rgba(255,255,255,0.08);position:absolute;top:50%;transform:translate(-50%,-50%);z-index:1;
-  font-size:0.6rem;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);
+.power-node{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);
+  background:rgba(255,255,255,0.1);position:absolute;top:50%;transform:translate(-50%,-50%);z-index:1;
+  font-size:0.6rem;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.55);
   font-family:'Russo One',sans-serif;transition:all 0.4s ease}
 .power-node.filled{color:#000;box-shadow:0 0 8px rgba(255,215,0,0.5);animation:nodeFill 0.5s ease}
 @keyframes nodeFill{0%{transform:translate(-50%,-50%) scale(0.5)}50%{transform:translate(-50%,-50%) scale(1.3)}100%{transform:translate(-50%,-50%) scale(1)}}
-.power-hero-marker{position:absolute;top:-20px;font-size:1.3rem;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1);
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));z-index:2}
+.power-hero-marker{position:absolute;top:-18px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));z-index:2;transform:translateX(-50%)}
 .power-goal{font-size:1.1rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
 .power-start{font-size:0.9rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
 
@@ -244,8 +243,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   border:3px dashed rgba(255,215,0,0.3);padding:12px}
 /* Concrete→Abstract progression */
 .count-items.abstract .count-item{font-size:2rem;opacity:0.85}
-.digit-hint{font-family:'Russo One',sans-serif;font-size:1.2rem;color:rgba(255,215,0,0.5);text-align:center;margin-top:6px;
-  letter-spacing:2px}
+.digit-hint{font-family:'Russo One',sans-serif;font-size:1.2rem;color:rgba(255,215,0,0.7);text-align:center;margin-top:6px;
+  letter-spacing:2px;text-shadow:0 0 8px rgba(255,215,0,0.3)}
 .count-item{font-size:2.6rem;animation:itemBounceIn 0.4s ease both;
   filter:drop-shadow(0 3px 8px rgba(0,0,0,0.5))}
 @keyframes itemBounceIn{0%{transform:scale(0) rotate(-180deg);opacity:0}
@@ -526,7 +525,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .teams-grid::-webkit-scrollbar{display:none}
 .team-card{position:relative;border:4px solid #000;border-radius:14px;overflow:hidden;
   box-shadow:4px 4px 0 rgba(0,0,0,0.5);
-  min-height:125px;min-width:150px;flex-shrink:0;display:flex;flex-direction:column;scroll-snap-align:start}
+  min-height:120px;min-width:140px;flex-shrink:0;display:flex;flex-direction:column;scroll-snap-align:start;
+  transition:transform 0.2s}
 
 /* Team card header with inline SVG logo */
 .team-card-header{display:flex;align-items:center;justify-content:center;gap:8px;
@@ -842,23 +842,32 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .reset-confirm-btns .confirm-no{background:linear-gradient(135deg,#43A047,#2E7D32)}
 
 /* ===== NUMBER LINE GAME ===== */
-.numberline-container{width:100%;max-width:min(95vw,500px);position:relative;z-index:2;padding:20px 10px;
-  background:rgba(0,0,0,0.3);border-radius:20px;border:4px solid rgba(255,255,255,0.15);direction:ltr}
+.numberline-container{width:100%;max-width:min(95vw,560px);position:relative;z-index:2;padding:24px 12px 20px;
+  background:linear-gradient(180deg,rgba(0,0,40,0.5),rgba(0,0,20,0.6));border-radius:20px;
+  border:4px solid rgba(255,215,0,0.2);direction:ltr;
+  box-shadow:0 4px 20px rgba(0,0,0,0.3),inset 0 0 30px rgba(255,215,0,0.03)}
 .numberline-svg{width:100%;height:180px;overflow:visible}
 .nl-tick{stroke:rgba(255,255,255,0.5);stroke-width:2}
-.nl-tick.major{stroke:rgba(255,255,255,0.8);stroke-width:3}
-.nl-line{stroke-width:4;stroke-linecap:round}
-.nl-label{fill:rgba(255,255,255,0.8);font-family:'Russo One',sans-serif;font-size:13px;text-anchor:middle;
-  dominant-baseline:hanging}
+.nl-tick.major{stroke:rgba(255,255,255,0.9);stroke-width:3}
+.nl-line{stroke-width:5;stroke-linecap:round}
+.nl-label{fill:rgba(255,255,255,0.9);font-family:'Russo One',sans-serif;font-size:14px;text-anchor:middle;
+  dominant-baseline:hanging;font-weight:700}
 .nl-label.hidden{fill:transparent}
 .nl-target{stroke:#FFD700;stroke-width:2;fill:rgba(255,215,0,0.12);cursor:pointer;transition:all 0.2s}
-.nl-target:hover,.nl-target.active{fill:rgba(255,215,0,0.4);stroke-width:3;r:16}
-.nl-target.correct{fill:rgba(76,175,80,0.5);stroke:#4CAF50;stroke-width:3}
-.nl-target.wrong{fill:rgba(244,67,54,0.3);stroke:#F44336;animation:shake 0.5s ease}
+.nl-target:hover,.nl-target.active{fill:rgba(255,215,0,0.45);stroke-width:3;r:18}
+.nl-target.correct{fill:rgba(76,175,80,0.6);stroke:#4CAF50;stroke-width:3;r:18}
+.nl-target.wrong{fill:rgba(244,67,54,0.4);stroke:#F44336;stroke-width:3;animation:shake 0.5s ease}
 .nl-hero-marker{transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1)}
 .nl-arrow{fill:#FFD700;opacity:0.8;animation:nlArrowPulse 1s ease-in-out infinite}
 @keyframes nlArrowPulse{0%,100%{opacity:0.6;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
 .nl-jump-path{stroke:#FFD700;stroke-width:2;fill:none;stroke-dasharray:6 4;opacity:0.5}
+.nl-progress{display:flex;gap:6px;justify-content:center;padding:8px 0 4px}
+.nl-progress-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.1);transition:all 0.3s}
+.nl-progress-dot.correct{background:#4CAF50;border-color:#4CAF50;box-shadow:0 0 6px rgba(76,175,80,0.5)}
+.nl-progress-dot.wrong{background:#F44336;border-color:#F44336}
+.nl-progress-dot.current{border-color:#FFD700;animation:nlDotPulse 1s ease-in-out infinite}
+@keyframes nlDotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
 .mode-btn-numberline{background:linear-gradient(135deg,#00BCD4,#006064)}
 
 /* Crush & Maze screens — fill viewport */
@@ -1026,21 +1035,21 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
   <div class="collection-row" id="collection-row"></div>
 
-  <div style="position:relative;z-index:1;text-align:center;padding:12px 16px 16px;max-width:min(95vw,600px);width:100%;direction:rtl;background:rgba(255,255,255,0.08);border-radius:12px;margin-top:8px">
-    <div style="font-family:'Bangers',cursive;font-size:0.9rem;color:rgba(255,255,255,0.55);letter-spacing:2px;padding:0 0 8px">MARVEL MATH HEROES</div>
-    <p style="font-size:0.85rem;color:rgba(255,255,255,0.75);font-family:sans-serif;line-height:1.5;margin:0">
+  <div style="position:relative;z-index:1;text-align:center;padding:14px 20px 18px;max-width:min(95vw,600px);width:100%;direction:rtl;background:linear-gradient(135deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05));border-radius:16px;margin-top:10px;border:2px solid rgba(255,215,0,0.15);backdrop-filter:blur(4px)">
+    <div style="font-family:'Bangers',cursive;font-size:1rem;color:rgba(255,215,0,0.7);letter-spacing:3px;padding:0 0 8px">MARVEL MATH HEROES</div>
+    <p style="font-size:0.9rem;color:rgba(255,255,255,0.9);font-family:sans-serif;line-height:1.6;margin:0;font-weight:500">
       קרדיט: המשחק נוצר ע"י יואל וגפן שילט בעזרת Claude Code
     </p>
-    <details style="margin-top:4px">
-      <summary style="font-size:0.75rem;color:rgba(255,255,255,0.6);cursor:pointer;font-family:sans-serif">מקורות מדעיים וקרדיטים</summary>
-      <div style="font-size:0.7rem;color:rgba(255,255,255,0.55);font-family:sans-serif;line-height:1.6;text-align:right;margin-top:4px;direction:ltr">
+    <details style="margin-top:6px">
+      <summary style="font-size:0.8rem;color:rgba(255,255,255,0.7);cursor:pointer;font-family:sans-serif;font-weight:500">מקורות מדעיים וקרדיטים</summary>
+      <div style="font-size:0.75rem;color:rgba(255,255,255,0.7);font-family:sans-serif;line-height:1.7;text-align:right;margin-top:6px;direction:ltr">
         <p style="direction:rtl;margin-bottom:4px">כל התמונות במשחק הן Free for personal & commercial use או Non-commercial use בלבד.</p>
         <p>Clements, D.H., & Sarama, J. (2014). <i>Learning and teaching early math.</i> Routledge.</p>
         <p>NCTM. (2000). <i>Principles and standards for school mathematics.</i></p>
         <p>Moyer-Packenham, P.S., & Westenskow, A. (2013). Effects of virtual manipulatives. <i>IJVPLE, 4</i>(3).</p>
       </div>
     </details>
-    <a href="mailto:yoelziblatshay@gmail.com" style="display:inline-block;margin-top:6px;font-size:0.75rem;color:rgba(255,255,255,0.45);text-decoration:none;font-family:sans-serif">
+    <a href="mailto:yoelziblatshay@gmail.com" style="display:inline-block;margin-top:8px;font-size:0.8rem;color:rgba(255,215,0,0.6);text-decoration:none;font-family:sans-serif">
       📧 יצירת קשר
     </a>
   </div>
@@ -1305,7 +1314,11 @@ const HEROES_DATA = [
   {id:'groot',name_he:'גרוט',emoji:'🌳',color:'#795548',colorLight:'#D7CCC8',
    gradient:'linear-gradient(135deg,#8D6E63,#4E342E)',powerEmoji:'🌿',powerName_he:'ענפים',
    image:'images/heroes/groot.png',
-   phrases:{correct:['!אני גרוט','!גרוט שמח','!אני גרוט'],wrong:['!אני גרוט','!אני גרוט'],intro:'אני גרוט'}}
+   phrases:{correct:['!אני גרוט','!גרוט שמח','!אני גרוט'],wrong:['!אני גרוט','!אני גרוט'],intro:'אני גרוט'}},
+  {id:'rocketraccoon',name_he:'רוקט רקון',emoji:'🦝',color:'#546E7A',colorLight:'#CFD8DC',
+   gradient:'linear-gradient(135deg,#607D8B,#37474F)',powerEmoji:'🔫',powerName_he:'נשקים',
+   image:'images/heroes/rocketraccoon.png',
+   phrases:{correct:['!רוקט רקון מתרשם','!ירי מדויק','!בום בום'],wrong:['!רוקט אומר נסה שוב','!עוד פעם'],intro:'רוקט רקון צריך את עזרתך'}}
 ];
 
 const HEBREW_NUMBERS = {
@@ -1442,7 +1455,7 @@ const TEAMS_DATA = [
      <text x="20" y="29" text-anchor="middle" font-family="'Bangers',Impact,sans-serif" font-size="24" font-weight="900" fill="#1E88E5" stroke="#fff" stroke-width="0.5">4</text>
    </svg>`},
   {id:'cosmic',name_he:'שומרי הגלקסיה',cssClass:'team-cosmic',
-   members:['starlord','gamora','groot','drax','marvel'],
+   members:['starlord','gamora','groot','drax','rocketraccoon','marvel'],
    logo:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
      <circle cx="20" cy="20" r="18" fill="rgba(0,0,0,0.3)" stroke="#00E5FF" stroke-width="2.5"/>
      <circle cx="20" cy="20" r="3" fill="#FFD700"/>
@@ -2009,7 +2022,7 @@ const Game = {
       const unlocked=st.heroesUnlocked.includes(h.id);
       return `<span class="collection-badge ${unlocked?'unlocked':'locked'}" data-speak="${unlocked?h.name_he:'נעול'}"
         style="${unlocked?'background:'+h.color+';border-color:'+h.color:'background:#222;border-color:#444'}">
-        <img src="${h.image}" alt="${h.name_he}" onerror="this.parentElement.textContent='${unlocked?h.emoji:'🔒'}'">
+        <img src="${h.image}" alt="${h.name_he}" onerror="this.style.display='none'">
       </span>`}).join('');
   },
 
@@ -2089,7 +2102,7 @@ const Game = {
       const gs=document.getElementById('game-screen');
       gs.style.background=this.currentHero.gradient;
       Decorations.addToScreen(gs,3);
-      this.state.nlRound=0;this.state.nlTotal=8;this.state.nlScore=0;
+      this.state.nlRound=0;this.state.nlTotal=8;this.state.nlScore=0;this.state.nlResults=[];
       this._t(()=>{this._doCountdown(()=>{
         this._t(()=>Speech.speak(this.currentHero.phrases.intro),200);
         this._t(()=>this._showNumberLine(),800);
@@ -2154,7 +2167,7 @@ const Game = {
     }
     const heroArea=document.getElementById('hero-area');
     heroArea.innerHTML=`<img src="${this.currentHero.image}" alt="${this.currentHero.name_he}" data-speak="${this.currentHero.name_he}"
-      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:7rem\\' data-speak=\\'${this.currentHero.name_he}\\'>${this.currentHero.emoji}</span>')">`;
+      onerror="this.style.opacity='0'">`;
     heroArea.className='hero-area';
     document.getElementById('progress-text').dataset.speak=`שאלה ${questionIndex+1} מתוך ${questions.length}`;
     const qArea=document.getElementById('question-area');
@@ -2232,7 +2245,7 @@ const Game = {
       <div class="speech-bubble" style="background:url('images/comics/burst-purple.png') center/contain no-repeat,rgba(255,255,255,0.12);padding:20px 28px"><div class="prompt-text">?מי חזק יותר</div></div>
       <div class="battle-area">
         <button class="battle-card" data-num="${q.numA}" data-speak="${heroA.name_he}, ${HEBREW_NUMBERS[q.numA]||q.numA}" style="border-color:${heroA.color}">
-          <img src="${heroA.image}" alt="${heroA.name_he}" onerror="this.outerHTML='<span style=\\'font-size:4rem\\'>${heroA.emoji}</span>'">
+          <img src="${heroA.image}" alt="${heroA.name_he}" onerror="this.style.opacity='0'">
           <span class="battle-num" style="color:${heroA.color}">${q.numA}</span>
           <span class="battle-name">${heroA.name_he}</span>
         </button>
@@ -2241,7 +2254,7 @@ const Game = {
           <span class="vs-text" data-speak="מול">⚡VS⚡</span>
         </span>
         <button class="battle-card" data-num="${q.numB}" data-speak="${heroB.name_he}, ${HEBREW_NUMBERS[q.numB]||q.numB}" style="border-color:${heroB.color}">
-          <img src="${heroB.image}" alt="${heroB.name_he}" onerror="this.outerHTML='<span style=\\'font-size:4rem\\'>${heroB.emoji}</span>'">
+          <img src="${heroB.image}" alt="${heroB.name_he}" onerror="this.style.opacity='0'">
           <span class="battle-num" style="color:${heroB.color}">${q.numB}</span>
           <span class="battle-name">${heroB.name_he}</span>
         </button>
@@ -2585,7 +2598,7 @@ const Game = {
     meter.innerHTML=`<span class="power-start">${hero.powerEmoji}</span>
       <div class="power-line">
         <div class="power-line-fill" style="width:${pct}%;background:${hero.gradient}"></div>
-        <span class="power-hero-marker" style="left:${pct}%">${hero.emoji}</span>
+        <span class="power-hero-marker" style="left:${pct}%"><img src="${hero.image}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #FFD700" onerror="this.style.display='none'"></span>
         ${nodes}
       </div>
       <span class="power-goal">⭐</span>`;
@@ -2629,7 +2642,7 @@ const Game = {
 
     document.getElementById('results-hero').innerHTML=
       `<img src="${hero.image}" alt="${hero.name_he}"
-        onerror="this.outerHTML='<span style=\\'font-size:6rem\\'>${hero.emoji}</span>'">`;
+        onerror="this.style.opacity='0'">`;
     document.getElementById('results-title').textContent=emoji+' '+title;
 
     let starsHtml='';
@@ -2645,7 +2658,7 @@ const Game = {
       unlockEl.innerHTML=`<div class="unlock-box">
         <div class="unlock-title">!גיבור חדש נפתח</div>
         <img src="${newHero.image}" alt="${newHero.name_he}"
-          onerror="this.outerHTML='<span style=\\'font-size:5rem\\'>${newHero.emoji}</span>'">
+          onerror="this.style.opacity='0'">
         <div class="unlock-name">${newHero.name_he}</div></div>`;
     } else unlockEl.innerHTML='';
 
@@ -2669,7 +2682,7 @@ const Game = {
     const hero=this.currentHero;
     const heroArea=document.getElementById('hero-area');
     heroArea.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}" data-speak="${hero.name_he}"
-      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:5rem\\'>${hero.emoji}</span>')">`;
+      onerror="this.style.opacity='0'">`;
     heroArea.className='hero-area';
     document.getElementById('progress-text').textContent=`${this.state.nlRound+1}/${this.state.nlTotal}`;
     const aArea=document.getElementById('answers-area');aArea.innerHTML='';
@@ -2726,11 +2739,12 @@ const Game = {
     const lineY=100;
     const tickW=(w-padL-padR)/maxNum;
     let svg=`<div class="numberline-container"><svg class="numberline-svg" viewBox="0 0 ${w} ${h}">`;
-    // Gradient definition
+    // Gradient and clip definitions
     svg+=`<defs><linearGradient id="nlGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" style="stop-color:#1565C0;stop-opacity:1"/>
       <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1"/>
-    </linearGradient></defs>`;
+    </linearGradient>
+    <clipPath id="nlCircleClip"><circle cx="14" cy="14" r="14"/></clipPath></defs>`;
     // Main line with gradient
     svg+=`<line class="nl-line" x1="${padL}" y1="${lineY}" x2="${w-padR}" y2="${lineY}" stroke="url(#nlGrad)"/>`;
 
@@ -2749,20 +2763,31 @@ const Game = {
     // Visible tappable dots (semi-transparent gold circles)
     for(let i=0;i<=maxNum;i++){
       const x=padL+i*tickW;
-      svg+=`<circle class="nl-target" data-num="${i}" cx="${x}" cy="${lineY}" r="13" style="cursor:pointer"/>`;
+      svg+=`<circle class="nl-target" data-num="${i}" cx="${x}" cy="${lineY}" r="15" style="cursor:pointer"/>`;
     }
 
     // Start position marker for jump mode
     if(startPos!==null){
       const sx=padL+startPos*tickW;
       svg+=`<circle cx="${sx}" cy="${lineY}" r="10" fill="${hero.color}" stroke="#FFD700" stroke-width="2.5"/>`;
-      svg+=`<text x="${sx}" y="${lineY-28}" text-anchor="middle" font-family="Bangers" font-size="18" fill="#FFD700">${hero.emoji}</text>`;
+      svg+=`<image href="${hero.image}" x="${sx-14}" y="${lineY-42}" width="28" height="28" clip-path="url(#nlCircleClip)"/>`;
+      // Show question mark at unknown destination
+      svg+=`<text x="${sx}" y="${lineY-50}" text-anchor="middle" font-family="Bangers" font-size="16" fill="#FFD700" opacity="0.7">?</text>`;
     }else{
       // Hero marker at position 0
-      svg+=`<text class="nl-hero-marker" id="nl-hero-marker" x="${padL}" y="${lineY-28}" text-anchor="middle" font-size="22">${hero.emoji}</text>`;
+      svg+=`<image class="nl-hero-marker" id="nl-hero-marker" href="${hero.image}" x="${padL-14}" y="${lineY-42}" width="28" height="28" clip-path="url(#nlCircleClip)"/>`;
     }
 
-    svg+=`</svg></div>`;
+    svg+=`</svg>`;
+    // Progress dots
+    let dots='<div class="nl-progress">';
+    for(let i=0;i<this.state.nlTotal;i++){
+      const cls=i<this.state.nlRound?(this.state.nlResults&&this.state.nlResults[i]?'correct':'wrong'):
+        i===this.state.nlRound?'current':'';
+      dots+=`<span class="nl-progress-dot ${cls}"></span>`;
+    }
+    dots+='</div>';
+    svg+=dots+'</div>';
     qArea.innerHTML=`<div class="speech-bubble"><p class="prompt-text" data-speak="${prompt.replace('?','')}">${prompt}</p></div>${svg}`;
 
     Speech.speak(prompt.replace('?',''));
@@ -2785,6 +2810,7 @@ const Game = {
 
     if(num===target){
       el.classList.add('correct');
+      this.state.nlResults.push(true);
       this.state.nlScore++;this.state.nlRound++;
       Sounds.powerUp();
       const praise=HERO_PRAISE[Math.floor(Math.random()*HERO_PRAISE.length)];
@@ -2795,7 +2821,7 @@ const Game = {
         const padL=40,padR=40,w=560;
         const maxNum=Adaptive.getLevel('counting')<=2?10:Adaptive.getLevel('counting')<=3?15:20;
         const tickW=(w-padL-padR)/maxNum;
-        heroMarker.setAttribute('x',padL+target*tickW);
+        heroMarker.setAttribute('x',padL+target*tickW-14);
       }
       const rect=el.closest('.numberline-container').getBoundingClientRect();
       const maxNum=Adaptive.getLevel('counting')<=2?10:Adaptive.getLevel('counting')<=3?15:20;
@@ -2806,6 +2832,7 @@ const Game = {
     }else{
       el.classList.add('wrong');
       Sounds.wrong();Speech.speak(HERO_ENCOURAGE[Math.floor(Math.random()*HERO_ENCOURAGE.length)].replace('!',''));
+      this.state.nlResults.push(false);
       Adaptive.recordWrong('counting');
       // Show correct answer
       const correctEl=document.querySelector(`.nl-target[data-num="${target}"]`);
@@ -2816,7 +2843,7 @@ const Game = {
         const padL=40,padR=40,w=560;
         const maxNum=Adaptive.getLevel('counting')<=2?10:Adaptive.getLevel('counting')<=3?15:20;
         const tickW=(w-padL-padR)/maxNum;
-        heroMarker.setAttribute('x',padL+target*tickW);
+        heroMarker.setAttribute('x',padL+target*tickW-14);
       }
       this.state.nlRound++;
       this._t(()=>this._showNumberLine(),2200);
@@ -2896,7 +2923,7 @@ const Game = {
     aArea.innerHTML='';
     const heroArea=document.getElementById('hero-area');
     heroArea.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}" data-speak="${hero.name_he}"
-      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\\'font-size:5rem\\'>${hero.emoji}</span>')">`;
+      onerror="this.style.opacity='0'">`;
     heroArea.className='hero-area';
     const titleText=isEasy?'התאם ספרה לכמות':'התאם תרגיל לתשובה';
     document.getElementById('progress-text').textContent=titleText;
@@ -2973,7 +3000,7 @@ const Game = {
       let lineupHtml='<div class="lineup-area">';
       lineup.forEach((h,i)=>{
         lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}" data-idx="${i}">
-          <img src="${h.image}" alt="${h.name_he}" onerror="this.outerHTML='<span style=\\'font-size:2rem\\'>${h.emoji}</span>'">
+          <img src="${h.image}" alt="${h.name_he}" onerror="this.style.opacity='0'">
           <div class="lineup-platform">${i+1}</div></div>`;
       });
       lineupHtml+='</div>';
@@ -2989,7 +3016,7 @@ const Game = {
       let lineupHtml='<div class="lineup-area">';
       lineup.forEach((h,i)=>{
         lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}, מקום ${HEBREW_ORDINALS[i+1]||i+1}" data-idx="${i}" data-hero-id="${h.id}">
-          <img src="${h.image}" alt="${h.name_he}" onerror="this.outerHTML='<span style=\\'font-size:2rem\\'>${h.emoji}</span>'">
+          <img src="${h.image}" alt="${h.name_he}" onerror="this.style.opacity='0'">
           <div class="lineup-platform">${i+1}</div></div>`;
       });
       lineupHtml+='</div>';
@@ -3027,7 +3054,7 @@ const Game = {
       let lineupHtml='<div class="lineup-area">';
       lineup.forEach((h,i)=>{
         lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}" data-idx="${i}">
-          <img src="${h.image}" alt="${h.name_he}" onerror="this.outerHTML='<span style=\\'font-size:2rem\\'>${h.emoji}</span>'">
+          <img src="${h.image}" alt="${h.name_he}" onerror="this.style.opacity='0'">
           <div class="lineup-platform">${i+1}</div></div>`;
       });
       lineupHtml+='</div>';
@@ -3230,7 +3257,7 @@ const CrushGame = {
           tile.style.borderColor=hero.color;
           tile.style.boxShadow=`inset 0 0 0 2px ${hero.color}, 2px 2px 0 rgba(0,0,0,0.4)`;
           tile.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}"
-            onerror="this.outerHTML='<span style=\\'font-size:1.4rem\\'>${hero.emoji}</span>'">`;
+            onerror="this.style.opacity='0'">`;
         }
         tile.addEventListener('click',()=>this._onTileClick(r,c));
         gridEl.appendChild(tile);
@@ -4203,14 +4230,14 @@ const MazeGame = {
     // Hero overlay
     const hs=this.cellSize-4;
     html+=`<div class="maze-hero" id="maze-hero" style="width:${hs}px;height:${hs}px;top:${this.heroPos.r*this.cellSize+2}px;left:${this.heroPos.c*this.cellSize+2}px">
-      <img src="${this.hero.image}" alt="${this.hero.name_he}" onerror="this.outerHTML='<span style=\\'font-size:1.2rem\\'>${this.hero.emoji}</span>'">
+      <img src="${this.hero.image}" alt="${this.hero.name_he}" onerror="this.style.opacity='0'">
     </div>`;
 
     // Villain overlays
     this.villains.forEach((v,i)=>{
       const vs=this.cellSize-4;
       html+=`<div class="maze-villain" id="maze-villain-${i}" style="width:${vs}px;height:${vs}px;top:${v.pos.r*this.cellSize+2}px;left:${v.pos.c*this.cellSize+2}px">
-        <img src="${v.hero.image}" alt="${v.hero.name_he}" onerror="this.outerHTML='<span style=\\'font-size:1rem\\'>${v.hero.emoji}</span>'">
+        <img src="${v.hero.image}" alt="${v.hero.name_he}" onerror="this.style.opacity='0'">
       </div>`;
     });
 
