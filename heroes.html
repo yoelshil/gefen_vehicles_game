@@ -1084,12 +1084,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 <div id="game-screen" class="screen game-screen">
   <img src="images/comics/spiderman-comic.png" alt="" style="position:absolute;bottom:10px;left:5px;width:80px;opacity:0.1;pointer-events:none;z-index:0">
   <div class="game-header">
-    <div style="width:48px"></div>
+    <button class="back-btn" id="back-btn">🏠</button>
     <span class="progress-text" id="progress-text">1/8</span>
-    <div style="display:flex;gap:6px;align-items:center">
-      <button class="level-down-btn" id="level-down-btn" data-speak="הורד רמה" title="הורד רמה - קל יותר">📉</button>
-      <button class="back-btn" id="back-btn">🏠</button>
-    </div>
+    <button class="level-down-btn" id="level-down-btn" data-speak="הורד רמה" title="הורד רמה - קל יותר">📉</button>
   </div>
   <div class="power-meter" id="power-meter"></div>
   <div class="hero-area" id="hero-area"></div>
