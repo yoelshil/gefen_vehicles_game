@@ -148,15 +148,15 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 @keyframes btnShine{0%,100%{left:-100%}50%{left:120%}}
 
 /* Hero Collection */
-.collection-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;padding:6px 12px;
-  max-width:min(95vw,900px);width:100%;position:relative;z-index:1}
-.collection-badge{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  border:3px solid #000;box-shadow:2px 2px 0 rgba(0,0,0,0.5);transition:transform 0.2s;position:relative}
+.collection-row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;align-items:center;padding:4px 8px;
+  max-width:min(98vw,960px);width:100%;position:relative;z-index:1}
+.collection-badge{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:2px solid #000;box-shadow:2px 2px 0 rgba(0,0,0,0.5);transition:transform 0.2s;position:relative}
 .collection-badge.unlocked{animation:badgePulse 3s ease-in-out infinite}
 .collection-badge.locked{filter:grayscale(0.8);opacity:0.45}
-.collection-badge.locked::after{content:'🔒';position:absolute;font-size:0.7rem;
+.collection-badge.locked::after{content:'🔒';position:absolute;font-size:0.6rem;
   bottom:-2px;right:-2px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8))}
-.collection-badge img{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:center top}
+.collection-badge img{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center top}
 @keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 
 /* ===== GAME SCREEN ===== */
@@ -948,8 +948,12 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 <!-- ===== MENU SCREEN ===== -->
 <div id="menu-screen" class="screen active">
   <div class="ray-burst"></div>
-  <img src="images/comics/spiderman-logo.png" alt="" style="position:absolute;top:8px;right:60px;width:50px;opacity:0.2;pointer-events:none;z-index:0">
-  <button class="menu-settings-btn" id="music-toggle" style="position:absolute;top:10px;right:60px;z-index:5;font-size:1.3rem;padding:6px 10px;border-radius:50%;width:40px;height:40px">🔊</button>
+  <img src="images/comics/spiderman-logo.png" alt="" style="position:absolute;top:8px;left:10px;width:50px;opacity:0.2;pointer-events:none;z-index:0">
+  <div style="position:absolute;top:10px;right:10px;z-index:5;display:flex;gap:6px;align-items:center;direction:rtl">
+    <button class="menu-settings-btn" id="music-toggle" style="font-size:1.3rem;padding:6px 10px;border-radius:50%;width:40px;height:40px">🔊</button>
+    <button class="menu-settings-btn" id="btn-level-down-menu" data-speak="הורד רמה" style="font-size:0.7rem;padding:4px 8px">⬇️ הורד רמה</button>
+    <button class="menu-settings-btn" id="btn-reset-progress" data-speak="אפס התקדמות" style="font-size:0.7rem;padding:4px 8px">🔄 אפס</button>
+  </div>
   <h1 class="menu-title" data-speak="גיבורי על">גיבורי על</h1>
   <p class="menu-subtitle" data-speak="מארוול מאת'">MARVEL MATH</p>
 
@@ -1022,28 +1026,23 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
   <div class="collection-row" id="collection-row"></div>
 
-  <div style="position:relative;z-index:1;text-align:center;padding:12px 16px 16px;max-width:min(95vw,600px);width:100%;direction:rtl;background:rgba(255,255,255,0.04);border-radius:12px;margin-top:8px">
-    <div style="font-family:'Bangers',cursive;font-size:0.9rem;color:rgba(255,255,255,0.3);letter-spacing:2px;padding:0 0 8px">MARVEL MATH HEROES</div>
-    <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);font-family:sans-serif;line-height:1.5;margin:0">
+  <div style="position:relative;z-index:1;text-align:center;padding:12px 16px 16px;max-width:min(95vw,600px);width:100%;direction:rtl;background:rgba(255,255,255,0.08);border-radius:12px;margin-top:8px">
+    <div style="font-family:'Bangers',cursive;font-size:0.9rem;color:rgba(255,255,255,0.55);letter-spacing:2px;padding:0 0 8px">MARVEL MATH HEROES</div>
+    <p style="font-size:0.85rem;color:rgba(255,255,255,0.75);font-family:sans-serif;line-height:1.5;margin:0">
       קרדיט: המשחק נוצר ע"י יואל וגפן שילט בעזרת Claude Code
     </p>
     <details style="margin-top:4px">
-      <summary style="font-size:0.75rem;color:rgba(255,255,255,0.4);cursor:pointer;font-family:sans-serif">מקורות מדעיים וקרדיטים</summary>
-      <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);font-family:sans-serif;line-height:1.6;text-align:right;margin-top:4px;direction:ltr">
+      <summary style="font-size:0.75rem;color:rgba(255,255,255,0.6);cursor:pointer;font-family:sans-serif">מקורות מדעיים וקרדיטים</summary>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.55);font-family:sans-serif;line-height:1.6;text-align:right;margin-top:4px;direction:ltr">
         <p style="direction:rtl;margin-bottom:4px">כל התמונות במשחק הן Free for personal & commercial use או Non-commercial use בלבד.</p>
         <p>Clements, D.H., & Sarama, J. (2014). <i>Learning and teaching early math.</i> Routledge.</p>
         <p>NCTM. (2000). <i>Principles and standards for school mathematics.</i></p>
         <p>Moyer-Packenham, P.S., & Westenskow, A. (2013). Effects of virtual manipulatives. <i>IJVPLE, 4</i>(3).</p>
       </div>
     </details>
-    <div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-top:8px;flex-wrap:wrap">
-      <a href="mailto:yoelziblatshay@gmail.com" style="font-size:0.75rem;color:rgba(255,255,255,0.45);text-decoration:none;font-family:sans-serif">
-        📧 יצירת קשר
-      </a>
-      <span style="color:rgba(255,255,255,0.2);font-size:0.7rem">|</span>
-      <button class="menu-settings-btn" id="btn-level-down-menu" data-speak="הורד רמה" style="font-size:0.75rem;padding:4px 10px">⬇️ הורד רמה</button>
-      <button class="menu-settings-btn" id="btn-reset-progress" data-speak="אפס התקדמות" style="font-size:0.75rem;padding:4px 10px">🔄 אפס התקדמות</button>
-    </div>
+    <a href="mailto:yoelziblatshay@gmail.com" style="display:inline-block;margin-top:6px;font-size:0.75rem;color:rgba(255,255,255,0.45);text-decoration:none;font-family:sans-serif">
+      📧 יצירת קשר
+    </a>
   </div>
 </div>
 
