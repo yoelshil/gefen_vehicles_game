@@ -1084,12 +1084,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 <div id="game-screen" class="screen game-screen">
   <img src="images/comics/spiderman-comic.png" alt="" style="position:absolute;bottom:10px;left:5px;width:80px;opacity:0.1;pointer-events:none;z-index:0">
   <div class="game-header">
-    <div style="width:48px"></div>
+    <button class="back-btn" id="back-btn">🏠</button>
     <span class="progress-text" id="progress-text">1/8</span>
-    <div style="display:flex;gap:6px;align-items:center">
-      <button class="level-down-btn" id="level-down-btn" data-speak="הורד רמה" title="הורד רמה - קל יותר">📉</button>
-      <button class="back-btn" id="back-btn">🏠</button>
-    </div>
+    <button class="level-down-btn" id="level-down-btn" data-speak="הורד רמה" title="הורד רמה - קל יותר">📉</button>
   </div>
   <div class="power-meter" id="power-meter"></div>
   <div class="hero-area" id="hero-area"></div>
@@ -1787,15 +1784,51 @@ const Adaptive = {
     switch(lv){
       case 1:minNum=1;maxNum=9;minGap=3;break;    // both under 10, easy
       case 2:minNum=2;maxNum=10;minGap=2;break;   // around 10, can cross
-      case 3:minNum=3;maxNum=15;minGap=2;break;   // mix under/over 10
-      case 4:minNum=5;maxNum=25;minGap=1;break;   // bigger numbers
-      case 5:minNum=10;maxNum=50;minGap=1;break;  // large range
+      case 3:minNum=3;maxNum=15;minGap=2;break;   // mix under/over 10 + expressions
+      case 4:minNum=5;maxNum=20;minGap=1;break;   // expressions + equality
+      case 5:minNum=5;maxNum=25;minGap=1;break;   // harder expressions + equality
       default:minNum=1;maxNum=9;minGap=3}
-    const gap=minGap+Math.floor(Math.random()*3);
-    let numA=minNum+Math.floor(Math.random()*(maxNum-gap-minNum+1));
-    let numB=numA+gap;
-    if(Math.random()<0.5)[numA,numB]=[numB,numA];
-    return {numA,numB,answer:Math.max(numA,numB),level:lv}},
+
+    // Level 4+: sometimes generate equal values
+    const canEqual=lv>=4;
+    const isEqual=canEqual&&Math.random()<0.3;
+
+    let numA,numB;
+    if(isEqual){
+      numA=minNum+Math.floor(Math.random()*(maxNum-minNum+1));
+      numB=numA;
+    }else{
+      const gap=minGap+Math.floor(Math.random()*3);
+      numA=minNum+Math.floor(Math.random()*(maxNum-gap-minNum+1));
+      numB=numA+gap;
+      if(Math.random()<0.5)[numA,numB]=[numB,numA];
+    }
+
+    // Level 3+: wrap numbers as math expressions
+    const useExpr=lv>=3;
+    let exprA=null,exprB=null;
+    if(useExpr){
+      exprA=this._numToExpr(numA);
+      exprB=this._numToExpr(numB);
+    }
+
+    return {numA,numB,answer:isEqual?'equal':Math.max(numA,numB),level:lv,
+      exprA,exprB,isEqual,useExpr}},
+
+  // Helper: convert a number to a simple math expression
+  _numToExpr(n){
+    if(n<=1) return null; // too small for expression
+    const r=Math.random();
+    if(r<0.5){
+      // addition: a + b = n
+      const a=1+Math.floor(Math.random()*(n-1));
+      return {text:`${a}+${n-a}`,val:n};
+    }else{
+      // subtraction: a - b = n
+      const b=1+Math.floor(Math.random()*Math.min(5,n));
+      return {text:`${n+b}-${b}`,val:n};
+    }
+  },
 
   // PUZZLE: gradual difficulty - first 3 counting, then mix, then harder
   generatePuzzleQuestion(pieceIndex){
@@ -1845,19 +1878,19 @@ const Adaptive = {
     return pairs;
   },
 
-  // EASY MEMORY: digit → symbolic quantity
+  // EASY MEMORY: digit → symbolic quantity (dots/objects)
   generateMemoryPairsEasy(count){
     const pairs=[];const used=new Set();
-    const emojis=['🕷️','⭐','💥','🛡️','⚡','🔥','💎','🐾','🌟','🔨'];
+    const symbols=['●','◆','★','■','▲','♦'];
     for(let i=0;i<count;i++){
       let num;let att=0;
-      do{num=1+Math.floor(Math.random()*9);att++}while(used.has(num)&&att<20);
+      do{num=1+Math.floor(Math.random()*7);att++}while(used.has(num)&&att<20);
       used.add(num);
-      const emoji=emojis[Math.floor(Math.random()*emojis.length)];
-      const symbols=emoji.repeat(num);
+      const sym=symbols[i%symbols.length];
+      const dots=Array(num).fill(sym).join(' ');
       pairs.push({equation:String(num),answer:num,
-        hebrewEq:HEBREW_NUMBERS[num]||String(num),hebrewAns:symbols,
-        isEasy:true,symbols});
+        hebrewEq:HEBREW_NUMBERS[num]||String(num),hebrewAns:dots,
+        isEasy:true,symbols:dots});
     }
     return pairs;
   },
@@ -2076,7 +2109,9 @@ const Game = {
   // ===== START MODE =====
   startMode(mode){
     this.cleanup();this.currentMode=mode;this.currentHero=this._pickHero();this.roundStreak=0;
+    const savedMemoryMode=this.state&&this.state.memoryMode;
     this.state={questionIndex:0,score:0,questions:[],answered:false};
+    if(savedMemoryMode) this.state.memoryMode=savedMemoryMode;
     const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים',
       puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר',readaloud:'קריאת מספרים',
       numberline:'ציר המספרים'};
@@ -2241,48 +2276,101 @@ const Game = {
     let heroA=unlocked[Math.floor(Math.random()*unlocked.length)];
     let heroB=unlocked[Math.floor(Math.random()*unlocked.length)];
     if(unlocked.length>1) while(heroB.id===heroA.id) heroB=unlocked[Math.floor(Math.random()*unlocked.length)];
+
+    // Display value: plain number or math expression
+    const displayA=q.exprA?q.exprA.text:q.numA;
+    const displayB=q.exprB?q.exprB.text:q.numB;
+    const speakA=q.exprA?q.exprA.text.replace('+',' ועוד ').replace('-',' פחות '):HEBREW_NUMBERS[q.numA]||q.numA;
+    const speakB=q.exprB?q.exprB.text.replace('+',' ועוד ').replace('-',' פחות '):HEBREW_NUMBERS[q.numB]||q.numB;
+    // Smaller font for expressions
+    const numStyle=q.useExpr?'font-size:2.2rem':'';
+
+    const promptText=q.isEqual?'?מי חזק יותר או שווים':'?מי חזק יותר';
     qArea.innerHTML=`
-      <div class="speech-bubble" style="background:url('images/comics/burst-purple.png') center/contain no-repeat,rgba(255,255,255,0.12);padding:20px 28px"><div class="prompt-text">?מי חזק יותר</div></div>
+      <div class="speech-bubble" style="background:url('images/comics/burst-purple.png') center/contain no-repeat,rgba(255,255,255,0.12);padding:20px 28px"><div class="prompt-text">${promptText}</div></div>
       <div class="battle-area">
-        <button class="battle-card" data-num="${q.numA}" data-speak="${heroA.name_he}, ${HEBREW_NUMBERS[q.numA]||q.numA}" style="border-color:${heroA.color}">
+        <button class="battle-card" data-num="${q.numA}" data-side="A" data-speak="${heroA.name_he}, ${speakA}" style="border-color:${heroA.color}">
           <img src="${heroA.image}" alt="${heroA.name_he}" onerror="this.style.opacity='0'">
-          <span class="battle-num" style="color:${heroA.color}">${q.numA}</span>
+          <span class="battle-num" style="color:${heroA.color};${numStyle};direction:ltr">${displayA}</span>
           <span class="battle-name">${heroA.name_he}</span>
         </button>
         <span style="position:relative;display:flex;align-items:center;justify-content:center">
           <img class="vs-splat" src="images/heroes/pngwing.com (14).png" alt="" onerror="this.remove()">
           <span class="vs-text" data-speak="מול">⚡VS⚡</span>
         </span>
-        <button class="battle-card" data-num="${q.numB}" data-speak="${heroB.name_he}, ${HEBREW_NUMBERS[q.numB]||q.numB}" style="border-color:${heroB.color}">
+        <button class="battle-card" data-num="${q.numB}" data-side="B" data-speak="${heroB.name_he}, ${speakB}" style="border-color:${heroB.color}">
           <img src="${heroB.image}" alt="${heroB.name_he}" onerror="this.style.opacity='0'">
-          <span class="battle-num" style="color:${heroB.color}">${q.numB}</span>
+          <span class="battle-num" style="color:${heroB.color};${numStyle};direction:ltr">${displayB}</span>
           <span class="battle-name">${heroB.name_he}</span>
         </button>
       </div>`;
-    aArea.innerHTML='';
-    const nA=HEBREW_NUMBERS[q.numA]||q.numA;const nB=HEBREW_NUMBERS[q.numB]||q.numB;
-    this._t(()=>Speech.speak(`${nA} או ${nB}? מי חזק יותר? מי יש לו יותר?`),300);
+
+    // Equal button for level 4+
+    if(q.isEqual!==undefined&&q.level>=4){
+      aArea.innerHTML=`<button class="answer-btn battle-equal-btn" data-answer="equal" data-speak="שווים"
+        style="min-width:140px;min-height:60px;font-size:1.8rem;font-family:Bangers,cursive;letter-spacing:2px">🤝 !שווים</button>`;
+    }else{
+      aArea.innerHTML='';
+    }
+
+    this._t(()=>Speech.speak(`${speakA} או ${speakB}? מי חזק יותר?`),300);
+
+    // Handle card clicks (pick a side)
     const cards=qArea.querySelectorAll('.battle-card');
     cards.forEach(card=>{card.addEventListener('click',()=>{
       if(this.state.answered) return;
-      this._handleBattle(parseInt(card.dataset.num),q.answer,cards)})});
+      this._handleBattle(parseInt(card.dataset.num),q.answer,cards,q)})});
+
+    // Handle equal button click
+    const equalBtn=aArea.querySelector('.battle-equal-btn');
+    if(equalBtn){
+      equalBtn.addEventListener('click',()=>{
+        if(this.state.answered) return;
+        this._handleBattle('equal',q.answer,cards,q)});
+    }
   },
 
-  _handleBattle(chosen,correct,cards){
+  _handleBattle(chosen,correct,cards,q){
     this.state.answered=true;
-    cards.forEach(card=>{const num=parseInt(card.dataset.num);
-      if(num===correct) card.classList.add('winner');else card.classList.add('loser')});
-    if(chosen===correct){
+    const isCorrect=chosen===correct;
+
+    if(correct==='equal'){
+      // Equal answer
+      if(isCorrect){
+        cards.forEach(card=>card.classList.add('winner'));
+        const equalBtn=document.querySelector('.battle-equal-btn');
+        if(equalBtn){equalBtn.classList.add('correct')}
+      }else{
+        cards.forEach(card=>card.classList.add('winner'));
+        const equalBtn=document.querySelector('.battle-equal-btn');
+        if(equalBtn){equalBtn.classList.add('wrong')}
+      }
+    }else{
+      cards.forEach(card=>{const num=parseInt(card.dataset.num);
+        if(num===correct) card.classList.add('winner');else card.classList.add('loser')});
+      const equalBtn=document.querySelector('.battle-equal-btn');
+      if(equalBtn) equalBtn.classList.add('disabled');
+    }
+
+    if(isCorrect){
       this.state.score++;this.roundStreak++;
       const result=Adaptive.recordCorrect('comparison');
       Sounds.powerUp();this._correctEffects(result==='level_up');
-      this._showNumberCard(correct);
-      if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
-      this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול!`)},1200);
+      if(correct==='equal'){
+        this._t(()=>Speech.speak(`!שניהם שווים! ${HEBREW_NUMBERS[q.numA]||q.numA} שווה ל-${HEBREW_NUMBERS[q.numB]||q.numB}`),800);
+      }else{
+        this._showNumberCard(correct);
+        if(result==='recovery_done') this._t(()=>Decorations.showAdaptiveBanner('!כוח מלא','#4CAF50'),500);
+        this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול!`)},1200);
+      }
     } else {
       this.roundStreak=0;const wr=Adaptive.recordWrong('comparison');Sounds.wrong();this._wrongEffects();
       if(wr==='level_down') this._t(()=>Decorations.showAdaptiveBanner('!בוא ננסה משהו קצת יותר קל','#64B5F6'),400);
-      this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול`)},1200);
+      if(correct==='equal'){
+        this._t(()=>Speech.speak('!הם שווים'),1200);
+      }else{
+        this._t(()=>{const nh=HEBREW_NUMBERS[correct]||correct;Speech.speak(`${nh} יותר גדול`)},1200);
+      }
     }
     this._updatePowerMeter();
     this._t(()=>this._nextQuestion(),2500);
@@ -2826,12 +2914,12 @@ const Game = {
       const rect=el.closest('.numberline-container').getBoundingClientRect();
       const maxNum=Adaptive.getLevel('counting')<=2?10:Adaptive.getLevel('counting')<=3?15:20;
       Particles.spawnStars(rect.left+rect.width*(num/maxNum),rect.top+rect.height/2,'#FFD700',10);
-      this._showActionWord();
+      this._correctEffects(false);
       Adaptive.recordCorrect('counting');
       this._t(()=>this._showNumberLine(),1500);
     }else{
       el.classList.add('wrong');
-      Sounds.wrong();Speech.speak(HERO_ENCOURAGE[Math.floor(Math.random()*HERO_ENCOURAGE.length)].replace('!',''));
+      Sounds.wrong();this._wrongEffects();
       this.state.nlResults.push(false);
       Adaptive.recordWrong('counting');
       // Show correct answer
@@ -2967,9 +3055,7 @@ const Game = {
           this.state.memoryMatched.push(c1.pairId);
           this.state.score++;this.roundStreak++;
           Sounds.powerUp();
-          const heroArea=document.getElementById('hero-area');heroArea.classList.add('celebrate');
-          this._t(()=>heroArea.classList.remove('celebrate'),1000);
-          this._showActionWord();
+          this._correctEffects(false);
           this.state.memoryFlipped=[];this.state.memoryLocked=false;
           Speech.speak('מצאת התאמה!');
           if(this.state.memoryMatched.length===6) this._t(()=>this._showResults(),1200);
@@ -2978,7 +3064,7 @@ const Game = {
         // No match
         this._t(()=>{
           cards[i1].classList.remove('flipped');cards[i2].classList.remove('flipped');
-          this.roundStreak=0;Sounds.wrong();
+          this.roundStreak=0;Sounds.wrong();this._wrongEffects();
           this.state.memoryFlipped=[];this.state.memoryLocked=false;
           Speech.speak('נסה שוב');
         },1200);
