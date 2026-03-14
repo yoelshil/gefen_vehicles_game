@@ -131,6 +131,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-title{font-size:1.2rem}
 .mode-btn-desc{font-size:0.7rem;font-weight:400;opacity:0.8;font-family:'Segoe UI',sans-serif;
   -webkit-text-stroke:0;letter-spacing:0}
+.mode-btn-tag{position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.45);color:rgba(255,255,255,0.9);
+  font-size:0.55rem;font-family:'Segoe UI',sans-serif;font-weight:600;padding:2px 6px;border-radius:8px;
+  letter-spacing:0.5px;pointer-events:none;-webkit-text-stroke:0}
 .mode-btn-counting{background:linear-gradient(135deg,#9C27B0,#4A148C)}
 .mode-btn-mission{background:linear-gradient(135deg,#E23636,#B71C1C)}
 .mode-btn-battle{background:linear-gradient(135deg,#FF6F00,#E65100)}
@@ -994,42 +997,52 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
     <button class="mode-btn mode-btn-counting" id="btn-counting" data-speak="ספירת כוח, ספור את הכוחות">
       <span class="mode-btn-icon">🔢</span>
       <span class="mode-btn-text"><span class="mode-btn-title">ספירת כוח</span><span class="mode-btn-desc">ספור את הכוחות</span></span>
-    </button>
-    <button class="mode-btn mode-btn-mission" id="btn-mission" data-speak="משימת גיבורים, חיבור וחיסור">
-      <span class="mode-btn-icon">💥</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">משימת גיבורים</span><span class="mode-btn-desc">חיבור וחיסור</span></span>
-    </button>
-    <button class="mode-btn mode-btn-battle" id="btn-battle" data-speak="קרב מספרים, מי חזק יותר?">
-      <span class="mode-btn-icon">⚔️</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">קרב מספרים</span><span class="mode-btn-desc">מי חזק יותר?</span></span>
-    </button>
-    <button class="mode-btn mode-btn-puzzle" id="btn-puzzle" data-speak="פאזל חשבון, פתור חידות וגלה את הגיבור">
-      <span class="mode-btn-icon">🧩</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">פאזל חשבון</span><span class="mode-btn-desc">גלה את הגיבור</span></span>
-    </button>
-    <button class="mode-btn mode-btn-memory" id="btn-memory" data-speak="משחק זיכרון, התאם תרגיל לתשובה">
-      <span class="mode-btn-icon">🃏</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">זיכרון חשבון</span><span class="mode-btn-desc">התאם תרגיל לתשובה</span></span>
-    </button>
-    <button class="mode-btn mode-btn-order" id="btn-order" data-speak="מספרים בסדר, ספירה ומיקום">
-      <span class="mode-btn-icon">🏆</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">מספרים בסדר</span><span class="mode-btn-desc">ספירה ומיקום</span></span>
+      <span class="mode-btn-tag">קרדינליות</span>
     </button>
     <button class="mode-btn mode-btn-readaloud" id="btn-readaloud" data-speak="קריאת מספרים, קרא את המספר בקול">
       <span class="mode-btn-icon">🎤</span>
       <span class="mode-btn-text"><span class="mode-btn-title">קריאת מספרים</span><span class="mode-btn-desc">אמור את המספר בקול</span></span>
+      <span class="mode-btn-tag">זיהוי מספרים</span>
     </button>
-    <button class="mode-btn mode-btn-crush" id="btn-crush" data-speak="גיבורי קראש, התאם גיבורים ופתור תרגילים">
-      <span class="mode-btn-icon">💎</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">גיבורי קראש</span><span class="mode-btn-desc">התאם גיבורים ופתור תרגילים</span></span>
+    <button class="mode-btn mode-btn-order" id="btn-order" data-speak="מספרים בסדר, ספירה ומיקום">
+      <span class="mode-btn-icon">🏆</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">מספרים בסדר</span><span class="mode-btn-desc">ספירה ומיקום</span></span>
+      <span class="mode-btn-tag">אורדינליות</span>
     </button>
-    <button class="mode-btn mode-btn-maze" id="btn-maze" data-speak="מבוך הגיבורים, נווט במבוך ואסוף כוכבים">
-      <span class="mode-btn-icon">🏃</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">מבוך הגיבורים</span><span class="mode-btn-desc">נווט במבוך ואסוף כוכבים</span></span>
+    <button class="mode-btn mode-btn-battle" id="btn-battle" data-speak="קרב מספרים, מי חזק יותר?">
+      <span class="mode-btn-icon">⚔️</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">קרב מספרים</span><span class="mode-btn-desc">מי חזק יותר?</span></span>
+      <span class="mode-btn-tag">השוואה</span>
     </button>
     <button class="mode-btn mode-btn-numberline" id="btn-numberline" data-speak="ציר המספרים, מצא את המספר על הציר">
       <span class="mode-btn-icon">📏</span>
       <span class="mode-btn-text"><span class="mode-btn-title">ציר המספרים</span><span class="mode-btn-desc">מצא את המספר על הציר</span></span>
+      <span class="mode-btn-tag">ציר המספרים</span>
+    </button>
+    <button class="mode-btn mode-btn-mission" id="btn-mission" data-speak="משימת גיבורים, חיבור וחיסור">
+      <span class="mode-btn-icon">💥</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">משימת גיבורים</span><span class="mode-btn-desc">חיבור וחיסור</span></span>
+      <span class="mode-btn-tag">חיבור וחיסור</span>
+    </button>
+    <button class="mode-btn mode-btn-memory" id="btn-memory" data-speak="משחק זיכרון, התאם תרגיל לתשובה">
+      <span class="mode-btn-icon">🃏</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">זיכרון חשבון</span><span class="mode-btn-desc">התאם תרגיל לתשובה</span></span>
+      <span class="mode-btn-tag">זיכרון מתמטי</span>
+    </button>
+    <button class="mode-btn mode-btn-puzzle" id="btn-puzzle" data-speak="פאזל חשבון, פתור חידות וגלה את הגיבור">
+      <span class="mode-btn-icon">🧩</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">פאזל חשבון</span><span class="mode-btn-desc">גלה את הגיבור</span></span>
+      <span class="mode-btn-tag">פתרון בעיות</span>
+    </button>
+    <button class="mode-btn mode-btn-crush" id="btn-crush" data-speak="גיבורי קראש, התאם גיבורים ופתור תרגילים">
+      <span class="mode-btn-icon">💎</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">גיבורי קראש</span><span class="mode-btn-desc">התאם גיבורים ופתור תרגילים</span></span>
+      <span class="mode-btn-tag">תרגול פעולות</span>
+    </button>
+    <button class="mode-btn mode-btn-maze" id="btn-maze" data-speak="מבוך הגיבורים, נווט במבוך ואסוף כוכבים">
+      <span class="mode-btn-icon">🏃</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">מבוך הגיבורים</span><span class="mode-btn-desc">נווט במבוך ואסוף כוכבים</span></span>
+      <span class="mode-btn-tag">חשיבה מרחבית</span>
     </button>
   </div>
 
