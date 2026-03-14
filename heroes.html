@@ -134,6 +134,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mode-btn-tag{position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.45);color:rgba(255,255,255,0.9);
   font-size:0.55rem;font-family:'Segoe UI',sans-serif;font-weight:600;padding:2px 6px;border-radius:8px;
   letter-spacing:0.5px;pointer-events:none;-webkit-text-stroke:0}
+.img-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
 .mode-btn-counting{background:linear-gradient(135deg,#9C27B0,#4A148C)}
 .mode-btn-mission{background:linear-gradient(135deg,#E23636,#B71C1C)}
 .mode-btn-battle{background:linear-gradient(135deg,#FF6F00,#E65100)}
@@ -875,7 +876,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 
 /* Crush & Maze screens — fill viewport */
 #crush-screen{justify-content:center;gap:6px;padding:6px}
-#maze-screen{justify-content:center;gap:6px;padding:6px}
+#maze-screen{justify-content:flex-start;gap:6px;padding:6px;padding-top:env(safe-area-inset-top,6px)}
 
 /* Crush mode button */
 .mode-btn-crush{background:linear-gradient(135deg,#E040FB,#7B1FA2)}
@@ -895,6 +896,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .maze-lives{font-size:1.3rem;letter-spacing:2px}
 /* Maze Container */
 .maze-container{position:relative;width:100%;max-width:min(95vw,68vh);aspect-ratio:1;
+  max-height:calc(100vh - 220px);max-height:calc(100dvh - 220px);
   background:rgba(0,0,0,0.4);border:4px solid #000;border-radius:12px;
   box-shadow:6px 6px 0 rgba(0,0,0,0.4);overflow:hidden;direction:ltr;margin:0 auto}
 .maze-grid{display:grid;width:100%;height:100%;position:relative}
@@ -923,7 +925,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .maze-villain img{width:90%;height:90%;border-radius:50%;object-fit:cover;object-position:center top}
 /* D-Pad */
 .maze-dpad{display:grid;grid-template-areas:'_ u _' 'l _ r' '_ d _';gap:6px;
-  padding:12px;width:200px;margin:8px auto 0}
+  padding:12px;width:200px;margin:8px auto 0;flex-shrink:0}
 .dpad-btn{width:56px;height:56px;border-radius:14px;border:3px solid #000;
   background:linear-gradient(135deg,#424242,#212121);font-size:1.5rem;cursor:pointer;
   touch-action:manipulation;display:flex;align-items:center;justify-content:center;
@@ -1211,6 +1213,12 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 </div>
 
 <script>
+function imgFallback(img,emoji){
+  img.style.display='none';
+  const s=document.createElement('span');s.textContent=emoji;s.className='img-fallback';
+  const sz=img.width>100?'5rem':img.width>40?'2rem':'1.5rem';
+  s.style.cssText='font-size:'+sz;img.parentNode.insertBefore(s,img);
+}
 // ===== HEROES DATA =====
 const HEROES_DATA = [
   {id:'spiderman',name_he:'ספיידרמן',emoji:'🕷️',color:'#E23636',colorLight:'#FFCDD2',
@@ -2068,7 +2076,7 @@ const Game = {
       const unlocked=st.heroesUnlocked.includes(h.id);
       return `<span class="collection-badge ${unlocked?'unlocked':'locked'}" data-speak="${unlocked?h.name_he:'נעול'}"
         style="${unlocked?'background:'+h.color+';border-color:'+h.color:'background:#222;border-color:#444'}">
-        <img src="${h.image}" alt="${h.name_he}" onerror="this.style.display='none'">
+        <img src="${h.image}" alt="${h.name_he}" onerror="imgFallback(this,'${h.emoji}')">
       </span>`}).join('');
   },
 
@@ -2081,7 +2089,7 @@ const Game = {
         if(!hero) return '';
         const isUnlocked=st.heroesUnlocked.includes(mid);
         return `<img class="team-member ${isUnlocked?'':'locked-member'}" src="${hero.image}" alt="${hero.name_he}"
-          onerror="this.style.display='none'" title="${hero.name_he}">`;
+          onerror="imgFallback(this,'${hero.emoji}')" title="${hero.name_he}">`;
       }).join('');
       const fullWidth=team.members.length>5?'full-width':'';
       const allUnlocked=team.members.every(mid=>st.heroesUnlocked.includes(mid));
@@ -2215,7 +2223,7 @@ const Game = {
     }
     const heroArea=document.getElementById('hero-area');
     heroArea.innerHTML=`<img src="${this.currentHero.image}" alt="${this.currentHero.name_he}" data-speak="${this.currentHero.name_he}"
-      onerror="this.style.opacity='0'">`;
+      onerror="imgFallback(this,'${this.currentHero.emoji}')">`;
     heroArea.className='hero-area';
     document.getElementById('progress-text').dataset.speak=`שאלה ${questionIndex+1} מתוך ${questions.length}`;
     const qArea=document.getElementById('question-area');
@@ -2303,7 +2311,7 @@ const Game = {
       <div class="speech-bubble" style="background:url('images/comics/burst-purple.png') center/contain no-repeat,rgba(255,255,255,0.12);padding:20px 28px"><div class="prompt-text">${promptText}</div></div>
       <div class="battle-area">
         <button class="battle-card" data-num="${q.numA}" data-side="A" data-speak="${heroA.name_he}, ${speakA}" style="border-color:${heroA.color}">
-          <img src="${heroA.image}" alt="${heroA.name_he}" onerror="this.style.opacity='0'">
+          <img src="${heroA.image}" alt="${heroA.name_he}" onerror="imgFallback(this,'${heroA.emoji}')">
           <span class="battle-num" style="color:${heroA.color};${numStyle};direction:ltr">${displayA}</span>
           <span class="battle-name">${heroA.name_he}</span>
         </button>
@@ -2312,7 +2320,7 @@ const Game = {
           <span class="vs-text" data-speak="מול">⚡VS⚡</span>
         </span>
         <button class="battle-card" data-num="${q.numB}" data-side="B" data-speak="${heroB.name_he}, ${speakB}" style="border-color:${heroB.color}">
-          <img src="${heroB.image}" alt="${heroB.name_he}" onerror="this.style.opacity='0'">
+          <img src="${heroB.image}" alt="${heroB.name_he}" onerror="imgFallback(this,'${heroB.emoji}')">
           <span class="battle-num" style="color:${heroB.color};${numStyle};direction:ltr">${displayB}</span>
           <span class="battle-name">${heroB.name_he}</span>
         </button>
@@ -2699,7 +2707,7 @@ const Game = {
     meter.innerHTML=`<span class="power-start">${hero.powerEmoji}</span>
       <div class="power-line">
         <div class="power-line-fill" style="width:${pct}%;background:${hero.gradient}"></div>
-        <span class="power-hero-marker" style="left:${pct}%"><img src="${hero.image}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #FFD700" onerror="this.style.display='none'"></span>
+        <span class="power-hero-marker" style="left:${pct}%"><img src="${hero.image}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #FFD700" onerror="imgFallback(this,'${hero.emoji}')"></span>
         ${nodes}
       </div>
       <span class="power-goal">⭐</span>`;
@@ -2743,7 +2751,7 @@ const Game = {
 
     document.getElementById('results-hero').innerHTML=
       `<img src="${hero.image}" alt="${hero.name_he}"
-        onerror="this.style.opacity='0'">`;
+        onerror="imgFallback(this,'${hero.emoji}')">`;
     document.getElementById('results-title').textContent=emoji+' '+title;
 
     let starsHtml='';
@@ -2759,7 +2767,7 @@ const Game = {
       unlockEl.innerHTML=`<div class="unlock-box">
         <div class="unlock-title">!גיבור חדש נפתח</div>
         <img src="${newHero.image}" alt="${newHero.name_he}"
-          onerror="this.style.opacity='0'">
+          onerror="imgFallback(this,'${newHero.emoji}')">
         <div class="unlock-name">${newHero.name_he}</div></div>`;
     } else unlockEl.innerHTML='';
 
@@ -2783,7 +2791,7 @@ const Game = {
     const hero=this.currentHero;
     const heroArea=document.getElementById('hero-area');
     heroArea.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}" data-speak="${hero.name_he}"
-      onerror="this.style.opacity='0'">`;
+      onerror="imgFallback(this,'${hero.emoji}')">`;
     heroArea.className='hero-area';
     document.getElementById('progress-text').textContent=`${this.state.nlRound+1}/${this.state.nlTotal}`;
     const aArea=document.getElementById('answers-area');aArea.innerHTML='';
@@ -3024,7 +3032,7 @@ const Game = {
     aArea.innerHTML='';
     const heroArea=document.getElementById('hero-area');
     heroArea.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}" data-speak="${hero.name_he}"
-      onerror="this.style.opacity='0'">`;
+      onerror="imgFallback(this,'${hero.emoji}')">`;
     heroArea.className='hero-area';
     const titleText=isEasy?'התאם ספרה לכמות':'התאם תרגיל לתשובה';
     document.getElementById('progress-text').textContent=titleText;
@@ -3099,7 +3107,7 @@ const Game = {
       let lineupHtml='<div class="lineup-area">';
       lineup.forEach((h,i)=>{
         lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}" data-idx="${i}">
-          <img src="${h.image}" alt="${h.name_he}" onerror="this.style.opacity='0'">
+          <img src="${h.image}" alt="${h.name_he}" onerror="imgFallback(this,'${h.emoji}')">
           <div class="lineup-platform">${i+1}</div></div>`;
       });
       lineupHtml+='</div>';
@@ -3115,7 +3123,7 @@ const Game = {
       let lineupHtml='<div class="lineup-area">';
       lineup.forEach((h,i)=>{
         lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}, מקום ${HEBREW_ORDINALS[i+1]||i+1}" data-idx="${i}" data-hero-id="${h.id}">
-          <img src="${h.image}" alt="${h.name_he}" onerror="this.style.opacity='0'">
+          <img src="${h.image}" alt="${h.name_he}" onerror="imgFallback(this,'${h.emoji}')">
           <div class="lineup-platform">${i+1}</div></div>`;
       });
       lineupHtml+='</div>';
@@ -3153,7 +3161,7 @@ const Game = {
       let lineupHtml='<div class="lineup-area">';
       lineup.forEach((h,i)=>{
         lineupHtml+=`<div class="lineup-hero" data-speak="${h.name_he}" data-idx="${i}">
-          <img src="${h.image}" alt="${h.name_he}" onerror="this.style.opacity='0'">
+          <img src="${h.image}" alt="${h.name_he}" onerror="imgFallback(this,'${h.emoji}')">
           <div class="lineup-platform">${i+1}</div></div>`;
       });
       lineupHtml+='</div>';
@@ -3356,7 +3364,7 @@ const CrushGame = {
           tile.style.borderColor=hero.color;
           tile.style.boxShadow=`inset 0 0 0 2px ${hero.color}, 2px 2px 0 rgba(0,0,0,0.4)`;
           tile.innerHTML=`<img src="${hero.image}" alt="${hero.name_he}"
-            onerror="this.style.opacity='0'">`;
+            onerror="imgFallback(this,'${hero.emoji}')">`;
         }
         tile.addEventListener('click',()=>this._onTileClick(r,c));
         gridEl.appendChild(tile);
@@ -4329,14 +4337,14 @@ const MazeGame = {
     // Hero overlay
     const hs=this.cellSize-4;
     html+=`<div class="maze-hero" id="maze-hero" style="width:${hs}px;height:${hs}px;top:${this.heroPos.r*this.cellSize+2}px;left:${this.heroPos.c*this.cellSize+2}px">
-      <img src="${this.hero.image}" alt="${this.hero.name_he}" onerror="this.style.opacity='0'">
+      <img src="${this.hero.image}" alt="${this.hero.name_he}" onerror="imgFallback(this,'${this.hero.emoji}')">
     </div>`;
 
     // Villain overlays
     this.villains.forEach((v,i)=>{
       const vs=this.cellSize-4;
       html+=`<div class="maze-villain" id="maze-villain-${i}" style="width:${vs}px;height:${vs}px;top:${v.pos.r*this.cellSize+2}px;left:${v.pos.c*this.cellSize+2}px">
-        <img src="${v.hero.image}" alt="${v.hero.name_he}" onerror="this.style.opacity='0'">
+        <img src="${v.hero.image}" alt="${v.hero.name_he}" onerror="imgFallback(this,'${v.hero.emoji}')">
       </div>`;
     });
 
