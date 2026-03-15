@@ -168,7 +168,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   background:radial-gradient(circle,rgba(255,255,255,0.04) 1px,transparent 1px);
   background-size:6px 6px;pointer-events:none;z-index:0}
 
-.game-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 4px;
+.game-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 4px 0 56px;
   position:relative;z-index:2}
 .back-btn{width:48px;height:48px;border-radius:12px;border:3px solid #000;
   background:linear-gradient(135deg,#FFD700,#FFA000);font-size:1.5rem;cursor:pointer;
@@ -691,6 +691,16 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .mic-hint{color:rgba(255,255,255,0.8);margin-top:8px;font-size:1.1rem}
 .mic-not-supported{color:#FFD700;font-size:1.3rem;text-align:center;padding:20px;line-height:1.8}
 
+/* ===== LEVEL POPUP OVERLAY ===== */
+.level-popup-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)}
+.level-popup-overlay.active{display:flex}
+.level-popup-box{background:linear-gradient(135deg,rgba(20,10,50,0.97),rgba(10,5,30,0.97));
+  border:4px solid #FFD700;border-radius:24px;padding:16px;max-width:480px;width:92%;
+  max-height:85vh;overflow-y:auto;box-shadow:0 0 40px rgba(255,215,0,0.3),8px 8px 0 rgba(0,0,0,0.5);
+  animation:crushBubbleIn 0.3s ease}
+
 /* ===== CRUSH MODE ===== */
 /* Crush Level Select */
 .crush-select-header{display:flex;align-items:center;gap:12px;padding:12px 16px;width:100%;max-width:480px}
@@ -785,7 +795,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .crush-timer-bar{width:100%;height:8px;background:rgba(0,0,0,0.3);border-radius:4px;overflow:hidden}
 .crush-timer-fill{height:100%;background:linear-gradient(90deg,#FF6347,#FFD700);
   border-radius:4px;transition:width 0.1s linear;width:100%}
-.crush-math-question{font-family:'Bangers',cursive;font-size:2rem;color:#fff;
+.crush-math-question{font-family:'Russo One','Bangers',cursive;font-size:2rem;color:#fff;
   text-align:center;-webkit-text-stroke:1px rgba(0,0,0,0.5);letter-spacing:2px;direction:rtl}
 .crush-math-answers{display:flex;gap:12px;justify-content:center;width:100%}
 .crush-math-answers .answer-btn{flex:1;min-height:70px;font-size:2.4rem}
@@ -901,9 +911,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   box-shadow:6px 6px 0 rgba(0,0,0,0.4);overflow:hidden;direction:ltr;margin:0 auto}
 .maze-grid{display:grid;width:100%;height:100%;position:relative}
 .maze-cell{display:flex;align-items:center;justify-content:center;position:relative}
-.maze-wall{background:linear-gradient(135deg,#2D1B4E,#1A0E33);border:1px solid rgba(100,50,150,0.3)}
-.maze-path{background:#0D1B3E}
-.maze-star{background:#0D1B3E;font-size:0.8rem;animation:mazeSpin 3s linear infinite}
+.maze-wall{background:linear-gradient(135deg,#1A0A2E,#0D0518);border:1px solid rgba(80,40,160,0.4)}
+.maze-path{background:#1E3060;border:1px solid rgba(60,100,180,0.15)}
+.maze-star{background:#1E3060;border:1px solid rgba(60,100,180,0.15);font-size:0.8rem;animation:mazeSpin 3s linear infinite}
 @keyframes mazeSpin{to{transform:rotate(360deg)}}
 .maze-gate{background:linear-gradient(135deg,#C62828,#B71C1C);border:2px solid #FFD700;
   font-size:0.7rem;animation:mazeGatePulse 1.5s ease-in-out infinite}
@@ -927,9 +937,9 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .maze-dpad{display:grid;grid-template-areas:'_ u _' 'l _ r' '_ d _';gap:6px;
   padding:12px;width:200px;margin:8px auto 0;flex-shrink:0}
 .dpad-btn{width:56px;height:56px;border-radius:14px;border:3px solid #000;
-  background:linear-gradient(135deg,#424242,#212121);font-size:1.5rem;cursor:pointer;
+  background:linear-gradient(135deg,#424242,#212121);font-size:1.8rem;cursor:pointer;
   touch-action:manipulation;display:flex;align-items:center;justify-content:center;
-  box-shadow:3px 3px 0 #000;color:#fff}
+  box-shadow:3px 3px 0 #000;color:#FFD700;text-shadow:0 0 6px rgba(255,215,0,0.4)}
 .dpad-btn:active{transform:scale(0.9);box-shadow:1px 1px 0 #000}
 .dpad-up{grid-area:u}.dpad-left{grid-area:l}.dpad-right{grid-area:r}.dpad-down{grid-area:d}
 /* Maze results reuse crush-results-overlay */
@@ -1016,10 +1026,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
       <span class="mode-btn-text"><span class="mode-btn-title">קרב מספרים</span><span class="mode-btn-desc">מי חזק יותר?</span></span>
       <span class="mode-btn-tag">השוואה</span>
     </button>
-    <button class="mode-btn mode-btn-numberline" id="btn-numberline" data-speak="ציר המספרים, מצא את המספר על הציר">
+    <button class="mode-btn mode-btn-numberline" id="btn-numberline" data-speak="ציר הגיבורים, מצא את המספר על הציר">
       <span class="mode-btn-icon">📏</span>
-      <span class="mode-btn-text"><span class="mode-btn-title">ציר המספרים</span><span class="mode-btn-desc">מצא את המספר על הציר</span></span>
-      <span class="mode-btn-tag">ציר המספרים</span>
+      <span class="mode-btn-text"><span class="mode-btn-title">ציר הגיבורים</span><span class="mode-btn-desc">מצא את המספר על הציר</span></span>
+      <span class="mode-btn-tag">ציר הגיבורים</span>
     </button>
     <button class="mode-btn mode-btn-mission" id="btn-mission" data-speak="משימת גיבורים, חיבור וחיסור">
       <span class="mode-btn-icon">💥</span>
@@ -1125,12 +1135,14 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 </div>
 
 <!-- ===== CRUSH LEVEL SELECT ===== -->
-<div id="crush-select" class="screen">
-  <div class="crush-select-header">
-    <button class="back-btn" id="crush-back-menu">🏠</button>
-    <h2 class="crush-select-title">גיבורי קראש</h2>
+<div id="crush-select" class="level-popup-overlay">
+  <div class="level-popup-box">
+    <div class="crush-select-header">
+      <button class="back-btn" id="crush-back-menu">✕</button>
+      <h2 class="crush-select-title">גיבורי קראש</h2>
+    </div>
+    <div class="crush-levels-grid" id="crush-levels-grid"></div>
   </div>
-  <div class="crush-levels-grid" id="crush-levels-grid"></div>
 </div>
 
 <!-- ===== CRUSH GAME SCREEN ===== -->
@@ -1168,12 +1180,14 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 </div>
 
 <!-- ===== MAZE LEVEL SELECT ===== -->
-<div id="maze-select" class="screen">
-  <div class="maze-select-header">
-    <button class="back-btn" id="maze-back-menu">🏠</button>
-    <h2 class="maze-select-title">מבוך הגיבורים</h2>
+<div id="maze-select" class="level-popup-overlay">
+  <div class="level-popup-box">
+    <div class="maze-select-header">
+      <button class="back-btn" id="maze-back-menu">✕</button>
+      <h2 class="maze-select-title">מבוך הגיבורים</h2>
+    </div>
+    <div class="maze-levels-grid" id="maze-levels-grid"></div>
   </div>
-  <div class="maze-levels-grid" id="maze-levels-grid"></div>
 </div>
 
 <!-- ===== MAZE GAME SCREEN ===== -->
@@ -1185,10 +1199,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   </div>
   <div class="maze-container" id="maze-container"></div>
   <div class="maze-dpad" id="maze-dpad">
-    <button class="dpad-btn dpad-up" data-dir="up">⬆️</button>
-    <button class="dpad-btn dpad-left" data-dir="left">⬅️</button>
-    <button class="dpad-btn dpad-right" data-dir="right">➡️</button>
-    <button class="dpad-btn dpad-down" data-dir="down">⬇️</button>
+    <button class="dpad-btn dpad-up" data-dir="up">▲</button>
+    <button class="dpad-btn dpad-left" data-dir="left">◄</button>
+    <button class="dpad-btn dpad-right" data-dir="right">►</button>
+    <button class="dpad-btn dpad-down" data-dir="down">▼</button>
   </div>
 </div>
 
@@ -2135,7 +2149,7 @@ const Game = {
     if(savedMemoryMode) this.state.memoryMode=savedMemoryMode;
     const modeNames={counting:'ספירת כוח',mission:'משימת גיבורים',battle:'קרב מספרים',
       puzzle:'פאזל חשבון',memory:'זיכרון חשבון',order:'מספרים בסדר',readaloud:'קריאת מספרים',
-      numberline:'ציר המספרים'};
+      numberline:'ציר הגיבורים'};
     Speech.speak(modeNames[mode]);
     Sounds.whoosh();
 
@@ -3266,7 +3280,7 @@ const CrushGame = {
   // ===== LEVEL SELECT =====
   showLevelSelect(){
     this.cleanup();
-    this._showScreen('crush-select');
+    document.getElementById('crush-select').classList.add('active');
     this._renderLevels();
     Sounds.whoosh();
     this._t(()=>Speech.speak('גיבורי קראש! בחר שלב'),500);
@@ -3306,6 +3320,7 @@ const CrushGame = {
 
   // ===== START LEVEL =====
   startLevel(n){
+    document.getElementById('crush-select').classList.remove('active');
     this.cleanup();
     this.levelNum=n;
     this.level=CRUSH_LEVELS[n-1];
@@ -3555,9 +3570,10 @@ const CrushGame = {
     let qText='';
     if(q.mode==='counting') qText='?כמה זה '+q.answer;
     else if(q.mode==='comparison') qText='?מי גדול יותר: '+q.numA+' או '+q.numB;
-    else qText=q.a+' '+q.operation+' '+q.b+' = ?';
+    else qText='\u200E'+q.a+' '+q.operation+' '+q.b+' = ?\u200E';
 
     qEl.textContent=qText;
+    qEl.style.direction=(q.mode==='counting'||q.mode==='comparison')?'rtl':'ltr';
     Speech.speak(qText.replace('?',''));
 
     // Build answer buttons
@@ -3572,7 +3588,7 @@ const CrushGame = {
       `<button class="answer-btn" data-val="${o}" data-speak="${o}"
         style="background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
         border:4px solid #000;border-radius:16px;color:#fff;cursor:pointer;
-        box-shadow:4px 4px 0 #000;font-family:'Bangers',cursive">${o}</button>`
+        box-shadow:4px 4px 0 #000;font-family:'Russo One',sans-serif">${o}</button>`
     ).join('');
 
     aEl.querySelectorAll('.answer-btn').forEach(btn=>{
@@ -4022,7 +4038,7 @@ const CrushGame = {
     let qText='';
     if(q.mode==='counting') qText='?כמה זה '+q.answer;
     else if(q.mode==='comparison') qText='?מי גדול יותר: '+q.numA+' או '+q.numB;
-    else qText=q.a+' '+q.operation+' '+q.b+' = ?';
+    else qText='\u200E'+q.a+' '+q.operation+' '+q.b+' = ?\u200E';
     qEl.textContent='💡 '+qText;
     Speech.speak('בוא נפתור תרגיל! '+qText.replace('?',''));
     let options;
@@ -4032,7 +4048,7 @@ const CrushGame = {
       `<button class="answer-btn" data-val="${o}" data-speak="${o}"
         style="background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
         border:4px solid #000;border-radius:16px;color:#fff;cursor:pointer;
-        box-shadow:4px 4px 0 #000;font-family:'Bangers',cursive">${o}</button>`).join('');
+        box-shadow:4px 4px 0 #000;font-family:'Russo One',sans-serif">${o}</button>`).join('');
     aEl.querySelectorAll('.answer-btn').forEach(btn=>{
       btn.addEventListener('click',()=>{
         const val=parseInt(btn.dataset.val);
@@ -4097,11 +4113,13 @@ const CrushGame = {
     this._t(()=>{
       if(el1) el1.classList.remove('hint');
       if(el2) el2.classList.remove('hint');
-    },2000);
+    },6000);
   },
   // ===== INIT =====
   init(){
-    document.getElementById('crush-back-menu').addEventListener('click',()=>Game.showMenu());
+    document.getElementById('crush-back-menu').addEventListener('click',()=>{
+      document.getElementById('crush-select').classList.remove('active');
+    });
     document.getElementById('crush-back-select').addEventListener('click',()=>this.showLevelSelect());
     document.getElementById('crush-retry').addEventListener('click',()=>{
       document.getElementById('crush-results').classList.remove('active');
@@ -4121,7 +4139,7 @@ const CrushGame = {
 
 // ===== MAZE GAME =====
 const MAZE_LEVELS = [
-  {id:1, name_he:'שלב 1', skills:['counting'], lives:3, villainCount:0, maze:[
+  {id:1, name_he:'שלב 1', skills:['counting'], lives:3, villainCount:1, maze:[
     '#############',
     '#S..*...*..*#',
     '#.###.###.#.#',
@@ -4149,7 +4167,7 @@ const MAZE_LEVELS = [
     '#.#########.#',
     '#...*...*..E#',
     '#############']},
-  {id:3, name_he:'שלב 3', skills:['counting','addition'], lives:3, villainCount:1, maze:[
+  {id:3, name_he:'שלב 3', skills:['counting','addition'], lives:3, villainCount:2, maze:[
     '#############',
     '#S.*...*..*.#',
     '#.##.####.#.#',
@@ -4163,7 +4181,21 @@ const MAZE_LEVELS = [
     '##.########.#',
     '#..*...*..*E#',
     '#############']},
-  {id:4, name_he:'שלב 4', skills:['addition','subtraction'], lives:3, villainCount:2, maze:[
+  {id:4, name_he:'שלב 4', skills:['counting','addition'], lives:3, villainCount:2, maze:[
+    '#############',
+    '#S..*...*...#',
+    '#.#.###.###.#',
+    '#.#..*G.*.#.#',
+    '#.#.####.##.#',
+    '#.*....*....#',
+    '#.###.###.#.#',
+    '#.*.#..G.*..#',
+    '#.#.#.#####.#',
+    '#.#...*...*.#',
+    '#.#########.#',
+    '#..*...*...E#',
+    '#############']},
+  {id:5, name_he:'שלב 5', skills:['addition','subtraction'], lives:3, villainCount:3, maze:[
     '#############',
     '#S.*...*..*.#',
     '##.#.####.#.#',
@@ -4177,15 +4209,71 @@ const MAZE_LEVELS = [
     '#.#.######.##',
     '#..*...*...E#',
     '#############']},
-  {id:5, name_he:'שלב 5', skills:['addition','subtraction','comparison'], lives:3, villainCount:2, maze:[
+  {id:6, name_he:'שלב 6', skills:['addition','subtraction'], lives:3, villainCount:3, maze:[
     '#############',
-    '#S.*G.*..**.#',
+    '#S..*..G*..*#',
+    '#.###.##.##.#',
+    '#..*....*...#',
+    '#.##.####.#.#',
+    '#.*..G....*.#',
+    '###.#####.###',
+    '#.*..*...G..#',
+    '#.#.##.####.#',
+    '#.#.*...*.*.#',
+    '#.########.##',
+    '#..*...*...E#',
+    '#############']},
+  {id:7, name_he:'שלב 7', skills:['addition','subtraction','comparison'], lives:3, villainCount:4, maze:[
+    '#############',
+    '#S.*.G.*..*.#',
     '#.##.####.#.#',
     '#..*....*...#',
     '#.####.##.#.#',
     '#.*..G....*.#',
     '#.#.######.##',
-    '#.#.*....*..#',
+    '#.#.*..G.*..#',
+    '#.#.##.####.#',
+    '#...*..G..*.#',
+    '##.########.#',
+    '#..*...*.**E#',
+    '#############']},
+  {id:8, name_he:'שלב 8', skills:['addition','subtraction','comparison'], lives:3, villainCount:4, maze:[
+    '#############',
+    '#S.*G..*..*.#',
+    '##.#.####.#.#',
+    '#..*....*...#',
+    '#.###G###.#.#',
+    '#.*........*#',
+    '#.#.####.#.##',
+    '#.#.*G..*...#',
+    '#.###.####.##',
+    '#...*..G..*.#',
+    '#.#.######.##',
+    '#..*...*...E#',
+    '#############']},
+  {id:9, name_he:'שלב 9', skills:['counting','addition','subtraction','comparison'], lives:3, villainCount:5, maze:[
+    '#############',
+    '#S..*G..*.**#',
+    '#.###.##.##.#',
+    '#..*..G..*..#',
+    '#.##.####.#.#',
+    '#.*..G....*G#',
+    '###.#####.###',
+    '#.*..*G..G..#',
+    '#.#.##.####.#',
+    '#.#.*...*.*.#',
+    '#.########.##',
+    '#..*...*...E#',
+    '#############']},
+  {id:10, name_he:'שלב 10', skills:['counting','addition','subtraction','comparison'], lives:3, villainCount:5, maze:[
+    '#############',
+    '#S.*G.*G.**.#',
+    '#.##.####.#.#',
+    '#..*..G..*..#',
+    '#.####.##.#.#',
+    '#.*G.G....*.#',
+    '#.#.######.##',
+    '#.#.*G.G.*..#',
     '#.#.##.####.#',
     '#...*..G..*.#',
     '##.########.#',
@@ -4220,7 +4308,7 @@ const MazeGame = {
   // ===== LEVEL SELECT =====
   showLevelSelect(){
     this.cleanup();
-    this._showScreen('maze-select');
+    document.getElementById('maze-select').classList.add('active');
     this._renderLevels();
     Sounds.whoosh();
     this._t(()=>Speech.speak('מבוך הגיבורים! בחר שלב'),500);
@@ -4260,6 +4348,7 @@ const MazeGame = {
 
   // ===== START LEVEL =====
   startLevel(n){
+    document.getElementById('maze-select').classList.remove('active');
     this.cleanup();
     this.levelNum=n;
     this.level=MAZE_LEVELS[n-1];
@@ -4445,9 +4534,10 @@ const MazeGame = {
     let qText='';
     if(q.mode==='counting') qText='?כמה זה '+q.answer;
     else if(q.mode==='comparison') qText='?מי גדול יותר: '+q.numA+' או '+q.numB;
-    else qText=q.a+' '+q.operation+' '+q.b+' = ?';
+    else qText='\u200E'+q.a+' '+q.operation+' '+q.b+' = ?\u200E';
 
     qEl.textContent=qText;
+    qEl.style.direction=(q.mode==='counting'||q.mode==='comparison')?'rtl':'ltr';
     Speech.speak(qText.replace('?',''));
 
     let options;
@@ -4458,7 +4548,7 @@ const MazeGame = {
       `<button class="answer-btn" data-val="${o}" data-speak="${o}"
         style="background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
         border:4px solid #000;border-radius:16px;color:#fff;cursor:pointer;
-        box-shadow:4px 4px 0 #000;font-family:'Bangers',cursive">${o}</button>`).join('');
+        box-shadow:4px 4px 0 #000;font-family:'Russo One',sans-serif">${o}</button>`).join('');
 
     aEl.querySelectorAll('.answer-btn').forEach(btn=>{
       btn.addEventListener('click',()=>{
@@ -4552,6 +4642,7 @@ const MazeGame = {
     else if(q.mode==='comparison') qText='!פתור כדי לברוח: מי גדול יותר: '+q.numA+' או '+q.numB+'?';
     else qText='!פתור כדי לברוח: '+q.a+' '+q.operation+' '+q.b+' = ?';
     qEl.textContent=qText;
+    qEl.style.direction=(q.mode==='counting'||q.mode==='comparison')?'rtl':'ltr';
     Speech.speak('נבל תפס אותך! פתור כדי לברוח');
     let options;
     if(q.mode==='comparison') options=[q.numA,q.numB].sort(()=>Math.random()-0.5);
@@ -4560,7 +4651,7 @@ const MazeGame = {
       `<button class="answer-btn" data-val="${o}" data-speak="${o}"
         style="background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
         border:4px solid #000;border-radius:16px;color:#fff;cursor:pointer;
-        box-shadow:4px 4px 0 #000;font-family:'Bangers',cursive">${o}</button>`).join('');
+        box-shadow:4px 4px 0 #000;font-family:'Russo One',sans-serif">${o}</button>`).join('');
     aEl.querySelectorAll('.answer-btn').forEach(btn=>{
       btn.addEventListener('click',()=>{
         const val=parseInt(btn.dataset.val);
@@ -4663,7 +4754,9 @@ const MazeGame = {
 
   // ===== INIT =====
   init(){
-    document.getElementById('maze-back-menu').addEventListener('click',()=>Game.showMenu());
+    document.getElementById('maze-back-menu').addEventListener('click',()=>{
+      document.getElementById('maze-select').classList.remove('active');
+    });
     document.getElementById('maze-back-select').addEventListener('click',()=>this.showLevelSelect());
     document.getElementById('maze-retry').addEventListener('click',()=>{
       document.getElementById('maze-results').classList.remove('active');
