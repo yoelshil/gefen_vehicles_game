@@ -905,8 +905,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
   -webkit-text-stroke:1px #000;letter-spacing:2px}
 .maze-lives{font-size:1.3rem;letter-spacing:2px}
 /* Maze Container */
-.maze-container{position:relative;width:100%;max-width:min(95vw,68vh);aspect-ratio:1;
-  max-height:calc(100vh - 220px);max-height:calc(100dvh - 220px);
+.maze-container{position:relative;width:100%;max-width:min(95vw,78vh);aspect-ratio:1;
+  max-height:calc(100vh - 180px);max-height:calc(100dvh - 180px);
   background:rgba(0,0,0,0.4);border:4px solid #000;border-radius:12px;
   box-shadow:6px 6px 0 rgba(0,0,0,0.4);overflow:hidden;direction:ltr;margin:0 auto}
 .maze-grid{display:grid;width:100%;height:100%;position:relative}
@@ -935,10 +935,10 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 .maze-villain img{width:90%;height:90%;border-radius:50%;object-fit:cover;object-position:center top}
 /* D-Pad */
 .maze-dpad{display:grid;grid-template-areas:'. u .' 'l . r' '. d .';gap:6px;
-  grid-template-columns:56px 56px 56px;grid-template-rows:56px 56px 56px;
-  padding:12px;width:auto;margin:8px auto 0;flex-shrink:0;justify-content:center}
-.dpad-btn{width:56px;height:56px;border-radius:14px;border:3px solid #000;
-  background:linear-gradient(135deg,#424242,#212121);font-size:1.8rem;cursor:pointer;
+  grid-template-columns:64px 64px 64px;grid-template-rows:64px 64px 64px;
+  padding:12px;width:auto;margin:8px auto 0;flex-shrink:0;justify-content:center;direction:ltr}
+.dpad-btn{width:64px;height:64px;border-radius:14px;border:3px solid #000;
+  background:linear-gradient(135deg,#424242,#212121);font-size:2rem;cursor:pointer;
   touch-action:manipulation;display:flex;align-items:center;justify-content:center;
   box-shadow:3px 3px 0 #000;color:#FFD700;text-shadow:0 0 6px rgba(255,215,0,0.4)}
 .dpad-btn:active{transform:scale(0.9);box-shadow:1px 1px 0 #000}
@@ -947,9 +947,8 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
 /* Mobile */
 @media(max-width:600px){
   .maze-container{border-radius:8px;border-width:3px}
-  .dpad-btn{width:50px;height:50px;font-size:1.3rem}
-  .maze-dpad{grid-template-columns:50px 50px 50px;grid-template-rows:50px 50px 50px;gap:4px}
-  .dpad-btn{width:50px;height:50px;font-size:1.3rem}
+  .dpad-btn{width:56px;height:56px;font-size:1.5rem}
+  .maze-dpad{grid-template-columns:56px 56px 56px;grid-template-rows:56px 56px 56px;gap:4px}
   .maze-select-title{font-size:1.8rem}
 }
 </style>
@@ -4117,7 +4116,7 @@ const CrushGame = {
     document.getElementById('crush-back-menu').addEventListener('click',()=>{
       document.getElementById('crush-select').classList.remove('active');
     });
-    document.getElementById('crush-back-select').addEventListener('click',()=>this.showLevelSelect());
+    document.getElementById('crush-back-select').addEventListener('click',()=>Game.showMenu());
     document.getElementById('crush-retry').addEventListener('click',()=>{
       document.getElementById('crush-results').classList.remove('active');
       this.startLevel(this.levelNum);
@@ -4768,7 +4767,7 @@ const MazeGame = {
     document.getElementById('maze-back-menu').addEventListener('click',()=>{
       document.getElementById('maze-select').classList.remove('active');
     });
-    document.getElementById('maze-back-select').addEventListener('click',()=>this.showLevelSelect());
+    document.getElementById('maze-back-select').addEventListener('click',()=>Game.showMenu());
     document.getElementById('maze-retry').addEventListener('click',()=>{
       document.getElementById('maze-results').classList.remove('active');
       this.startLevel(this.levelNum);
