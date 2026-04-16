@@ -2,6 +2,7 @@
 
 const App = {
   speechInitialized: false,
+  deferredInstallPrompt: null,
 
   init() {
     // Initialize modules
@@ -13,6 +14,15 @@ const App = {
     OddOneOut.init();
     CarParts.init();
     Puzzle.init();
+
+    // Register service worker
+    this.registerServiceWorker();
+
+    // Setup PWA install prompt
+    this.setupInstallPrompt();
+
+    // Setup WhatsApp share
+    this.setupShare();
 
     // Bind menu buttons
     document.querySelectorAll('[data-screen]').forEach(btn => {
@@ -153,6 +163,83 @@ const App = {
           break;
       }
     }
+  },
+
+  registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+    }
+  },
+
+  setupInstallPrompt() {
+    const installBtn = document.getElementById('install-btn');
+
+    // Catch the beforeinstallprompt event (Chrome/Android)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredInstallPrompt = e;
+      installBtn.style.display = 'flex';
+    });
+
+    installBtn.addEventListener('click', () => {
+      if (this.deferredInstallPrompt) {
+        // Android / Chrome: use native prompt
+        this.deferredInstallPrompt.prompt();
+        this.deferredInstallPrompt.userChoice.then(() => {
+          this.deferredInstallPrompt = null;
+          installBtn.style.display = 'none';
+        });
+      } else if (this.isIOS()) {
+        // iOS: show manual instructions
+        this.showIOSInstallBanner();
+      }
+    });
+
+    // On iOS show the install button with manual instructions
+    if (this.isIOS() && !this.isStandalone()) {
+      installBtn.style.display = 'flex';
+    }
+
+    // Hide install button if already installed
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+      this.deferredInstallPrompt = null;
+    });
+  },
+
+  isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  },
+
+  isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      navigator.standalone === true;
+  },
+
+  showIOSInstallBanner() {
+    // Remove existing banner if any
+    const existing = document.querySelector('.ios-install-banner');
+    if (existing) existing.remove();
+
+    const banner = document.createElement('div');
+    banner.className = 'ios-install-banner';
+    banner.innerHTML = `
+      <button class="close-banner" aria-label="סגור">&times;</button>
+      <p>להתקנה על המכשיר:</p>
+      <p>לחץ על <strong style="font-size:1.3em">⎙</strong> (שיתוף) בתחתית הדפדפן</p>
+      <p>ואז בחר <strong>"הוסף למסך הבית"</strong></p>
+    `;
+    document.body.appendChild(banner);
+    banner.querySelector('.close-banner').addEventListener('click', () => banner.remove());
+  },
+
+  setupShare() {
+    document.getElementById('share-whatsapp-btn').addEventListener('click', () => {
+      const gameUrl = window.location.href;
+      const text = encodeURIComponent('בואו לשחק במשחק המכוניות של גפן! 🚗🎮\n' + gameUrl);
+      window.open('https://wa.me/?text=' + text, '_blank');
+    });
   },
 
   celebrate() {
