@@ -1,25 +1,9 @@
-// Service Worker for "משחק המכוניות של גפן"
-const CACHE_NAME = 'gefen-cars-v1';
+// Service Worker for "גיבורי על - משחק חשבון"
+const CACHE_NAME = 'gefen-heroes-v1';
 
 const ASSETS_TO_CACHE = [
   './',
-  './index.html',
-  './css/style.css',
-  './js/app.js',
-  './js/cars-data.js',
-  './js/brands-data.js',
-  './js/car-parts-data.js',
-  './js/speech.js',
-  './js/sounds.js',
-  './js/storage.js',
-  './js/learning.js',
-  './js/brands.js',
-  './js/quiz.js',
-  './js/matching.js',
-  './js/sound-quiz.js',
-  './js/odd-one-out.js',
-  './js/car-parts.js',
-  './js/puzzle.js',
+  './heroes.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
@@ -48,7 +32,6 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Cache successful responses
         if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
