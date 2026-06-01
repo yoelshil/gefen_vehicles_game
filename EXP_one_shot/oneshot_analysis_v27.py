@@ -15,6 +15,10 @@ v27 CHANGES:
   - Added Icon vs T2 comparison (Q_icon_t2): paired permutation + Wilcoxon +
     Cliff's delta. Tests learning from two exposures relative to icon prior.
   - Panel 3.2b: Icon vs T2 paired dot plot (mirrors 3.2 layout).
+  - Panel 7.9 (Improvement by Feedback Band): added per-band Wilcoxon signed-rank
+    test vs 0 (significance star over each bar) plus the continuous Spearman rho
+    (T1 SAD vs improvement) annotation. Both labeled exploratory (regression-to-
+    the-mean caveat). band_stats now carries wilcoxon_stat / wilcoxon_p.
 
 v26 CHANGES:
   - Added Blind vs T1 comparison (q_blind_t1): paired permutation (two-sided) +
@@ -4054,14 +4058,26 @@ def analyze_feedback_utilization(df, summary_df):
         if mask.sum() > 0:
             imp_vals = improvement[mask]
             t2_vals = t2_sad[mask]
+            # Per-band Wilcoxon signed-rank test: is improvement != 0 within this band?
+            # (exploratory; small n and confounded by regression to the mean)
+            w_stat, w_p = np.nan, np.nan
+            nonzero = imp_vals[imp_vals != 0]
+            if len(nonzero) >= 1:
+                try:
+                    w_stat, w_p = stats.wilcoxon(imp_vals)
+                except ValueError:
+                    w_stat, w_p = np.nan, np.nan
             band_stats[band] = {
                 'n': int(mask.sum()),
                 'imp_mean': float(np.mean(imp_vals)),
                 'imp_median': float(np.median(imp_vals)),
                 't2_mean': float(np.mean(t2_vals)),
+                'wilcoxon_stat': float(w_stat) if not np.isnan(w_stat) else np.nan,
+                'wilcoxon_p': float(w_p) if not np.isnan(w_p) else np.nan,
             }
+            wp_str = f", W={w_stat:.1f}, p={w_p:.3f} {interpret_p_value(w_p)}" if not np.isnan(w_p) else ""
             report(f"  {band:<14} {mask.sum():>4} {np.mean(imp_vals):>7.2f} "
-                   f"{np.median(imp_vals):>8.1f} {np.mean(t2_vals):>6.1f}")
+                   f"{np.median(imp_vals):>8.1f} {np.mean(t2_vals):>6.1f}{wp_str}")
     results['band_stats'] = band_stats
 
     # ---- (4) Item-level correction direction ----
@@ -6521,11 +6537,26 @@ def create_figure7(df, summary_df, results, save_path=None):
         ns = [band_stats.get(b, {}).get('n', 0) for b in band_order]
         colors_b = [band_colors_map.get(b, 'gray') for b in band_order]
         bars = ax.bar(x_bands, means_b, color=colors_b, alpha=0.8, edgecolor='black', linewidth=0.5)
-        for i, (m, n) in enumerate(zip(means_b, ns)):
+        for i, (b, m, n) in enumerate(zip(band_order, means_b, ns)):
             if n > 0:
-                ax.text(i, m + (0.15 if m >= 0 else -0.3), f'n={n}', ha='center', fontsize=7)
+                # Per-band Wilcoxon-vs-0 significance star (above bar) + n label (below/near base)
+                w_p = band_stats.get(b, {}).get('wilcoxon_p', np.nan)
+                star = interpret_p_value(w_p)
+                off = 0.15 if m >= 0 else -0.3
+                if star:
+                    ax.text(i, m + (0.30 if m >= 0 else -0.55), star, ha='center',
+                            fontsize=10, fontweight='bold')
+                ax.text(i, m + off, f'n={n}', ha='center', fontsize=7)
         ax.axhline(y=0, color='black', lw=0.8)
         ax.set_xticks(x_bands); ax.set_xticklabels(band_order, fontsize=8)
+        # Continuous (un-binned) Spearman rho: T1 SAD vs improvement, with RTM caveat.
+        ec = fb.get('error_correction', {})
+        if ec.get('rho') is not None and not np.isnan(ec.get('rho', np.nan)):
+            add_stats_text(ax, f"T1 SAD vs Imp (cont.):\nrho={ec['rho']:.3f}, p={ec['p_value']:.3f} "
+                               f"{interpret_p_value(ec['p_value'])}\nper-band: Wilcoxon vs 0 (*)",
+                           loc='upper left', fontsize=6)
+        ax.text(0.98, 0.02, '*RTM inflates band differences', transform=ax.transAxes,
+                fontsize=5.5, ha='right', va='bottom', color='gray', style='italic')
     ax.set_xlabel('T1 Feedback Band (SAD range)'); ax.set_ylabel('Mean Improvement (T1-T2)')
     ax.set_title('7.9 Improvement by Feedback Band')
 
