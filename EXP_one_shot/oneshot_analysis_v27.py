@@ -15,10 +15,11 @@ v27 CHANGES:
   - Added Icon vs T2 comparison (Q_icon_t2): paired permutation + Wilcoxon +
     Cliff's delta. Tests learning from two exposures relative to icon prior.
   - Panel 3.2b: Icon vs T2 paired dot plot (mirrors 3.2 layout).
-  - Panel 7.9 (Improvement by Feedback Band): added per-band Wilcoxon signed-rank
-    test vs 0 (significance star over each bar) plus the continuous Spearman rho
-    (T1 SAD vs improvement) annotation. Both labeled exploratory (regression-to-
-    the-mean caveat). band_stats now carries wilcoxon_stat / wilcoxon_p.
+  - Panel 7.9 (Improvement by Feedback Band): added a Jonckheere-Terpstra trend
+    test across the ordered feedback bands (new jonckheere_terpstra_test() helper:
+    JT statistic, normal-approx z, two-sided permutation p) plus the continuous
+    Spearman rho (T1 SAD vs improvement) annotation. Both labeled exploratory
+    (regression-to-the-mean caveat). Stored in results['feedback']['jt_trend'].
 
 v26 CHANGES:
   - Added Blind vs T1 comparison (q_blind_t1): paired permutation (two-sided) +
@@ -3993,6 +3994,58 @@ def analyze_estimation_trends(df, summary_df):
 # and item-level correction direction.
 # Caveat: regression to the mean inflates apparent correction for high T1 SAD.
 
+def jonckheere_terpstra_test(groups, n_perm=10000, seed=42):
+    """Jonckheere-Terpstra test for an ordered (monotonic) trend across groups.
+
+    `groups` is a list of 1-D arrays given in the hypothesized order. Tests H0:
+    no trend vs H1: a monotonic trend across the ordered groups. scipy has no JT,
+    so this computes the statistic directly, a normal-approximation z, and a
+    two-sided permutation p-value (label-shuffle, robust for small/unequal n).
+    Returns {} if fewer than 2 non-empty groups or <3 total observations.
+    """
+    groups = [np.asarray(g, dtype=float) for g in groups if len(g) > 0]
+    if len(groups) < 2:
+        return {}
+    ns = [len(g) for g in groups]
+    N = int(sum(ns))
+    if N < 3:
+        return {}
+
+    def _jt(grps):
+        total = 0.0
+        for i in range(len(grps)):
+            for j in range(i + 1, len(grps)):
+                xi, yj = grps[i], grps[j]
+                # # of (x<y) pairs + 0.5 * ties, summed over ordered group pairs
+                diff = yj[:, None] - xi[None, :]
+                total += np.sum(diff > 0) + 0.5 * np.sum(diff == 0)
+        return total
+
+    jt = _jt(groups)
+    # Normal approximation (no tie correction): mean & variance under H0
+    sum_n2 = sum(n * n for n in ns)
+    mean = (N * N - sum_n2) / 4.0
+    var = (N * N * (2 * N + 3) - sum(n * n * (2 * n + 3) for n in ns)) / 72.0
+    z = (jt - mean) / np.sqrt(var) if var > 0 else np.nan
+    p_norm = 2 * stats.norm.sf(abs(z)) if not np.isnan(z) else np.nan
+
+    # Two-sided permutation p-value: shuffle membership, keep group sizes fixed
+    rng = np.random.default_rng(seed)
+    pooled = np.concatenate(groups)
+    obs_dev = abs(jt - mean)
+    count = 0
+    for _ in range(n_perm):
+        perm = rng.permutation(pooled)
+        idx, parts = 0, []
+        for n in ns:
+            parts.append(perm[idx:idx + n]); idx += n
+        if abs(_jt(parts) - mean) >= obs_dev:
+            count += 1
+    p_perm = (count + 1) / (n_perm + 1)
+    return {'statistic': float(jt), 'z': float(z), 'p_norm': float(p_norm),
+            'p_value': float(p_perm), 'n': N, 'k_groups': len(groups)}
+
+
 def analyze_feedback_utilization(df, summary_df):
     """Analyze whether T1 SAD feedback predicts T2 improvement magnitude."""
     report("\n" + "=" * 70)
@@ -4053,32 +4106,34 @@ def analyze_feedback_utilization(df, summary_df):
     report(f"  {'Band':<14} {'N':>4} {'Imp_M':>7} {'Imp_Mdn':>8} {'T2_M':>6}")
     report(f"  " + "-" * 45)
     band_stats = {}
-    for band in ['Low (0-2)', 'Mid (3-4)', 'High (5-6)', 'VHigh (7+)']:
+    band_order = ['Low (0-2)', 'Mid (3-4)', 'High (5-6)', 'VHigh (7+)']
+    band_groups = []   # ordered improvement arrays for the trend test
+    for band in band_order:
         mask = bands == band
         if mask.sum() > 0:
             imp_vals = improvement[mask]
             t2_vals = t2_sad[mask]
-            # Per-band Wilcoxon signed-rank test: is improvement != 0 within this band?
-            # (exploratory; small n and confounded by regression to the mean)
-            w_stat, w_p = np.nan, np.nan
-            nonzero = imp_vals[imp_vals != 0]
-            if len(nonzero) >= 1:
-                try:
-                    w_stat, w_p = stats.wilcoxon(imp_vals)
-                except ValueError:
-                    w_stat, w_p = np.nan, np.nan
             band_stats[band] = {
                 'n': int(mask.sum()),
                 'imp_mean': float(np.mean(imp_vals)),
                 'imp_median': float(np.median(imp_vals)),
                 't2_mean': float(np.mean(t2_vals)),
-                'wilcoxon_stat': float(w_stat) if not np.isnan(w_stat) else np.nan,
-                'wilcoxon_p': float(w_p) if not np.isnan(w_p) else np.nan,
             }
-            wp_str = f", W={w_stat:.1f}, p={w_p:.3f} {interpret_p_value(w_p)}" if not np.isnan(w_p) else ""
+            band_groups.append(imp_vals)
             report(f"  {band:<14} {mask.sum():>4} {np.mean(imp_vals):>7.2f} "
-                   f"{np.median(imp_vals):>8.1f} {np.mean(t2_vals):>6.1f}{wp_str}")
+                   f"{np.median(imp_vals):>8.1f} {np.mean(t2_vals):>6.1f}")
     results['band_stats'] = band_stats
+
+    # Jonckheere-Terpstra trend test: does improvement change monotonically across
+    # the ordered T1 feedback bands? (exploratory; confounded by regression to mean)
+    jt = jonckheere_terpstra_test(band_groups)
+    results['jt_trend'] = jt
+    if jt:
+        report(f"\n  Jonckheere-Terpstra trend (improvement across ordered bands): "
+               f"JT={jt['statistic']:.1f}, z={jt['z']:.2f}, "
+               f"p_perm={jt['p_value']:.4f} {interpret_p_value(jt['p_value'])} "
+               f"(k={jt['k_groups']} bands, N={jt['n']})")
+        report(f"    NOTE: exploratory; band differences are inflated by regression to the mean.")
 
     # ---- (4) Item-level correction direction ----
     report(f"\n  Item-Level Correction (T1 -> T2):")
@@ -6537,25 +6592,25 @@ def create_figure7(df, summary_df, results, save_path=None):
         ns = [band_stats.get(b, {}).get('n', 0) for b in band_order]
         colors_b = [band_colors_map.get(b, 'gray') for b in band_order]
         bars = ax.bar(x_bands, means_b, color=colors_b, alpha=0.8, edgecolor='black', linewidth=0.5)
-        for i, (b, m, n) in enumerate(zip(band_order, means_b, ns)):
+        for i, (m, n) in enumerate(zip(means_b, ns)):
             if n > 0:
-                # Per-band Wilcoxon-vs-0 significance star (above bar) + n label (below/near base)
-                w_p = band_stats.get(b, {}).get('wilcoxon_p', np.nan)
-                star = interpret_p_value(w_p)
-                off = 0.15 if m >= 0 else -0.3
-                if star:
-                    ax.text(i, m + (0.30 if m >= 0 else -0.55), star, ha='center',
-                            fontsize=10, fontweight='bold')
-                ax.text(i, m + off, f'n={n}', ha='center', fontsize=7)
+                ax.text(i, m + (0.15 if m >= 0 else -0.3), f'n={n}', ha='center', fontsize=7)
         ax.axhline(y=0, color='black', lw=0.8)
         ax.set_xticks(x_bands); ax.set_xticklabels(band_order, fontsize=8)
-        # Continuous (un-binned) Spearman rho: T1 SAD vs improvement, with RTM caveat.
+        # Hypothesis tests: Jonckheere-Terpstra trend across ordered bands +
+        # continuous (un-binned) Spearman rho (T1 SAD vs improvement). RTM caveat.
+        jt = fb.get('jt_trend', {})
         ec = fb.get('error_correction', {})
+        lines = []
+        if jt:
+            lines.append(f"J-T trend: z={jt['z']:.2f}, p={jt['p_value']:.3f} "
+                         f"{interpret_p_value(jt['p_value'])}")
         if ec.get('rho') is not None and not np.isnan(ec.get('rho', np.nan)):
-            add_stats_text(ax, f"T1 SAD vs Imp (cont.):\nrho={ec['rho']:.3f}, p={ec['p_value']:.3f} "
-                               f"{interpret_p_value(ec['p_value'])}\nper-band: Wilcoxon vs 0 (*)",
-                           loc='upper left', fontsize=6)
-        ax.text(0.98, 0.02, '*RTM inflates band differences', transform=ax.transAxes,
+            lines.append(f"T1 vs Imp (cont.): rho={ec['rho']:.3f}, "
+                         f"p={ec['p_value']:.3f} {interpret_p_value(ec['p_value'])}")
+        if lines:
+            add_stats_text(ax, '\n'.join(lines), loc='upper left', fontsize=6)
+        ax.text(0.98, 0.02, 'exploratory; RTM inflates band differences', transform=ax.transAxes,
                 fontsize=5.5, ha='right', va='bottom', color='gray', style='italic')
     ax.set_xlabel('T1 Feedback Band (SAD range)'); ax.set_ylabel('Mean Improvement (T1-T2)')
     ax.set_title('7.9 Improvement by Feedback Band')

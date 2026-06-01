@@ -57,6 +57,6 @@ ONESHOT_DATA="/path/to/oneshot_subject_*.csv" python _run_v27_smoke.py
 - Added Icon vs T2 comparison (`Q_icon_t2`): paired permutation + Wilcoxon +
   Cliff's delta. Tests learning from two exposures relative to the icon prior.
 - Panel 3.2b: Icon vs T2 paired dot plot (mirrors the 3.2 layout).
-- Panel 7.9 (Improvement by Feedback Band): per-band Wilcoxon signed-rank test
-  vs 0 (significance star per bar) + continuous Spearman rho (T1 SAD vs
-  improvement). Both flagged exploratory (regression-to-the-mean caveat).
+- Panel 7.9 (Improvement by Feedback Band): Jonckheere-Terpstra trend test across
+  the ordered feedback bands + continuous Spearman rho (T1 SAD vs improvement).
+  Both flagged exploratory (regression-to-the-mean caveat).
