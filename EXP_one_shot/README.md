@@ -52,6 +52,14 @@ ONESHOT_DATA="/path/to/oneshot_subject_*.csv" python _run_v27_smoke.py
 > Note: paired statistics require at least two valid subjects; running against a
 > single subject will report "Insufficient data" for those comparisons.
 
+## v29 changes (current — `oneshot_analysis_v29.py`)
+
+- Saved subfigures no longer cropped: each panel gets a clean white margin of
+  6.5% of its width (each side) and 5% of its height (top/bottom).
+- Panel 1.3 (heatmap): the 0-12 estimate-scale colorbar is now merged into the
+  saved subfigure instead of being written as a separate file. Twin/secondary
+  axes (e.g. Panel 4.6 KS line) are merged into their parent panel too.
+
 ## v27 changes
 
 - Added Icon vs T2 comparison (`Q_icon_t2`): paired permutation + Wilcoxon +
