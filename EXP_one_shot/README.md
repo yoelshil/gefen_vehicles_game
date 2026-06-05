@@ -52,7 +52,37 @@ ONESHOT_DATA="/path/to/oneshot_subject_*.csv" python _run_v27_smoke.py
 > Note: paired statistics require at least two valid subjects; running against a
 > single subject will report "Insufficient data" for those comparisons.
 
-## v29 changes (current — `oneshot_analysis_v29.py`)
+## v_2_2 changes (current — `oneshot_analysis_v_2_2.py`)
+
+Built on the `v_2_x` role-based series (not the `v29` line). Adds **rare-mean
+companion panels** alongside the existing rare-min/rare-max panels — originals are
+left untouched.
+
+The two true-rare items (true count = 1) were previously split into `rare_min` and
+`rare_max` (min/max of the two estimates). That split is an **order statistic**: across
+participants `E[rare_max] > E[rare_min]` purely by construction, which made the Icon-phase
+`rare_max` bar look misleadingly high. The companion panels collapse the two rare items
+into a single `rare_mean` slot (3 role slots: Rare-mean / Medium / Dominant), removing the
+artifact.
+
+New panels:
+
+| Figure | New panel | Mirrors | Position |
+|--------|-----------|---------|----------|
+| 2 (now 3×3) | 2.4m Blind vs Icon Prior (rare-mean) | 2.4 | `[2,0]` |
+| 2 | 2.5m Prior Shift (rare-mean) | 2.5 | `[2,1]` |
+| 3 (4×3) | 3.3m Mean Response by Phase (rare-mean) | 3.3 | `[3,1]` |
+| 4 (now 4×3) | 4.1m Final Estimates vs True (rare-mean) | 4.1 | `[3,0]` |
+| 4 | 4.2m Role Error by Phase (rare-mean) | 4.2 | `[3,1]` |
+| 4 | 4.7m Estimation Bias (rare-mean) | 4.7 | `[3,2]` |
+
+Panel 4.3 already aggregates the two rare items into one bar, so it has no companion.
+A new blind-phase column `sorted_est_rare_mean = mean(pos1, pos2)` provides the collapsed
+rare slot for the shape-aligned blind phase.
+
+Run with `_run_v2_2_smoke.py` (uses `./sample_data`, subjects 101 + 218).
+
+## v29 changes (`oneshot_analysis_v29.py`)
 
 - Saved subfigures no longer cropped: each panel gets a clean white margin of
   6.5% of its width (each side) and 5% of its height (top/bottom).
