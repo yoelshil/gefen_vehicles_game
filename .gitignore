@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+report_8_preview.pptx
+_scratch_*/
+_scratch_v2_*_out/
