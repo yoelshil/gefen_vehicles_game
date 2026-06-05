@@ -5,16 +5,27 @@ OneShot Analysis Pipeline v_2_4
 
 v_2_4 CHANGES:
   - Restored rare-mean companion panels dropped in v_2_3:
-    Fig 3: Panel 3.3m Mean Response by Phase (rare-mean) at [4,0].
-    Fig 4 expanded from 3x3 to 4x3: 4.1m Final Estimates (rare-mean) [3,0],
-           4.2m Role Error (rare-mean) [3,1], 4.7m Estimation Bias (rare-mean) [3,2].
+    Fig 3: Panel 3.3m Mean Response by Phase (rare-mean).
+    Fig 4: 4.1m Final Estimates, 4.2m Role Error, 4.7m Estimation Bias (rare-mean).
   - Restored sorted_est_rare_mean column computation for blind-phase rare-mean.
   - Panel 3.4: Added SEM error bars to mean line + Friedman omnibus annotation.
   - Panel 3.5: Added SEM error bars to mean line + per-group Friedman + KW stats.
   - New Panel 3.6 "Shape-Group Mean Trajectories": mean +/- SEM lines for each
     prior-shape group + overall mean. Same per-group Friedman + KW stats.
-  - Renamed existing 3.6 (Prior vs Test Quality Q5b) to 3.7, moved to [3,2].
-  - Figure 3 layout: Row 3 [3.5, 3.6(new), 3.7], Row 4 [3.3m, hidden, hidden].
+  - Renamed existing 3.6 (Prior vs Test Quality Q5b) to 3.7.
+  - Figure 2 restructured 2x3 → 2x4: Added 2.4m and 2.5m (rare-mean companions)
+    next to their 4-role counterparts. Moved 2.6 to [0,3].
+    Layout: Row 0 [2.1, 2.2, 2.3, 2.6], Row 1 [2.4, 2.4m, 2.5, 2.5m].
+  - Figure 3 rearranged: 3.3m moved next to 3.3 at [2,2]. Trajectory panels
+    (3.4, 3.5, 3.6) grouped on Row 3. 3.7 moved to [4,0].
+    3.6 no longer shows Bimodal-symmetric (n=1).
+    Layout: Row 2 [3.2e, 3.3, 3.3m], Row 3 [3.4, 3.5, 3.6], Row 4 [3.7, -, -].
+  - Figure 4 restructured 4x3 → 3x4: Rare-mean panels paired with counterparts.
+    Layout: Row 0 [4.1, 4.1m, 4.2, 4.2m], Row 1 [4.3, 4.4, 4.5, 4.6],
+    Row 2 [4.7, 4.7m, 4.8, 4.9].
+  - New Figure 10 "Timing × Item Role": 2x3 grid with RT vs per-role error
+    scatters (9.1-9.3), RT tertile analysis (9.4), deliberation vs role error
+    (9.5), and summary table (9.6).
 
 v_2_3 CHANGES:
   - Added Panel 3.2a "Null Learning" (Blind vs Icon paired dot plot) to Figure 3.
@@ -4746,11 +4757,11 @@ def create_figure1(df, summary_df, results, save_path=None):
 # FIGURE 2: PRIOR CHARACTERIZATION (2x3)
 # ============================================================================
 # Panels: 2.1 Prior Distribution, 2.2 Blind Prior Bars, 2.3 Shape Classification,
-#   2.4 Blind vs Icon, 2.5 Prior Shift, 2.6 Prior Null Distribution
+#   2.4 Blind vs Icon, 2.4m (rare-mean), 2.5 Prior Shift, 2.5m (rare-mean), 2.6 Prior Null
 
 def create_figure2(df, summary_df, results, save_path=None):
-    """Figure 2: Prior Characterization (2x3)."""
-    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    """Figure 2: Prior Characterization (2x4)."""
+    fig, axes = plt.subplots(2, 4, figsize=(22, 10))
     fig.suptitle('Figure 2: Prior Characterization', fontsize=14, fontweight='bold')
     item_labels = ['Pos 1', 'Pos 2', 'Pos 3', 'Pos 4']
     x_items = np.arange(4)
@@ -4898,8 +4909,34 @@ def create_figure2(df, summary_df, results, save_path=None):
             transform=ax.transAxes, fontsize=5.5, ha='center', style='italic', color='gray')
 
 
-    # ---- 2.6: Per-role shift (Icon role - Blind sorted, shape-aligned) ----
+    # ---- 2.4m: Blind vs Icon Mean Response (rare-mean, 3-role) ----
     ax = axes[1, 1]
+    x3_fig2 = np.arange(3)
+    bar_w_m = 0.3
+    blind_cols_3 = ['sorted_est_rare_mean', 'sorted_est_pos3', 'sorted_est_pos4']
+    icon_cols_3 = ['role_est_rare_mean', 'role_est_medium', 'role_est_dominant']
+    role_labels_3_fig2 = ['Rare\n(mean)', 'Medium', 'Dominant']
+    true_by_role_3 = [1, 4, 6]
+    for phase_df, phase_label, color, offset, cols in [
+        (blind, 'Blind (sorted)', COLORS['blind_prior'], -bar_w_m/2, blind_cols_3),
+        (icon, 'Icon (role)', COLORS['prior_icon'], bar_w_m/2, icon_cols_3),
+    ]:
+        means = [phase_df[c].dropna().mean() for c in cols]
+        sems = [safe_sem(phase_df[c].dropna()) for c in cols]
+        medians = [phase_df[c].dropna().median() for c in cols]
+        ax.bar(x3_fig2 + offset, means, bar_w_m, yerr=sems, color=color, alpha=0.8,
+               capsize=3, edgecolor='black', linewidth=0.5, label=f'{phase_label} (mean)')
+        ax.scatter(x3_fig2 + offset, medians, marker='_', color='red', s=80, zorder=10, linewidths=2)
+    ax.scatter(x3_fig2, true_by_role_3, marker='*', s=200, color=COLORS['true'],
+               zorder=10, label='True', edgecolor='black')
+    ax.axhline(y=3, color='gray', ls='--', lw=1, alpha=0.5, label='Uniform (3)')
+    ax.set_xticks(x3_fig2); ax.set_xticklabels(role_labels_3_fig2)
+    ax.set_ylabel('Mean Estimate (red dash = median)')
+    ax.set_title('2.4m Blind vs Icon (rare-mean)')
+    ax.legend(fontsize=6, loc='upper left'); ax.set_ylim(0, 9)
+
+    # ---- 2.5: Per-role shift (Icon role - Blind sorted, shape-aligned) ----
+    ax = axes[1, 2]
     if len(blind) > 0 and len(icon) > 0:
         blind_means = [blind[c].dropna().mean() for c in blind_cols_fig2]
         icon_means = [icon[c].dropna().mean() for c in icon_cols_fig2]
@@ -4929,8 +4966,32 @@ def create_figure2(df, summary_df, results, save_path=None):
     ax.text(3.4, ylim*0.1, 'Increase', fontsize=6, color='green', ha='right', style='italic')
     ax.text(3.4, -ylim*0.1, 'Decrease', fontsize=6, color='red', ha='right', style='italic')
 
+    # ---- 2.5m: Per-role shift (rare-mean, 3-role) ----
+    ax = axes[1, 3]
+    if len(blind) > 0 and len(icon) > 0:
+        blind_means_3 = [blind[c].dropna().mean() for c in blind_cols_3]
+        icon_means_3 = [icon[c].dropna().mean() for c in icon_cols_3]
+        shifts_3 = [ic - bl for ic, bl in zip(icon_means_3, blind_means_3)]
+        true_shifts_3 = [t - 3 for t in true_by_role_3]
+        colors_shift_3 = [COLORS['rare'], COLORS['medium'], COLORS['dominant']]
+        ax.bar(x3_fig2, shifts_3, 0.5, color=colors_shift_3, alpha=0.7, edgecolor='black', linewidth=0.5)
+        ax.scatter(x3_fig2, true_shifts_3, marker='*', s=150, color=COLORS['true'], zorder=10,
+                   label='Needed shift\n(true - uniform)', edgecolor='black')
+        ax.axhline(y=0, color='black', lw=0.8)
+        for i, s in enumerate(shifts_3):
+            ax.text(i, s + (0.15 if s >= 0 else -0.25), f'{s:+.2f}',
+                    ha='center', fontsize=8, fontweight='bold')
+    ax.set_xticks(x3_fig2); ax.set_xticklabels(role_labels_3_fig2)
+    ax.set_ylabel('Mean Shift (Icon - Blind)')
+    ax.set_title('2.5m Prior Shift (rare-mean)')
+    ax.legend(fontsize=6, loc='upper left')
+    ylim_m = max(abs(ax.get_ylim()[0]), abs(ax.get_ylim()[1]), 3.5)
+    ax.set_ylim(-ylim_m, ylim_m)
+    ax.fill_between([-0.5, 2.5], 0, ylim_m, alpha=0.03, color='green')
+    ax.fill_between([-0.5, 2.5], -ylim_m, 0, alpha=0.03, color='red')
+
     # ---- 2.6: Prior Null Distribution (histogram + KDE dual) ----
-    ax = axes[1, 2]
+    ax = axes[0, 3]
     ut = q1.get('uniform_test', {})
     observed_sad = ut.get('mean_diff')
     expected_null = ut.get('expected_null_sad')
@@ -5157,116 +5218,8 @@ def create_figure3(df, summary_df, results, save_path=None):
     ax.set_ylabel('Mean Estimate'); ax.set_title('3.3 Mean Response by Phase (role-based)')
     ax.legend(fontsize=7, ncol=3, loc='upper left'); ax.set_ylim(0, 8)
 
-    # ---- 3.4: Individual Trajectories ----
-    ax = axes[2, 2]
-    for _, row in summary_df.iterrows():
-        traj = [row.get(f'{p}_sad', np.nan) for p in ['Blind','Icon','T1','T2']]
-        ax.plot(range(4), traj, 'o-', color='gray', alpha=0.25, markersize=3)
-    mt = [summary_df[f'{p}_sad'].mean() for p in ['Blind','Icon','T1','T2']]
-    mt_sem = [safe_sem(summary_df[f'{p}_sad'].dropna()) for p in ['Blind','Icon','T1','T2']]
-    ax.errorbar(range(4), mt, yerr=mt_sem, fmt='o-', color='black', lw=3, markersize=10,
-                capsize=5, label='Mean \u00b1 SEM', zorder=10)
-    ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.5)
-    ax.set_xticks(range(4)); ax.set_xticklabels([PHASE_SHORT[p] for p in PHASE_ORDER])
-    friedman_res = results.get('friedman', {})
-    fr_chi2 = friedman_res.get('statistic', np.nan)
-    fr_p = friedman_res.get('p_value', np.nan)
-    if not np.isnan(fr_chi2):
-        add_stats_text(ax, f"Friedman \u03c7\u00b2={fr_chi2:.2f}\np={fr_p:.4f} {interpret_p_value(fr_p)}",
-                       loc='upper left', fontsize=7)
-    ax.set_ylabel('SAD'); ax.set_title('3.4 Individual Trajectories'); ax.legend(fontsize=8); ax.set_ylim(0, MAX_SAD)
-
-    # ---- 3.5: Trajectories by Prior Shape ----
-    ax = axes[3, 0]
-    classifications = q1.get('classifications', [])
-    blind_df = df[df['trial_type']=='blind_prior'].sort_values('subject_nr')
-    subj_order = blind_df['subject_nr'].values
-    subj_class = {subj: classifications[i] for i, subj in enumerate(subj_order) if i < len(classifications)}
-    legend_added = set()
-    for _, row in summary_df.iterrows():
-        subj = row['subject_nr']
-        traj = [row.get(f'{p}_sad', np.nan) for p in ['Blind','Icon','T1','T2']]
-        st = subj_class.get(subj, 'unknown')
-        c = SHAPE_COLORS.get(st, 'gray')
-        lbl = st if st not in legend_added else None
-        if lbl: legend_added.add(st)
-        ax.plot(range(4), traj, 'o-', color=c, alpha=0.5, markersize=5, linewidth=1.5, label=lbl)
-    ax.errorbar(range(4), mt, yerr=mt_sem, fmt='o-', color='black', lw=3, markersize=10,
-                capsize=5, label='Mean \u00b1 SEM', zorder=10)
-    ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.5)
-    ax.set_xticks(range(4)); ax.set_xticklabels([PHASE_SHORT[p] for p in PHASE_ORDER])
-    # Per-group Friedman + between-group Kruskal-Wallis
-    _stats_lines_35 = []
-    _group_improvements = {}
-    for grp_name in ['Uniform', 'Unimodal-mild']:
-        grp_subjs = [s for s, cl in subj_class.items() if cl == grp_name]
-        grp_df = summary_df[summary_df['subject_nr'].isin(grp_subjs)]
-        grp_matrix = grp_df[['Blind_sad','Icon_sad','T1_sad','T2_sad']].dropna().values
-        _group_improvements[grp_name] = grp_df['Blind_sad'].dropna().values - grp_df['T2_sad'].dropna().values
-        if grp_matrix.shape[0] >= 3:
-            fr_s, fr_pv = stats.friedmanchisquare(*[grp_matrix[:, i] for i in range(4)])
-            short = 'Uni' if grp_name == 'Uniform' else 'UMild'
-            _stats_lines_35.append(f"{short}(n={grp_matrix.shape[0]}): \u03c7\u00b2={fr_s:.1f}, p={fr_pv:.3f}")
-    kw_groups = [v for v in _group_improvements.values() if len(v) >= 2]
-    if len(kw_groups) >= 2:
-        kw_h, kw_p = stats.kruskal(*kw_groups)
-        _stats_lines_35.append(f"KW: H={kw_h:.2f}, p={kw_p:.3f}")
-    if _stats_lines_35:
-        add_stats_text(ax, '\n'.join(_stats_lines_35), loc='upper left', fontsize=6)
-    ax.set_ylabel('SAD'); ax.set_title('3.5 Trajectories by Prior Shape'); ax.legend(fontsize=7); ax.set_ylim(0, MAX_SAD)
-
-    # ---- 3.6: Shape-Group Mean Trajectories ----
-    ax = axes[3, 1]
-    _stats_lines_36 = []
-    for grp_name in ['Uniform', 'Unimodal-mild', 'Bimodal-symmetric']:
-        grp_subjs = [s for s, cl in subj_class.items() if cl == grp_name]
-        grp_df = summary_df[summary_df['subject_nr'].isin(grp_subjs)]
-        grp_means = [grp_df[f'{p}_sad'].mean() for p in ['Blind','Icon','T1','T2']]
-        grp_sems = [safe_sem(grp_df[f'{p}_sad'].dropna()) for p in ['Blind','Icon','T1','T2']]
-        c = SHAPE_COLORS.get(grp_name, 'gray')
-        n_grp = len(grp_df)
-        ax.errorbar(range(4), grp_means, yerr=grp_sems, fmt='o-', color=c, lw=2, markersize=8,
-                    capsize=4, label=f'{grp_name} (n={n_grp})', alpha=0.85)
-        grp_matrix = grp_df[['Blind_sad','Icon_sad','T1_sad','T2_sad']].dropna().values
-        if grp_matrix.shape[0] >= 3:
-            fr_s, fr_pv = stats.friedmanchisquare(*[grp_matrix[:, i] for i in range(4)])
-            short = {'Uniform': 'Uni', 'Unimodal-mild': 'UMild', 'Bimodal-symmetric': 'Bimod'}.get(grp_name, grp_name[:4])
-            _stats_lines_36.append(f"{short}(n={grp_matrix.shape[0]}): \u03c7\u00b2={fr_s:.1f}, p={fr_pv:.3f}")
-    ax.errorbar(range(4), mt, yerr=mt_sem, fmt='o-', color='black', lw=3, markersize=10,
-                capsize=5, label='Overall Mean', zorder=10)
-    ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.5)
-    ax.set_xticks(range(4)); ax.set_xticklabels([PHASE_SHORT[p] for p in PHASE_ORDER])
-    if len(kw_groups) >= 2:
-        _stats_lines_36.append(f"KW: H={kw_h:.2f}, p={kw_p:.3f}")
-    if _stats_lines_36:
-        add_stats_text(ax, '\n'.join(_stats_lines_36), loc='upper left', fontsize=6)
-    ax.set_ylabel('SAD'); ax.set_title('3.6 Trajectories: Bimodal vs Unimodal-mild')
-    ax.legend(fontsize=7); ax.set_ylim(0, MAX_SAD)
-
-    # ---- 3.7: Prior-Test Correlation (was 3.6) ----
-    ax = axes[3, 2]
-    prior_sads, test_sads, shapes = [], [], []
-    for _, row in summary_df.iterrows():
-        vals = [row.get(f'{p}_sad', np.nan) for p in ['Blind','Icon','T1','T2']]
-        if not any(pd.isna(vals)):
-            prior_sads.append((vals[0]+vals[1])/2)
-            test_sads.append((vals[2]+vals[3])/2)
-            shapes.append(subj_class.get(row['subject_nr'], 'unknown'))
-    if len(prior_sads) > 2:
-        pa, ta = np.array(prior_sads), np.array(test_sads)
-        for px, ty, sh in zip(pa, ta, shapes):
-            ax.scatter(px, ty, color=SHAPE_COLORS.get(sh,'gray'), s=60, edgecolor='black', linewidth=0.5, alpha=0.7)
-        z = np.polyfit(pa, ta, 1); x_line = np.linspace(min(pa), max(pa), 100)
-        ax.plot(x_line, np.poly1d(z)(x_line), '--', color='black', lw=1.5, alpha=0.7)
-        rho, p = stats.spearmanr(pa, ta)
-        add_stats_text(ax, f"N={len(pa)}\n\u03c1={rho:.2f}, p={p:.3f}", loc='upper left', fontsize=8)
-        ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.3)
-        ax.axvline(x=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.3)
-    ax.set_xlabel('Prior SAD (mean Blind+Icon)'); ax.set_ylabel('Test SAD (mean T1+T2)')
-    ax.set_title('3.7 Prior vs Test Quality (Q5b)')
-
     # ---- 3.3m: Mean Response by Phase (rare-mean companion to 3.3) ----
-    ax = axes[4, 0]
+    ax = axes[2, 2]
     x3 = np.arange(3)
     _role_cols_33m = {
         'blind_prior': ['sorted_est_rare_mean', 'sorted_est_pos3', 'sorted_est_pos4'],
@@ -5287,6 +5240,113 @@ def create_figure3(df, summary_df, results, save_path=None):
     ax.set_ylabel('Mean Estimate'); ax.set_title('3.3m Mean Response by Phase (rare-mean)')
     ax.legend(fontsize=7, ncol=3, loc='upper left'); ax.set_ylim(0, 8)
 
+    # ---- 3.4: Individual Trajectories ----
+    ax = axes[3, 0]
+    for _, row in summary_df.iterrows():
+        traj = [row.get(f'{p}_sad', np.nan) for p in ['Blind','Icon','T1','T2']]
+        ax.plot(range(4), traj, 'o-', color='gray', alpha=0.25, markersize=3)
+    mt = [summary_df[f'{p}_sad'].mean() for p in ['Blind','Icon','T1','T2']]
+    mt_sem = [safe_sem(summary_df[f'{p}_sad'].dropna()) for p in ['Blind','Icon','T1','T2']]
+    ax.errorbar(range(4), mt, yerr=mt_sem, fmt='o-', color='black', lw=3, markersize=10,
+                capsize=5, label='Mean \u00b1 SEM', zorder=10)
+    ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.5)
+    ax.set_xticks(range(4)); ax.set_xticklabels([PHASE_SHORT[p] for p in PHASE_ORDER])
+    friedman_res = results.get('friedman', {})
+    fr_chi2 = friedman_res.get('statistic', np.nan)
+    fr_p = friedman_res.get('p_value', np.nan)
+    if not np.isnan(fr_chi2):
+        add_stats_text(ax, f"Friedman \u03c7\u00b2={fr_chi2:.2f}\np={fr_p:.4f} {interpret_p_value(fr_p)}",
+                       loc='upper left', fontsize=7)
+    ax.set_ylabel('SAD'); ax.set_title('3.4 Individual Trajectories'); ax.legend(fontsize=8); ax.set_ylim(0, MAX_SAD)
+
+    # ---- 3.5: Trajectories by Prior Shape ----
+    ax = axes[3, 1]
+    classifications = q1.get('classifications', [])
+    blind_df = df[df['trial_type']=='blind_prior'].sort_values('subject_nr')
+    subj_order = blind_df['subject_nr'].values
+    subj_class = {subj: classifications[i] for i, subj in enumerate(subj_order) if i < len(classifications)}
+    legend_added = set()
+    for _, row in summary_df.iterrows():
+        subj = row['subject_nr']
+        traj = [row.get(f'{p}_sad', np.nan) for p in ['Blind','Icon','T1','T2']]
+        st = subj_class.get(subj, 'unknown')
+        c = SHAPE_COLORS.get(st, 'gray')
+        lbl = st if st not in legend_added else None
+        if lbl: legend_added.add(st)
+        ax.plot(range(4), traj, 'o-', color=c, alpha=0.5, markersize=5, linewidth=1.5, label=lbl)
+    ax.errorbar(range(4), mt, yerr=mt_sem, fmt='o-', color='black', lw=3, markersize=10,
+                capsize=5, label='Mean \u00b1 SEM', zorder=10)
+    ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.5)
+    ax.set_xticks(range(4)); ax.set_xticklabels([PHASE_SHORT[p] for p in PHASE_ORDER])
+    _stats_lines_35 = []
+    _group_improvements = {}
+    for grp_name in ['Uniform', 'Unimodal-mild']:
+        grp_subjs = [s for s, cl in subj_class.items() if cl == grp_name]
+        grp_df = summary_df[summary_df['subject_nr'].isin(grp_subjs)]
+        grp_matrix = grp_df[['Blind_sad','Icon_sad','T1_sad','T2_sad']].dropna().values
+        _group_improvements[grp_name] = grp_df['Blind_sad'].dropna().values - grp_df['T2_sad'].dropna().values
+        if grp_matrix.shape[0] >= 3:
+            fr_s, fr_pv = stats.friedmanchisquare(*[grp_matrix[:, i] for i in range(4)])
+            short = 'Uni' if grp_name == 'Uniform' else 'UMild'
+            _stats_lines_35.append(f"{short}(n={grp_matrix.shape[0]}): \u03c7\u00b2={fr_s:.1f}, p={fr_pv:.3f}")
+    kw_groups = [v for v in _group_improvements.values() if len(v) >= 2]
+    if len(kw_groups) >= 2:
+        kw_h, kw_p = stats.kruskal(*kw_groups)
+        _stats_lines_35.append(f"KW: H={kw_h:.2f}, p={kw_p:.3f}")
+    if _stats_lines_35:
+        add_stats_text(ax, '\n'.join(_stats_lines_35), loc='upper left', fontsize=6)
+    ax.set_ylabel('SAD'); ax.set_title('3.5 Trajectories by Prior Shape'); ax.legend(fontsize=7); ax.set_ylim(0, MAX_SAD)
+
+    # ---- 3.6: Shape-Group Mean Trajectories ----
+    ax = axes[3, 2]
+    _stats_lines_36 = []
+    for grp_name in ['Uniform', 'Unimodal-mild']:
+        grp_subjs = [s for s, cl in subj_class.items() if cl == grp_name]
+        grp_df = summary_df[summary_df['subject_nr'].isin(grp_subjs)]
+        grp_means = [grp_df[f'{p}_sad'].mean() for p in ['Blind','Icon','T1','T2']]
+        grp_sems = [safe_sem(grp_df[f'{p}_sad'].dropna()) for p in ['Blind','Icon','T1','T2']]
+        c = SHAPE_COLORS.get(grp_name, 'gray')
+        n_grp = len(grp_df)
+        ax.errorbar(range(4), grp_means, yerr=grp_sems, fmt='o-', color=c, lw=2, markersize=8,
+                    capsize=4, label=f'{grp_name} (n={n_grp})', alpha=0.85)
+        grp_matrix = grp_df[['Blind_sad','Icon_sad','T1_sad','T2_sad']].dropna().values
+        if grp_matrix.shape[0] >= 3:
+            fr_s, fr_pv = stats.friedmanchisquare(*[grp_matrix[:, i] for i in range(4)])
+            short = {'Uniform': 'Uni', 'Unimodal-mild': 'UMild'}.get(grp_name, grp_name[:4])
+            _stats_lines_36.append(f"{short}(n={grp_matrix.shape[0]}): \u03c7\u00b2={fr_s:.1f}, p={fr_pv:.3f}")
+    ax.errorbar(range(4), mt, yerr=mt_sem, fmt='o-', color='black', lw=3, markersize=10,
+                capsize=5, label='Overall Mean', zorder=10)
+    ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.5)
+    ax.set_xticks(range(4)); ax.set_xticklabels([PHASE_SHORT[p] for p in PHASE_ORDER])
+    if len(kw_groups) >= 2:
+        _stats_lines_36.append(f"KW: H={kw_h:.2f}, p={kw_p:.3f}")
+    if _stats_lines_36:
+        add_stats_text(ax, '\n'.join(_stats_lines_36), loc='upper left', fontsize=6)
+    ax.set_ylabel('SAD'); ax.set_title('3.6 Trajectories: Uniform vs Unimodal-mild')
+    ax.legend(fontsize=7); ax.set_ylim(0, MAX_SAD)
+
+    # ---- 3.7: Prior-Test Correlation (was 3.6) ----
+    ax = axes[4, 0]
+    prior_sads, test_sads, shapes = [], [], []
+    for _, row in summary_df.iterrows():
+        vals = [row.get(f'{p}_sad', np.nan) for p in ['Blind','Icon','T1','T2']]
+        if not any(pd.isna(vals)):
+            prior_sads.append((vals[0]+vals[1])/2)
+            test_sads.append((vals[2]+vals[3])/2)
+            shapes.append(subj_class.get(row['subject_nr'], 'unknown'))
+    if len(prior_sads) > 2:
+        pa, ta = np.array(prior_sads), np.array(test_sads)
+        for px, ty, sh in zip(pa, ta, shapes):
+            ax.scatter(px, ty, color=SHAPE_COLORS.get(sh,'gray'), s=60, edgecolor='black', linewidth=0.5, alpha=0.7)
+        z = np.polyfit(pa, ta, 1); x_line = np.linspace(min(pa), max(pa), 100)
+        ax.plot(x_line, np.poly1d(z)(x_line), '--', color='black', lw=1.5, alpha=0.7)
+        rho, p = stats.spearmanr(pa, ta)
+        add_stats_text(ax, f"N={len(pa)}\n\u03c1={rho:.2f}, p={p:.3f}", loc='upper left', fontsize=8)
+        ax.axhline(y=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.3)
+        ax.axvline(x=UNIFORM_SAD, color='gray', ls='--', lw=1, alpha=0.3)
+    ax.set_xlabel('Prior SAD (mean Blind+Icon)'); ax.set_ylabel('Test SAD (mean T1+T2)')
+    ax.set_title('3.7 Prior vs Test Quality (Q5b)')
+
     # Hide unused slots in the 5x3 grid
     axes[4, 1].axis('off')
     axes[4, 2].axis('off')
@@ -5298,21 +5358,19 @@ def create_figure3(df, summary_df, results, save_path=None):
 
 
 # ============================================================================
-# FIGURE 4: ITEM ESTIMATION & MATCH ANALYSIS (4x3)
+# FIGURE 4: ITEM ESTIMATION & MATCH ANALYSIS (3x4)
 # ============================================================================
-# Row 0 (A: Estimation vs truth): 4.1 Final Estimates, 4.2 Role Error, 4.3 Error by Role
-# Row 1 (B: Exact match): 4.4 Count Match, 4.5 Match by Phase, 4.6 Match by Role
-# Row 2 (C: Error analysis): 4.7 Estimation Bias, 4.8 Alt Error Measures, 4.9 Distribution Fit
-# Row 3 (D: Rare-mean companions): 4.1m, 4.2m, 4.7m
+# Row 0: 4.1 Final Estimates, 4.1m (rare-mean), 4.2 Role Error, 4.2m (rare-mean)
+# Row 1: 4.3 Error by Role, 4.4 Count Match, 4.5 Match by Phase, 4.6 Match by Role
+# Row 2: 4.7 Estimation Bias, 4.7m (rare-mean), 4.8 Alt Error Measures, 4.9 Distribution Fit
 
 def create_figure4(df, summary_df, results, save_path=None):
-    """Figure 4: Item Estimation & Match Analysis (4x3).
-    Row 0: Estimation vs truth (4.1-4.3)
-    Row 1: Exact match analysis (4.4-4.6, moved from Fig 2)
-    Row 2: Error analysis (4.7-4.9)
-    Row 3: Rare-mean companions (4.1m, 4.2m, 4.7m)
+    """Figure 4: Item Estimation & Match Analysis (3x4).
+    Row 0: 4.1/4.1m Final Estimates, 4.2/4.2m Role Error (paired with rare-mean)
+    Row 1: 4.3 Error by Role, 4.4-4.6 Match analysis
+    Row 2: 4.7/4.7m Estimation Bias (paired with rare-mean), 4.8-4.9 Error measures
     """
-    fig, axes = plt.subplots(4, 3, figsize=(18, 20))
+    fig, axes = plt.subplots(3, 4, figsize=(24, 15))
     fig.suptitle('Figure 4: Item Estimation & Match Analysis', fontsize=14, fontweight='bold')
     x_items = np.arange(4)
     role_labels_f4 = ['Rare\n(min)', 'Rare\n(max)', 'Medium', 'Dominant']
@@ -5338,7 +5396,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     ax.set_title('4.1 Final Estimates vs True (by role)'); ax.legend(fontsize=8); ax.set_ylim(0, 8)
 
     # ---- 4.2: Role Error by Phase ----
-    ax = axes[0, 1]
+    ax = axes[0, 2]
     for phase in PHASE_ORDER:
         pdf = df[df['trial_type']==phase]
         cols = role_cols_by_phase.get(phase, role_cols_by_phase['exposure_gen_2'])
@@ -5349,7 +5407,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     ax.set_title('4.2 Role Error by Phase'); ax.legend(fontsize=8)
 
     # ---- 4.3: Error by Item Role (aggregated) ----
-    ax = axes[0, 2]
+    ax = axes[1, 0]
     role_err = {'dominant': [], 'medium': [], 'rare': []}
     for phase in PHASE_ORDER:
         pdf = df[df['trial_type']==phase]
@@ -5368,7 +5426,7 @@ def create_figure4(df, summary_df, results, save_path=None):
         add_stats_text(ax, f"Dom vs Rare (T2):\nd={dvr.get('cliffs_delta',np.nan):.2f}, p={dvr.get('p_value',np.nan):.3f}", loc='upper left', fontsize=7)
 
     # ---- 4.4: Position-Free Count Match (moved from Fig 2) ----
-    ax = axes[1, 0]
+    ax = axes[1, 1]
     cm = results.get('exact_match', {}).get('count_match', {})
     if cm:
         x_ph = np.arange(4)
@@ -5386,7 +5444,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     ax.set_title('4.4 Position-Free Count Match')
 
     # ---- 4.5: Exact Match by Phase (moved from Fig 2) ----
-    ax = axes[1, 1]
+    ax = axes[1, 2]
     em = results.get('exact_match', {}).get('by_phase', {})
     if em:
         x = np.arange(len(PHASE_ORDER))
@@ -5410,7 +5468,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     ax.set_title('4.5 Exact Match Rate by Phase')
 
     # ---- 4.6: Exact Match by Role (moved from Fig 2) ----
-    ax = axes[1, 2]
+    ax = axes[1, 3]
     em_role = results.get('exact_match', {}).get('by_role', {})
     if em_role:
         x = np.arange(len(PHASE_ORDER))
@@ -5446,7 +5504,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     ax.text(3.4, -0.3, 'Under', fontsize=7, color='blue', ha='right', style='italic')
 
     # ---- 4.8: Alternative Error Measures (learning curves with 3 exponents) ----
-    ax = axes[2, 1]
+    ax = axes[2, 2]
     alt_err = results.get('alt_errors', {}).get('by_phase', {})
     exp_colors = {1.0: '#2196F3', 1.72: '#FF9800', 2.0: '#E91E63'}
     exp_labels_map = {1.0: 'SAD (p=1)', 1.72: 'CNS (p=1.72)', 2.0: 'SSE (p=2)'}
@@ -5478,7 +5536,7 @@ def create_figure4(df, summary_df, results, save_path=None):
         add_stats_text(ax, 'Friedman:\n' + '\n'.join(f_lines), loc='upper left', fontsize=6)
 
     # ---- 4.9: Distribution Fit (Chi-square GoF by phase) ----
-    ax = axes[2, 2]
+    ax = axes[2, 3]
     dist_fit = results.get('dist_fit', {}).get('by_phase', {})
 
     if dist_fit:
@@ -5539,7 +5597,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     x3 = np.arange(3)
 
     # ---- 4.1m: Final Estimates vs True (rare-mean) ----
-    ax = axes[3, 0]
+    ax = axes[0, 1]
     t2_df = df[df['trial_type'] == 'exposure_gen_2']
     t2_cols3 = role_cols3_by_phase['exposure_gen_2']
     t2_m3 = [t2_df[c].mean() for c in t2_cols3]
@@ -5552,7 +5610,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     ax.set_title('4.1m Final Estimates vs True (rare-mean)'); ax.legend(fontsize=8); ax.set_ylim(0, 8)
 
     # ---- 4.2m: Role Error by Phase (rare-mean) ----
-    ax = axes[3, 1]
+    ax = axes[0, 3]
     for phase in PHASE_ORDER:
         pdf = df[df['trial_type'] == phase]
         cols = role_cols3_by_phase.get(phase, role_cols3_by_phase['exposure_gen_2'])
@@ -5564,7 +5622,7 @@ def create_figure4(df, summary_df, results, save_path=None):
     ax.set_title('4.2m Role Error by Phase (rare-mean)'); ax.legend(fontsize=8)
 
     # ---- 4.7m: Estimation Bias (rare-mean) ----
-    ax = axes[3, 2]
+    ax = axes[2, 1]
     for phase in PHASE_ORDER:
         pdf = df[df['trial_type'] == phase]
         if len(pdf) == 0: continue
@@ -7355,13 +7413,157 @@ def create_figure8(df, summary_df, results, save_path=None):
 
 
 # ============================================================================
+# FIGURE 9: TIMING x ITEM ROLE (2x3)
+# ============================================================================
+# Row 0: 9.1 RT vs Dominant Error, 9.2 RT vs Medium Error, 9.3 RT vs Rare Error
+# Row 1: 9.4 Role Error by RT Tertile, 9.5 Deliberation vs Role Error, 9.6 Summary Table
+
+def create_figure9(df, summary_df, results, save_path=None):
+    """Figure 9: Timing x Item Role analysis (2x3)."""
+    fig, axes = plt.subplots(2, 3, figsize=(18, 11))
+    fig.suptitle('Figure 9: Timing × Item Role', fontsize=14, fontweight='bold')
+
+    t2 = df[df['trial_type'] == 'exposure_gen_2'].copy()
+    role_info = [
+        ('dominant', 'role_est_dominant', 6, COLORS['dominant']),
+        ('medium', 'role_est_medium', 4, COLORS['medium']),
+        ('rare', 'role_est_rare_mean', 1, COLORS['rare']),
+    ]
+
+    # ---- 9.1-9.3: RT vs per-role error scatters (T2 only) ----
+    for col_idx, (role_name, est_col, true_val, color) in enumerate(role_info):
+        ax = axes[0, col_idx]
+        if est_col in t2.columns and 'gen_rt' in t2.columns:
+            valid = t2[[est_col, 'gen_rt']].dropna()
+            if len(valid) >= 3:
+                rt_s = valid['gen_rt'] / 1000
+                err = np.abs(valid[est_col] - true_val)
+                ax.scatter(rt_s, err, alpha=0.6, s=60, color=color,
+                           edgecolor='black', linewidth=0.5)
+                if len(valid) >= 5:
+                    z = np.polyfit(rt_s.values, err.values, 1)
+                    x_line = np.linspace(rt_s.min(), rt_s.max(), 50)
+                    ax.plot(x_line, np.polyval(z, x_line), '--', color=color, alpha=0.6, lw=1.5)
+                rho, rp = stats.spearmanr(rt_s, err)
+                add_stats_text(ax, f"N={len(valid)}\nρ={rho:.2f}, p={rp:.3f}", loc='upper right', fontsize=7)
+        ax.set_xlabel('First Click RT (s)'); ax.set_ylabel(f'|Error| ({role_name.capitalize()})')
+        ax.set_title(f'9.{col_idx+1} RT vs {role_name.capitalize()} Error (T2)')
+
+    # ---- 9.4: Role Error by RT Tertile ----
+    ax = axes[1, 0]
+    if 'gen_rt' in t2.columns and len(t2) >= 6:
+        t2_valid = t2[['gen_rt'] + [r[1] for r in role_info]].dropna()
+        if len(t2_valid) >= 6:
+            t2_valid = t2_valid.copy()
+            t2_valid['rt_tertile'] = pd.qcut(t2_valid['gen_rt'], 3, labels=['Fast', 'Medium', 'Slow'])
+            x_tert = np.arange(3)
+            w = 0.25
+            for r_idx, (role_name, est_col, true_val, color) in enumerate(role_info):
+                means_t = []
+                sems_t = []
+                for tert in ['Fast', 'Medium', 'Slow']:
+                    grp = t2_valid[t2_valid['rt_tertile'] == tert]
+                    err_vals = np.abs(grp[est_col] - true_val)
+                    means_t.append(err_vals.mean())
+                    sems_t.append(safe_sem(err_vals))
+                ax.bar(x_tert + (r_idx - 1) * w, means_t, w, yerr=sems_t, color=color,
+                       alpha=0.8, capsize=3, edgecolor='black', linewidth=0.5,
+                       label=role_name.capitalize())
+            ax.set_xticks(x_tert); ax.set_xticklabels(['Fast', 'Medium', 'Slow'])
+            ax.set_ylabel('Mean |Error|'); ax.legend(fontsize=7)
+            kw_lines = []
+            for role_name, est_col, true_val, _ in role_info:
+                groups = []
+                for tert in ['Fast', 'Medium', 'Slow']:
+                    grp = t2_valid[t2_valid['rt_tertile'] == tert]
+                    groups.append(np.abs(grp[est_col] - true_val).values)
+                groups = [g for g in groups if len(g) >= 2]
+                if len(groups) >= 2:
+                    h, p = stats.kruskal(*groups)
+                    kw_lines.append(f"{role_name[:3].capitalize()}: H={h:.1f}, p={p:.2f}")
+            if kw_lines:
+                add_stats_text(ax, 'KW:\n' + '\n'.join(kw_lines), loc='upper left', fontsize=6)
+    ax.set_title('9.4 Role Error by RT Tertile (T2)')
+
+    # ---- 9.5: Deliberation vs Role Error ----
+    ax = axes[1, 1]
+    stat_lines_delib = []
+    for role_name, est_col, true_val, color in role_info:
+        if est_col in t2.columns and 'deliberation_time' in t2.columns:
+            valid = t2[[est_col, 'deliberation_time']].dropna()
+            valid = valid[valid['deliberation_time'] > 0]
+            if len(valid) >= 3:
+                delib_s = valid['deliberation_time'] / 1000
+                err = np.abs(valid[est_col] - true_val)
+                ax.scatter(delib_s, err, alpha=0.5, s=50, color=color,
+                           edgecolor='black', linewidth=0.3, label=role_name.capitalize())
+                if len(valid) >= 5:
+                    z = np.polyfit(delib_s.values, err.values, 1)
+                    x_line = np.linspace(delib_s.min(), delib_s.max(), 50)
+                    ax.plot(x_line, np.polyval(z, x_line), '--', color=color, alpha=0.5, lw=1.5)
+                rho, rp = stats.spearmanr(delib_s, err)
+                stat_lines_delib.append(f"{role_name[:3].capitalize()}: ρ={rho:.2f}, p={rp:.2f}")
+    ax.set_xlabel('Deliberation Time (s)'); ax.set_ylabel('|Error|')
+    ax.set_title('9.5 Deliberation vs Role Error (T2)')
+    ax.legend(fontsize=7)
+    if stat_lines_delib:
+        add_stats_text(ax, '\n'.join(stat_lines_delib), loc='upper right', fontsize=7)
+
+    # ---- 9.6: RT-Accuracy Summary Table ----
+    ax = axes[1, 2]
+    ax.axis('off')
+    ax.set_title('9.6 Timing × Role Summary (T2)', fontsize=11, fontweight='bold', pad=10)
+    col_labels = ['Role', 'True', 'M Error', 'SEM', 'RT ρ', 'RT p', 'Delib ρ', 'Delib p']
+    table_rows = []
+    for role_name, est_col, true_val, _ in role_info:
+        if est_col in t2.columns:
+            valid_rt = t2[[est_col, 'gen_rt']].dropna()
+            valid_dl = t2[[est_col, 'deliberation_time']].dropna()
+            valid_dl = valid_dl[valid_dl['deliberation_time'] > 0]
+            err_all = np.abs(t2[est_col].dropna() - true_val)
+            m_err = f"{err_all.mean():.2f}"
+            s_err = f"{safe_sem(err_all):.2f}"
+            if len(valid_rt) >= 3:
+                rho_rt, p_rt = stats.spearmanr(valid_rt['gen_rt'], np.abs(valid_rt[est_col] - true_val))
+                rt_rho_s = f"{rho_rt:.2f}"
+                rt_p_s = f"{p_rt:.3f}"
+            else:
+                rt_rho_s = rt_p_s = '-'
+            if len(valid_dl) >= 3:
+                rho_dl, p_dl = stats.spearmanr(valid_dl['deliberation_time'], np.abs(valid_dl[est_col] - true_val))
+                dl_rho_s = f"{rho_dl:.2f}"
+                dl_p_s = f"{p_dl:.3f}"
+            else:
+                dl_rho_s = dl_p_s = '-'
+            table_rows.append([role_name.capitalize(), str(true_val), m_err, s_err,
+                               rt_rho_s, rt_p_s, dl_rho_s, dl_p_s])
+    if table_rows:
+        table = ax.table(cellText=table_rows, colLabels=col_labels, cellLoc='center', loc='center')
+        table.auto_set_font_size(False)
+        table.set_fontsize(9)
+        table.scale(1.0, 1.8)
+        for j in range(len(col_labels)):
+            table[0, j].set_facecolor('#FF8C00')
+            table[0, j].set_text_props(color='white', fontweight='bold', fontsize=8)
+        role_colors = [COLORS['dominant'], COLORS['medium'], COLORS['rare']]
+        for i in range(len(table_rows)):
+            table[i+1, 0].set_facecolor(role_colors[i])
+            table[i+1, 0].set_text_props(color='white', fontweight='bold')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    if save_path:
+        fig.savefig(save_path, dpi=150, bbox_inches='tight'); report(f"Figure 9 saved to: {save_path}")
+    return fig
+
+
+# ============================================================================
 # MAIN ANALYSIS PIPELINE
 # ============================================================================
 # Order: Descriptives (Fig 1) -> Prior + Exact Match (Fig 2) ->
 #   Friedman + Q2-Q5 + Q5b Learning (Fig 3) -> Q6 Items + Alt Errors + Dist Fit (Fig 4) ->
 #   Timing with RT stats (Fig 5) -> Q7 Self-report (Fig 6) ->
-#   Estimation Trends (Fig 7) -> Range Convergence (Fig 8)
-# Outputs: 8 figures, 3 CSVs, 1 text report.
+#   Estimation Trends (Fig 7) -> Range Convergence (Fig 8) -> Timing x Role (Fig 9)
+# Outputs: 9 figures, 3 CSVs, 1 text report.
 
 def run_analysis(source=None, use_gui=False, output_dir=None,
                  save_figures=True, save_subfigures=True):
@@ -7511,11 +7713,16 @@ def run_analysis(source=None, use_gui=False, output_dir=None,
     fig9_path = _fig_path("Fig9_DistSpace")
     fig9 = create_figure_distribution_space(df, summary_df, results, save_path=fig9_path)
 
+    # ---- Figure 10: Timing × Item Role (v24) ----
+    fig10_path = _fig_path("Fig10_TimingRole")
+    fig10 = create_figure9(df, summary_df, results, save_path=fig10_path)
+
     # ---- Optional: export each subplot as a standalone PNG ----
     if save_subfigures:
         for _fig, _name in [(fig1, 'Fig1'), (fig2, 'Fig2'), (fig3, 'Fig3'),
                             (fig4, 'Fig4'), (fig5, 'Fig5'), (fig6, 'Fig6'),
-                            (fig7, 'Fig7'), (fig8, 'Fig8'), (fig9, 'Fig9')]:
+                            (fig7, 'Fig7'), (fig8, 'Fig8'), (fig9, 'Fig9'),
+                            (fig10, 'Fig10')]:
             if _fig is not None:
                 save_individual_panels(_fig, _name, output_dir, timestamp)
 
