@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneShot Analysis Rationale v_2_2</title>
+<style>
+  :root { --bg: #fafbfc; --fg: #1a1a2e; --accent: #16213e; --accent2: #0f3460; --border: #d1d5db; --section-bg: #fff; --code-bg: #f0f2f5; --highlight: #e8f0fe; --green: #059669; --orange: #d97706; --red: #dc2626; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; background: var(--bg); color: var(--fg); line-height: 1.7; max-width: 1020px; margin: 0 auto; padding: 24px; font-size: 15px; }
+  h1 { font-family: 'Segoe UI', Tahoma, sans-serif; color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 8px; margin-bottom: 4px; font-size: 1.7em; letter-spacing: -0.5px; }
+  h2 { font-family: 'Segoe UI', Tahoma, sans-serif; color: var(--accent2); margin: 18px 0 8px; font-size: 1.2em; border-left: 4px solid var(--accent2); padding-left: 10px; }
+  h3 { color: var(--accent); margin: 12px 0 6px; font-size: 1.05em; }
+  .subtitle { font-family: 'Segoe UI', sans-serif; color: #6b7280; font-size: 0.92em; margin-bottom: 20px; }
+  details { background: var(--section-bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  details[open] { margin-bottom: 14px; }
+  summary { font-family: 'Segoe UI', sans-serif; padding: 11px 16px; cursor: pointer; font-weight: 600; color: var(--accent); font-size: 1.02em; list-style: none; position: relative; border-radius: 6px; }
+  summary::before { content: '\25B6'; position: absolute; right: 16px; transition: transform 0.2s; font-size: 0.75em; color: #9ca3af; }
+  details[open] summary::before { transform: rotate(90deg); }
+  summary:hover { background: var(--highlight); }
+  .content { padding: 0 16px 16px; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 0.88em; font-family: 'Segoe UI', sans-serif; }
+  th { background: var(--accent); color: white; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 0.85em; }
+  td { padding: 6px 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) { background: #f8f9fa; }
+  tr:hover { background: var(--highlight); }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.88em; font-family: 'Consolas', 'Courier New', monospace; color: #374151; }
+  pre { background: var(--code-bg); padding: 12px; border-radius: 4px; overflow-x: auto; margin: 10px 0; font-size: 0.84em; font-family: Consolas, monospace; }
+  .note { background: #fffbeb; border-left: 4px solid var(--orange); padding: 10px 14px; margin: 10px 0; border-radius: 0 4px 4px 0; font-size: 0.9em; }
+  .caveat { background: #fef2f2; border-left: 4px solid var(--red); padding: 10px 14px; margin: 10px 0; border-radius: 0 4px 4px 0; font-size: 0.9em; }
+  p { margin: 7px 0; }
+  ul, ol { margin: 6px 0 6px 20px; }
+  li { margin: 3px 0; }
+  .badge { font-family: 'Segoe UI', sans-serif; display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 0.72em; font-weight: 600; vertical-align: middle; }
+  .new { background: var(--green); color: white; }
+  .changed { background: var(--orange); color: white; }
+  .fig-title { font-family: 'Segoe UI', sans-serif; font-size: 1.08em; font-weight: 700; color: var(--accent2); margin: 10px 0 4px; }
+  .fig-purpose { font-style: italic; color: #4b5563; margin-bottom: 8px; font-size: 0.93em; }
+  .ref { color: #6b7280; font-size: 0.86em; }
+  .pipeline { background: var(--code-bg); padding: 14px; border-radius: 6px; font-family: Consolas, monospace; font-size: 0.82em; line-height: 1.9; }
+  .toc { background: var(--highlight); padding: 12px 16px; border-radius: 6px; margin: 12px 0; font-family: 'Segoe UI', sans-serif; font-size: 0.9em; }
+  .toc a { color: var(--accent2); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>OneShot Experiment Analysis Rationale</h1>
+<div class="subtitle">Version 2.2 | June 2026 | Paz Lab, Weizmann Institute of Science<br>
+<code>oneshot_analysis_v_2_2.py</code> | 9 Figures | 29 References<br>
+<span style="color:var(--green); font-weight:600;">v_2_2:</span> added 6 rare-mean companion panels
+(2.4m, 2.5m, 3.3m, 4.1m, 4.2m, 4.7m) that collapse the rare-min/rare-max split into a single
+rare-mean slot. Figure 2 is now 3&times;3 and Figure 4 is now 4&times;3.</div>
+
+<!-- ================================================================ -->
+<!-- EXECUTIVE SUMMARY -->
+<!-- ================================================================ -->
+<details open>
+<summary>1. Executive Summary</summary>
+<div class="content">
+<p>Complete statistical pipeline for the <strong>OneShot distributional learning experiment</strong>. Participants estimate a probability distribution [1, 1, 4, 6] across 4 items (N=12 total) from two brief exposures, across four phases: Blind Prior, Icon Prior, Trial 1 (exposure + SAD feedback), Trial 2 (exposure + SAD feedback).</p>
+<p><strong>Primary DV:</strong> SAD (Sum of Absolute Deviations from true distribution), range 0-22, always even for N=12.</p>
+<p><strong>Pipeline principles:</strong> (1) plan before execute, (2) figure-driven analysis grouping, (3) non-parametric statistics throughout, (4) versioned outputs, (5) no external dependencies beyond standard scientific Python.</p>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- RESEARCH QUESTIONS -->
+<!-- ================================================================ -->
+<details>
+<summary>2. Research Questions</summary>
+<div class="content">
+<table>
+<tr><th>ID</th><th>Question</th><th>Comparison</th><th>Direction</th><th>Figure(s)</th></tr>
+<tr><td>Q1</td><td>What is the population prior?</td><td>Observed mean SAD vs Multinomial(12, uniform) null</td><td>Two-tailed (different)</td><td>Fig 2</td></tr>
+<tr><td>Q2</td><td>Does seeing shapes change the prior?</td><td>Blind SAD vs Icon SAD</td><td>Two-sided</td><td>Fig 2, 3</td></tr>
+<tr><td>Q2a (P2a)</td><td>Is icon prior also more uniform than chance?</td><td>Icon SAD vs Multinomial(12, uniform) null simulation</td><td>Two-tailed</td><td>Panel 2.6 (orange line, v24)</td></tr>
+<tr><td>Q2b (P2b)</td><td>Is the difference between blind and icon significant?</td><td>Paired permutation + Wilcoxon + Cliff's delta</td><td>Two-sided</td><td>Fig 2.4, 2.5</td></tr>
+<tr><td>Q3</td><td>Does one exposure produce learning?</td><td>Icon SAD vs T1 SAD</td><td>One-sided (decrease)</td><td>Fig 3</td></tr>
+<tr><td>Q4</td><td>Does repetition improve estimates?</td><td>T1 SAD vs T2 SAD</td><td>One-sided (decrease)</td><td>Fig 3</td></tr>
+<tr><td>Q5</td><td><strong>Total learning? [PRIMARY]</strong></td><td>Blind SAD vs T2 SAD</td><td>One-sided (decrease)</td><td>Fig 3</td></tr>
+<tr><td>Q5b</td><td>Does prior quality predict test quality?</td><td>Prior SAD vs Test SAD</td><td>Spearman rho</td><td>Fig 3</td></tr>
+<tr><td>Q6</td><td>Item-specific: dominant vs rare error?</td><td>Dominant error vs Rare error (T2)</td><td>Mann-Whitney U</td><td>Fig 4</td></tr>
+<tr><td>Q7</td><td>Do self-reports match behavior?</td><td>Strategy reports vs SAD performance</td><td>Descriptive</td><td>Fig 6</td></tr>
+</table>
+<p style="margin-top:8px">Additional analyses (not tied to a single Q): exact match rates, alternative error measures (p=1/1.72/2), distribution fit (chi-sq GoF, KS), estimation trends (max/dominant/range), feedback utilization (error-correction), timing decomposition, self-report validation.</p>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 1 -->
+<!-- ================================================================ -->
+<details>
+<summary>3. Figure 1: Descriptive Overview (2x2)</summary>
+<div class="content">
+<p class="fig-purpose">Provides the reader with a complete descriptive snapshot before any inferential analysis. Establishes sample characteristics, SAD distributions, response patterns, and diversity metrics.</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>1.1</td><td>Descriptive Statistics</td><td>-</td><td>What are the central tendency and spread of SAD, entropy, and RT per phase?</td><td><code>distance_from_true</code>, <code>response_entropy</code>, <code>gen_rt</code></td><td>M, SD, Mdn, MAD, Mode, IQR computed per phase</td><td>Table (4 rows x 12 columns, phase-colored row headers)</td><td>None (descriptive)</td></tr>
+<tr><td>1.2</td><td>SAD Distribution</td><td>Q1-Q5</td><td>How does SAD distribute per phase? Is there a shift toward zero?</td><td><code>distance_from_true</code></td><td>Per-participant SAD, grouped by phase</td><td>Violin plots (4 phases) + uniform reference line (SAD=8)</td><td>None (visual; tested in Fig 3)</td></tr>
+<tr><td>1.3</td><td>Response Heatmap</td><td>-</td><td>What did each participant actually report? Where are exact matches?</td><td><code>gen_est_item1-4</code> (all phases)</td><td>4 items x 4 phases = 16 columns per row, sorted by T2 SAD</td><td>Heatmap (discrete 0-12 colorbar, green bold + border = exact match)</td><td>None (visual)</td></tr>
+<tr><td>1.4</td><td>Response Diversity</td><td>-</td><td>Are responses becoming less uniform (more peaked) over phases?</td><td><code>response_entropy</code>, <code>response_gini_simpson</code></td><td>Shannon H and Gini-Simpson per participant per phase</td><td>Dual-axis: entropy boxplots (left) + GS line (right) + reference lines</td><td>None (visual)</td></tr>
+</table>
+<div class="note"><strong>Heatmap exact match logic (v10+):</strong> Each cell is checked against the true value for that item position (items 1,2,3,4 = 1,1,4,6 repeated per phase). Green bold text + green border marks exact matches only. Discrete colorbar uses <code>BoundaryNorm</code> with 13 integer bins on YlOrRd gradient.</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 2 -->
+<!-- ================================================================ -->
+<details>
+<summary>4. Figure 2: Prior Characterization (3x3)</summary>
+<div class="content">
+<p class="fig-purpose">Characterizes the population prior (Q1), classifies prior shapes, compares Blind vs Icon priors, and tests whether non-uniformity exceeds multinomial noise. Exact-match panels moved to Figure 4 in v_2_1. <span class="badge new">v_2_2</span> Row 3 (panels 2.4m, 2.5m) adds rare-mean companions to the rare-min/rare-max panels above (see the order-statistic note below).</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>2.1</td><td>Prior Distribution</td><td>Q1</td><td>Is blind prior uniform or differentiated?</td><td><code>gen_est_item1-4</code> (blind)</td><td>Per-item estimates across participants</td><td>Boxplot per item + True stars + Uniform line</td><td><span class="badge new">v15</span> Multinomial simulation (10,000 draws)</td></tr>
+<tr><td>2.2</td><td>Blind Prior Bars</td><td>Q1</td><td>What is the mean blind estimate per item?</td><td><code>gen_est_item1-4</code> (blind)</td><td>Mean + SEM; individual dots (jittered)</td><td>Role-colored bars + median markers + True stars + mean labels</td><td>Descriptive (position-based; see 2.6 for position-free)</td></tr>
+<tr><td>2.3</td><td>Shape Classification</td><td>Q1</td><td>What distributional shapes do blind priors take?</td><td>Sorted blind response [ascending]</td><td>SAD to 5 references; chi-sq tiebreaker; Mixed if still tied</td><td>Horizontal bar (% of N) with reference distributions</td><td>Descriptive (counts + tie statistics)</td></tr>
+<tr><td>2.4</td><td>Blind vs Icon Prior</td><td>Q2</td><td>Does seeing shapes shift estimates toward truth?</td><td><code>gen_est_item1-4</code> (blind + icon)</td><td>Mean + SEM per item per phase; median overlay</td><td>Grouped bars + True stars + significance stars + stats box</td><td><span class="badge new">v12</span> Per-item Wilcoxon (Bonf.) + Friedman interaction</td></tr>
+<tr><td>2.5</td><td>Prior Shift</td><td>Q2</td><td>Which items shift and in what direction?</td><td>Icon mean - Blind mean per item</td><td>Difference scores vs needed shift (true - uniform)</td><td>Bars with +/- annotations + needed-shift stars</td><td>Visual</td></tr>
+<tr><td>2.6</td><td>Prior Test: Blind &amp; Icon vs Null</td><td>Q1, Q2a</td><td>Is prior non-uniformity more than multinomial noise? (Both phases)</td><td>Mean SAD vs 100,000 Multinomial(12, uniform) simulations</td><td><span class="badge new">v24</span> Simulate N draws; compute mean SAD per simulation. Show both blind and icon observed values against same null.</td><td>Dual: histogram (many bins) + KDE curve (smoothed). Red line = blind observed (2.73), orange line = icon observed (3.20), blue dashed = null mean (4.65). Red shading = p-value region. Annotation box shows both p-values.</td><td>Simulation (two-tailed): blind p&lt;.001, icon p=.0002</td></tr>
+<tr style="background:#f0fdf4;"><td>2.4m <span class="badge new">v_2_2</span></td><td>Blind vs Icon Prior (rare-mean)</td><td>Q2</td><td>Same as 2.4, but with the two rare items collapsed so the order-statistic artifact is removed.</td><td><code>sorted_est_rare_mean</code> (blind), <code>role_est_rare_mean</code> (icon), <code>role_est_medium</code>, <code>role_est_dominant</code></td><td>Mean + SEM per role slot per phase; median overlay. 3 role slots instead of 4.</td><td>Grouped bars + True stars + Uniform line. X-axis: Rare (mean), Medium, Dominant. Grid slot [2,0].</td><td>Visual (companion to 2.4)</td></tr>
+<tr style="background:#f0fdf4;"><td>2.5m <span class="badge new">v_2_2</span></td><td>Prior Shift (rare-mean)</td><td>Q2</td><td>Same as 2.5, with the rare items collapsed to one Rare-mean slot.</td><td>Icon role-mean - Blind sorted-mean per role slot</td><td>Difference scores vs needed shift (true - uniform), 3 slots.</td><td>Bars with +/- annotations + needed-shift stars + increase/decrease shading. Grid slot [2,1]. ([2,2] left blank.)</td><td>Visual (companion to 2.5)</td></tr>
+</table>
+<div class="note" id="rare-artifact"><strong>Order-statistic artifact and the rare-mean companions (v_2_2):</strong>
+<br><br>Two items in the true distribution have count = 1 (both "rare"). In panels 2.4, 2.5, 3.3, 4.1, 4.2 and 4.7 these two estimates are split into <code>rare_min</code> = min(est<sub>a</sub>, est<sub>b</sub>) and <code>rare_max</code> = max(est<sub>a</sub>, est<sub>b</sub>). Sorting two values into a min slot and a max slot is an <strong>order statistic</strong>: for any two draws from the same distribution, <code>E[max] &ge; E[mean] &ge; E[min]</code> by construction. So even when a participant has no role knowledge and guesses near-uniformly, the <code>rare_max</code> bar is pulled up and <code>rare_min</code> is pulled down.
+<br><br><strong>Why this misleads.</strong> In the Icon phase (no data seen yet) participants tend to spread estimates ~uniformly. Suppose a participant types [rare_a=2, rare_b=4, medium=3, dominant=2]. The split gives <code>rare_min=2</code>, <code>rare_max=4</code>, <code>medium=3</code>, <code>dominant=2</code> &mdash; making <code>rare_max</code> (4) look higher than both medium and dominant, purely from noise, not from believing the rare items are common.
+<br>
+<table style="font-size: 0.85em; margin: 8px 0;">
+<tr><th>Two rare estimates</th><th>rare_min</th><th>rare_max</th><th>rare_mean</th></tr>
+<tr><td>[2, 4]</td><td>2</td><td>4</td><td>3</td></tr>
+<tr><td>[3, 3]</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><td>[1, 5]</td><td>1</td><td>5</td><td>3</td></tr>
+</table>
+Across participants the min/max bars diverge while the mean stays put: <code>E[rare_max] &gt; E[rare_mean] &gt; E[rare_min]</code>. The spread reflects estimation <em>noise</em>, not differential knowledge.
+<br><br><strong>The companion panels (suffix "m").</strong> Each rare-min/rare-max panel keeps its original (unchanged) and gains a companion that collapses the two rare items into a single <code>rare_mean</code> slot (3 role slots: Rare-mean / Medium / Dominant). The blind phase uses <code>sorted_est_rare_mean = mean(sorted_est_pos1, sorted_est_pos2)</code>; non-blind phases use the existing <code>role_est_rare_mean</code>. In the companions the Rare bar sits between the old min/max heights and, in the Icon phase, close to Medium &mdash; confirming participants do not yet differentiate the roles. Panel 4.3 already aggregates the two rare items into one bar, so it has no companion.</div>
+<div class="note"><strong>Item assignment in blind phase (panels 2.2, 2.4):</strong> Items are position-mapped. <code>gen_est_item4</code> records the count typed into the position where the dominant shape will later appear. In the blind phase (gray squares), this is a chance baseline. Panel 2.6 provides position-independent analysis valid across all phases. Exact-match panels (count match, match by phase, match by role) are now in Figure 4 (panels 4.4-4.6).</div>
+<div class="note"><strong>Shape classification tie-breaking (v12):</strong> 3-tier: SAD -> chi-square -> Mixed composite. All ties logged.</div>
+
+<div class="note"><strong>Why [2,3,3,4] classifies as Uniform, not Unimodal (v23):</strong>
+<br><br>The classification is a nearest-neighbor assignment: compute SAD between the sorted response and each of 5 sorted reference distributions, pick the minimum. For [2, 3, 3, 4]:
+<br>
+<table style="font-size: 0.85em; margin: 8px 0;">
+<tr><th>Reference</th><th>Sorted shape</th><th>SAD computation</th><th>SAD</th></tr>
+<tr style="font-weight:bold; background:#e8f5e9;"><td>Uniform</td><td>[3, 3, 3, 3]</td><td>|2-3| + |3-3| + |3-3| + |4-3|</td><td>2 &larr; winner</td></tr>
+<tr><td>Unimodal-mild</td><td>[1, 2, 3, 6]</td><td>|2-1| + |3-2| + |3-3| + |4-6|</td><td>4</td></tr>
+<tr><td>J-shaped (True)</td><td>[1, 1, 4, 6]</td><td>|2-1| + |3-1| + |3-4| + |4-6|</td><td>6</td></tr>
+<tr><td>Bimodal-symmetric</td><td>[1, 1, 5, 5]</td><td>|2-1| + |3-1| + |3-5| + |4-5|</td><td>6</td></tr>
+<tr><td>Unimodal-extreme</td><td>[0, 1, 2, 9]</td><td>|2-0| + |3-1| + |3-2| + |4-9|</td><td>10</td></tr>
+</table>
+<br><strong>Why this is defensible:</strong> [2, 3, 3, 4] has a range of only 2 (max minus min). The "peak" at 4 is just 1 unit above the mean of 3. Compared to the Unimodal-mild reference [1, 2, 3, 6] (range = 5, clear dominant value), [2, 3, 3, 4] reflects approximately equal allocation with minor noise, not item differentiation.
+<br><br><strong>What it means for interpretation:</strong> "63% Uniform" includes participants who produced [2, 3, 3, 4] (most common, P=19.8% under null), [2, 2, 4, 4], and exact [3, 3, 3, 3]. The label "Uniform" therefore means "no meaningful differentiation between items" rather than "exactly equal counts." This is a category label capturing a behavioral pattern (flat allocation), not a literal descriptor. For the stricter question ("how many produced exactly [3, 3, 3, 3]?"), Panel 9.2 provides exact distribution counts per phase, bypassing the classification entirely.
+<br><br><strong>Design choice:</strong> The classification is a nearest-neighbor classifier with 5 fixed prototypes representing qualitatively distinct distributional shapes. Its granularity depends on the reference set. Adding a 6th reference (e.g., "near-uniform" = [2, 3, 3, 4]) would split the current Uniform category but might not add interpretive value, since the core question is whether participants differentiate between items at all.
+</div>
+<div class="note"><strong>Classification significance tests (v19):</strong> Tests whether observed classification proportions differ from what Multinomial(12, uniform) noise would produce. Method: simulate 100,000 experiments (N participants each), classify each simulated participant using the same 5-reference + tiebreaker system, record null classification proportions.
+<br><br><strong>Tests performed:</strong>
+<br>(1) <strong>Per-category test</strong>: For each of 5 categories, two-tailed simulation test comparing observed count to null count distribution. Answers: "Is 63% Uniform surprising under H0?"
+<br>(2) <strong>Binary test</strong>: Uniform vs Non-uniform. Compares observed Uniform count to null Uniform count.
+<br>(3) <strong>Top-2 test</strong>: Uniform + Unimodal-mild combined. Tests if these two categories together capture more participants than expected.
+<br>(4) <strong>Model comparison</strong>: Stepwise from k=5 to k=2 categories. At each k, merge least frequent categories into "Other" and compute chi-square GoF (observed vs null expected). Simulation p-value. Shows which k first becomes significant.
+<br><br>Note: with small N, some categories may have 0 observed participants. The simulation-based p-values handle this naturally (no minimum expected count assumption unlike parametric chi-square).</div>
+
+<div class="note"><strong>How classification proportion p-values are computed (v22):</strong>
+<br><br><strong>Per-category (e.g., Uniform):</strong>
+<br>1. In each of 100,000 simulated experiments (N participants from Multinomial(12, uniform)), classify all simulated participants using the same 5-reference SAD system.
+<br>2. Count how many are classified as "Uniform" in each simulation. Average across simulations = null expected proportion (e.g., 29.5%).
+<br>3. Compute observed deviation: |observed_count - null_mean_count| (e.g., |19 - 8.9| = 10.1).
+<br>4. For each simulation, compute its deviation from null mean: |sim_count - null_mean_count|.
+<br>5. p = proportion of simulations with deviation >= observed deviation (two-tailed).
+<br><br><strong>Combined categories (e.g., Uniform + Unimodal-mild):</strong>
+<br>Same procedure but summing counts for the combined categories before computing deviations.
+<br><br><strong>Interpretation note:</strong> Even under the null, the 5 categories are NOT equally likely. Multinomial noise naturally produces responses that classify as Uniform (~30%) or Unimodal-mild (~60%), because random responses close to [3,3,3,3] have smallest SAD to the Uniform reference, and slightly skewed responses like [1,3,3,5] classify as Unimodal-mild. Responses classifying as Bimodal or J-shaped are rare under noise. The null expected proportions account for this.
+<br><br>Consequence: the combined Uniform + Unimodal-mild proportion may NOT be significant (null already expects ~91% in these two categories), even when the individual Uniform proportion IS significant (observed 63% vs null 29.5%). The excess Uniform participants come at the expense of other categories, not Unimodal-mild.</div>
+<div class="note"><strong>Item-level phase tests (v12):</strong> (A) Per-item Wilcoxon Blind vs Icon (Bonf. 0.0125). (B) Per-item Friedman across 4 phases. (C) Interaction Friedman on shift magnitudes.</div>
+<div class="caveat"><strong>Prior test correction (v15):</strong> Old sign-flip test compared mean SAD to 0 (always rejects). Corrected simulation test uses Multinomial(12, uniform) null. <strong>Now two-tailed:</strong> tests whether observed mean SAD is DIFFERENT from null expectation (~4.65) in either direction. p = proportion of simulated |deviation from null mean| >= observed |deviation|. Three outcomes: (1) p<.05, observed > null: reject H0, observed was higher than expected. (2) p<.05, observed < null: reject H0, observed was lower than expected. (3) p>.05: fail to reject H0, data consistent with multinomial noise. The direction is a descriptive observation; the p-value only indicates whether the data is inconsistent with the multinomial model.</div>
+<div class="note"><strong>Null distribution discreteness (v15):</strong> SAD from [3,3,3,3] is always even because deviations sum to zero (SAD = 2 * sum of positive deviations). The mean of N even integers has granularity 2/N. With N=30, possible mean values are spaced 0.0667 apart. A naive histogram with bin width close to this spacing creates artificial spikes. Panel 2.6 uses dual visualization: (1) histogram with many bins (shows discrete structure) and (2) KDE with bandwidth=0.15 (provides smooth envelope for interpretation).</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 3 -->
+<!-- ================================================================ -->
+<details>
+<summary>5. Figure 3: Learning Trajectory (2x3)</summary>
+<div class="content">
+<p class="fig-purpose">Tests the primary hypothesis (Q5) and all pairwise phase comparisons. Shows both group-level trends and individual trajectories, including stratification by prior shape.</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>3.1</td><td>SAD Learning Curve</td><td>Q2-Q5</td><td>Does SAD decrease across phases?</td><td><code>distance_from_true</code></td><td>Mean SAD per phase + SEM</td><td>Bar chart + error bars + uniform reference + Friedman brackets</td><td>Friedman omnibus + 6 pairwise Wilcoxon (Bonferroni)</td></tr>
+<tr><td>3.2</td><td>Total Learning (Q5)</td><td>Q5</td><td>Is T2 SAD lower than Blind SAD? [PRIMARY]</td><td>Blind SAD, T2 SAD per participant</td><td>Paired comparison with jittered paired dots</td><td>Paired dot plot (Blind vs T2) + mean boxes + direction counts</td><td>Paired permutation (one-sided) + Cliff's delta</td></tr>
+<tr><td>3.3</td><td>Mean Response by Phase</td><td>Q3-Q5</td><td>How do item-level mean estimates evolve toward truth?</td><td><code>gen_est_item1-4</code> mean per phase (role-based: rare_min/rare_max/medium/dominant)</td><td>Mean estimate per role slot per phase</td><td>4 line plots (one per role slot) + True dashed reference</td><td>Visual</td></tr>
+<tr style="background:#f0fdf4;"><td>3.3m <span class="badge new">v_2_2</span></td><td>Mean Response by Phase (rare-mean)</td><td>Q3-Q5</td><td>Same as 3.3, with the two rare items collapsed so the order-statistic artifact is removed.</td><td><code>sorted_est_rare_mean</code> (blind) / <code>role_est_rare_mean</code> (non-blind), <code>role_est_medium</code>, <code>role_est_dominant</code></td><td>Mean estimate per role slot per phase, 3 slots instead of 4</td><td>3 line plots (one per phase) + True dashed reference. X-axis: Rare (mean), Medium, Dominant. Grid slot [3,1] (previously empty).</td><td>Visual (companion to 3.3)</td></tr>
+<tr><td>3.4</td><td>Individual Trajectories</td><td>Q5</td><td>Do most participants improve, or is the effect driven by a subset?</td><td><code>distance_from_true</code> per participant per phase</td><td>Individual SAD trajectories + group mean</td><td>Spaghetti plot (gray individual lines + black mean)</td><td>Visual (learner/non-learner counts)</td></tr>
+<tr><td>3.5</td><td>Trajectories by Prior Shape</td><td>Q1, Q5</td><td>Do participants with different priors learn differently?</td><td>SAD trajectory, stratified by shape classification</td><td>Group mean per prior shape category</td><td>Colored lines by shape class + overall mean</td><td>Visual</td></tr>
+<tr><td>3.6</td><td>Prior vs Test Quality</td><td>Q5b</td><td>Does a better prior predict better test performance?</td><td>Prior SAD (mean Blind+Icon) vs Test SAD (mean T1+T2)</td><td>Spearman rank correlation</td><td>Scatter plot + rho annotation</td><td>Spearman rho</td></tr>
+</table>
+<div class="note"><strong>Grid order (4&times;3):</strong> Row 0 = 3.1, 3.2, 3.2b; Row 1 = 3.2c, 3.2d, 3.2e; Row 2 = 3.3, 3.4, 3.5; Row 3 = 3.6 [3,0], <strong>3.3m [3,1]</strong> <span class="badge new">v_2_2</span>, blank [3,2]. The rare-mean companion 3.3m fills a slot that was previously empty, so Figure 3 keeps its 4&times;3 shape. See the <a href="#rare-artifact">order-statistic note</a> in Figure 2 for why the rare-mean version is shown.</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 4 -->
+<!-- ================================================================ -->
+<details>
+<summary>6. Figure 4: Item Estimation & Match Analysis (4x3)</summary>
+<div class="content">
+<p class="fig-purpose">Comprehensive item-level analysis organized in four logical groups: (A) estimation accuracy vs truth, (B) exact-match precision (moved from Figure 2 in v_2_1), (C) error analysis with alternative loss functions and distributional fit, and <span class="badge new">v_2_2</span> (D) rare-mean companions of the Row A / Row C role panels.</p>
+
+<h3>Row A: Estimation vs Truth (panels 4.1-4.3)</h3>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>4.1</td><td>Final Estimates vs True</td><td>Q6</td><td>How close are T2 estimates to the true distribution?</td><td><code>gen_est_item1-4</code> (T2) vs TRUE [1,1,4,6]</td><td>Mean T2 estimate per item</td><td>Grouped bar (True vs T2 Estimate) + SEM</td><td>Visual</td></tr>
+<tr><td>4.2</td><td>Item Error by Phase</td><td>Q6</td><td>Which items have the largest estimation error?</td><td>|estimate - true| per item per phase</td><td>Mean absolute error per item per phase</td><td>Line plot (4 phases x 4 items) + SEM</td><td>Visual</td></tr>
+<tr><td>4.3</td><td>Error by Item Role</td><td>Q6</td><td>Is dominant item harder or easier to estimate than rare?</td><td>Mean |error| grouped by role (dominant/medium/rare)</td><td>Dominant=item4, Medium=item3, Rare=mean(item1,item2)</td><td>Grouped bar (3 roles x 4 phases) + Q6 statistics</td><td>Mann-Whitney U + Cliff's delta (Dom vs Rare, T2)</td></tr>
+</table>
+
+<h3>Row B: Exact Match Analysis (panels 4.4-4.6, moved from Figure 2)</h3>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>4.4</td><td>Position-Free Count Match</td><td>-</td><td>Does response contain count values 6, 4, 1 anywhere?</td><td>Binary: value present (any position)</td><td>Check for 6, 4, 1, full [1,1,4,6] in sorted response</td><td>Grouped bars (4 metrics x 4 phases)</td><td>Cochran's Q per metric</td></tr>
+<tr><td>4.5</td><td>Exact Match by Phase</td><td>-</td><td>What % hit exact true count per item?</td><td>Binary: <code>est == true</code></td><td>% match per item per phase; raw counts on bars</td><td>Grouped bars (4 items x 4 phases)</td><td>Descriptive (Blind = chance baseline)</td></tr>
+<tr><td>4.6</td><td>Exact Match by Role</td><td>-</td><td>Do dominant items get matched more than rare?</td><td>Binary exact match averaged by role</td><td>Dom (item4==6), Med (item3==4), Rare (mean item1+2==1)</td><td>Grouped bars (3 roles x 4 phases) + counts</td><td>Descriptive (Blind = chance baseline)</td></tr>
+</table>
+
+<h3>Row C: Error Analysis (panels 4.7-4.9)</h3>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>4.7</td><td>Estimation Bias</td><td>Q6</td><td>Do participants over- or under-estimate each item?</td><td>estimate - true (signed) per item per phase</td><td>Mean signed error per item per phase</td><td>Line plot + zero line + over/under shading</td><td>Visual</td></tr>
+<tr><td>4.8</td><td>Alternative Error Measures</td><td>-</td><td>Do learning conclusions depend on the assumed loss function?</td><td>Sum(|error|^p) for p=1 (SAD), p=1.72 (CNS), p=2 (SSE)</td><td>Power-law error per participant per phase</td><td>3 learning curves (different markers/colors) + Friedman per exponent</td><td>Friedman per exponent</td></tr>
+<tr><td>4.9</td><td>Distribution Fit</td><td>-</td><td>Do estimates fit the true distribution formally?</td><td>Chi-square GoF statistic; KS statistic</td><td>Chi-sq = Sum((O-E)^2/E), df=3; KS = max|CDF_obs - CDF_true|</td><td>Chi-sq bars + KS line (secondary axis) + %Fit labels</td><td>Friedman on chi-sq values</td></tr>
+</table>
+
+<h3>Row D: Rare-Mean Companions (panels 4.1m, 4.2m, 4.7m) <span class="badge new">v_2_2</span></h3>
+<p class="fig-purpose">Companions to the Row A / Row C role panels with the two rare items collapsed into a single Rare-mean slot (3 role slots: Rare-mean / Medium / Dominant), removing the order-statistic artifact. Originals (4.1, 4.2, 4.7) are unchanged. Grid row 3 of the 4&times;3 layout.</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr style="background:#f0fdf4;"><td>4.1m</td><td>Final Estimates vs True (rare-mean)</td><td>Q6</td><td>How close are T2 estimates to truth, with rare collapsed?</td><td><code>role_est_rare_mean</code>, <code>role_est_medium</code>, <code>role_est_dominant</code> (T2) vs True [1,4,6]</td><td>Mean T2 estimate per role slot</td><td>Grouped bar (True vs T2 Estimate) + SEM. Grid slot [3,0].</td><td>Visual (companion to 4.1)</td></tr>
+<tr style="background:#f0fdf4;"><td>4.2m</td><td>Role Error by Phase (rare-mean)</td><td>Q6</td><td>Mean absolute error per role per phase, rare collapsed.</td><td>|estimate - true| per role slot per phase (3 slots)</td><td>Mean absolute error per role slot per phase</td><td>Line plot (4 phases x 3 roles) + SEM. Grid slot [3,1].</td><td>Visual (companion to 4.2)</td></tr>
+<tr style="background:#f0fdf4;"><td>4.7m</td><td>Estimation Bias (rare-mean)</td><td>Q6</td><td>Signed over/under-estimation per role, rare collapsed.</td><td>estimate - true (signed) per role slot per phase (3 slots)</td><td>Mean signed error per role slot per phase</td><td>Line plot + zero line + over/under shading. Grid slot [3,2].</td><td>Visual (companion to 4.7)</td></tr>
+</table>
+
+<div class="note"><strong>Why 4.3 has no companion (v_2_2):</strong> Panel 4.3 (Error by Item Role) already aggregates the two rare items into a single Rare bar &mdash; it averages the two rare absolute errors &mdash; so there is no rare-min/rare-max split to remove. The rare-mean companions cover 4.1, 4.2 and 4.7. See the <a href="#rare-artifact">order-statistic note</a> in Figure 2 for the full rationale.</div>
+
+<div class="note"><strong>v_2_1 restructuring:</strong> Panels 4.4-4.6 were previously Figure 2 panels 2.6-2.8. They are grouped here with other item-level analyses for thematic coherence: Row A measures how close estimates are to truth, Row B measures exact-match precision (binary hit/miss), Row C examines error properties under different loss functions.</div>
+<div class="caveat"><strong>Chi-square caveat:</strong> Expected values for rare items (E=1) violate the E>=5 assumption (Cochran, 1954). Results are supplementary to SAD.</div>
+<div class="note"><strong>CNS loss exponent:</strong> Kording & Wolpert (2004, <em>PNAS</em>) estimated the neural loss function exponent at ~1.72 for sensorimotor tasks, between absolute error (p=1) and squared error (p=2).</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 5 -->
+<!-- ================================================================ -->
+<details>
+<summary>7. Figure 5: Timing Analysis (2x3)</summary>
+<div class="content">
+<p class="fig-purpose">Decomposes response time into first-click RT (decision initiation) and deliberation (adjustment after first click). Tests whether timing changes across phases and whether speed relates to accuracy.</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>5.1</td><td>Timing Decomposition</td><td>-</td><td>How is total time split between RT and deliberation?</td><td><code>gen_rt</code>, <code>deliberation_time</code> (= completion - RT)</td><td>Mean per phase</td><td>Stacked bar (solid=RT, hatched=deliberation) + total labels</td><td>Visual</td></tr>
+<tr><td>5.2</td><td>RT Raincloud</td><td>-</td><td>What is the RT distribution shape per phase?</td><td><code>gen_rt</code> / 1000 (seconds)</td><td>Individual RT values per phase</td><td>Raincloud (half-violin + box + strip dots + mean diamond)</td><td>Friedman on RT</td></tr>
+<tr><td>5.3</td><td>RT Descriptive Table</td><td>-</td><td>What are the raw and cleaned RT descriptives?</td><td><code>gen_rt</code>, skewness, kurtosis, outliers (2.5 SD)</td><td>N, M, SD, Mdn, MAD, Skew, Kurt per phase; outlier detection; cleaned M/SD</td><td>Standalone table (phase-colored rows, red outlier cells)</td><td>Descriptive</td></tr>
+<tr><td>5.4</td><td>RT Histogram</td><td>-</td><td>Is the RT distribution right-skewed as expected?</td><td><code>gen_rt</code> / 1000</td><td>Density histogram per phase</td><td>Overlaid density histograms (4 colors)</td><td>Visual</td></tr>
+<tr><td>5.5</td><td>Completion Raincloud</td><td>-</td><td>How does total completion time distribute per phase?</td><td><code>gen_completion_time</code> / 1000</td><td>Individual values per phase</td><td>Raincloud (same style as 5.2)</td><td>Friedman on completion time</td></tr>
+<tr><td>5.6</td><td>Timing vs Accuracy</td><td>-</td><td>Does spending more time lead to better T2 performance?</td><td>RT, Completion, Deliberation (T2) vs T2 SAD</td><td>Spearman rho per timing measure</td><td>Scatter (3 measures, different markers) + regression lines (N>=5)</td><td>Spearman rho per measure</td></tr>
+</table>
+<div class="note"><strong>Outlier detection:</strong> 2.5 SD threshold per phase (Ratcliff, 1993). Skewness and kurtosis computed on raw data before removal. Cleaned descriptives reported for comparison.</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 6 -->
+<!-- ================================================================ -->
+<details>
+<summary>8. Figure 6: Self-Report Validation (2x3)</summary>
+<div class="content">
+<p class="fig-purpose">Validates behavioral results against participants' self-reported strategies and subjective experience (Q7). Hebrew RTL text rendered via built-in bidi function.</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>6.1</td><td>Blind Prior Strategy</td><td>Q7</td><td>What strategy did participants report for the blind phase?</td><td><code>post_q1</code> (Hebrew categorical)</td><td>Response frequency distribution</td><td>Horizontal bar + Hebrew header in yellow box</td><td>Descriptive</td></tr>
+<tr><td>6.2</td><td>Icon Prior Strategy</td><td>Q7</td><td>What strategy for the icon phase?</td><td><code>post_q2</code></td><td>Response frequency</td><td>Same format as 6.1</td><td>Descriptive</td></tr>
+<tr><td>6.3</td><td>Understanding vs Performance</td><td>Q7</td><td>Does self-reported task understanding predict T2 SAD?</td><td><code>post_q3</code> (1-6 scale) vs T2 SAD</td><td>Scatter</td><td>Scatter plot + axis labels</td><td>Visual (Spearman if N sufficient)</td></tr>
+<tr><td>6.4</td><td>Strategy vs T1 Accuracy</td><td>Q7</td><td>Do different strategies produce different T1 SAD?</td><td><code>post_q4</code> (categorical) vs T1 SAD</td><td>Mean T1 SAD per strategy category</td><td>Horizontal bars (strategy groups) with M and n labels</td><td>Descriptive</td></tr>
+<tr><td>6.5</td><td>Learning Source</td><td>Q7</td><td>What do participants attribute their learning to?</td><td><code>post_q5</code> (categorical)</td><td>Response frequency as % of N</td><td>Horizontal bar (% of participants) with labels</td><td>Descriptive</td></tr>
+<tr><td>6.6</td><td>Self-Report Summary</td><td>Q7</td><td>Key findings across all 5 questionnaire items</td><td>All post_q1-5</td><td>Modal response + key finding per question</td><td>Summary table with Hebrew text (bidi-rendered)</td><td>Descriptive</td></tr>
+</table>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 7 -->
+<!-- ================================================================ -->
+<details>
+<summary>9. Figure 7: Estimation Trends & Feedback Utilization (3x3)</summary>
+<div class="content">
+<p class="fig-purpose">Goes beyond global SAD to examine how specific estimation patterns change across phases. Row 1: Do participants learn to give higher estimates to the right items? Row 2: How precise are individual estimates? Row 3: Does the T1 error signal drive T2 correction?</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>7.1</td><td>Max Estimate Trend</td><td>Q5</td><td>Does the peak of participants' distribution increase toward 6?</td><td>max(est1..4) per participant per phase</td><td>Maximum of 4 estimates</td><td>Slope chart (gray individual + black mean) + true max line (6)</td><td>Friedman + Page's trend test</td></tr>
+<tr><td>7.2</td><td>Dominant Item Trend</td><td>Q5, Q6</td><td>Does the estimate for the dominant item (true=6) increase?</td><td><code>gen_est_item4</code> per phase</td><td>Item 4 estimate per participant</td><td>Slope chart (gray individual + green mean) + true line (6)</td><td>Friedman + Page's trend test</td></tr>
+<tr><td>7.3</td><td>Dominant Item Distribution</td><td>Q5</td><td>How does the distribution of dominant item estimates shift?</td><td><code>gen_est_item4</code> binned: 0-1, 2-3, 4-5, 6, 7+</td><td>% in each bin per phase</td><td>Stacked bar (5 bins, color-coded: red to green to purple)</td><td>Visual</td></tr>
+<tr><td>7.4</td><td>CDF of Dominant Item</td><td>Q5</td><td>Does the CDF shift rightward (toward 6) across phases?</td><td><code>gen_est_item4</code></td><td>Empirical CDF per phase</td><td>4 step functions + True=6 vertical reference</td><td>Visual</td></tr>
+<tr><td>7.5</td><td>Near-Miss Precision</td><td>Q6</td><td>Are participants getting closer to exact values?</td><td>|estimate - true|: exact (0), near (1), far (>1)</td><td>Classify each estimate; % in each category per phase</td><td>Stacked bar (exact/near/far) for dominant AND medium</td><td>Cochran's Q on exact+near (binary)</td></tr>
+<tr><td>7.6</td><td>Joint & Marginal Hits</td><td>Q6</td><td>Do participants who hit 6 also hit 4? (coherent learning)</td><td>Binary: hit item4==6, hit item3==4, both</td><td>P(6), P(4), P(both), P(6|4), P(4|6) per phase</td><td>3 lines (P(6), P(4), P(both)) across phases</td><td>Cochran's Q on joint hits</td></tr>
+<tr><td>7.7</td><td>T1 vs T2 SAD</td><td>-</td><td>Does T1 error predict T2 error? (stability vs correction)</td><td>T1 SAD, T2 SAD per participant</td><td>Scatter with identity line (below = improved)</td><td>Scatter + identity line + "Improved" zone shading</td><td>Spearman rho</td></tr>
+<tr><td>7.8</td><td>Error-Correction</td><td>-</td><td>Does larger T1 error produce larger improvement?</td><td>T1 SAD vs (T1 SAD - T2 SAD)</td><td>Scatter with regression line</td><td>Scatter (green=improved, red=worsened) + regression + RTM caveat</td><td>Spearman rho (confounded by RTM*)</td></tr>
+<tr><td>7.9</td><td>Improvement by Band</td><td>-</td><td>Do higher-error feedback bands produce more correction?</td><td>T1 SAD grouped into Low/Mid/High/VHigh bands</td><td>Mean improvement (T1-T2) per band</td><td>Color-coded bars (green to red) + n labels</td><td>Descriptive</td></tr>
+</table>
+<div class="caveat"><strong>*Regression to the mean (RTM):</strong> Panel 7.8 correlation is partially confounded: participants with extreme T1 SAD have more room to improve AND will statistically regress. Panel 7.7 (T1 vs T2) is cleaner because T1 does not appear on both sides. Both are reported; the caveat is noted directly on the plot.</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 8 -->
+<!-- ================================================================ -->
+<details>
+<summary>10. Figure 8: Range Convergence & Category Flow (1x3)</summary>
+<div class="content">
+<p class="fig-purpose">Tests whether estimates converge toward the [4,6] range that contains the medium and dominant true values, and visualizes how individual participants' dominant item estimates transition between categories across phases.</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>8.1</td><td>Range Convergence</td><td>Q5</td><td>Does the proportion of estimates in [4,6] increase?</td><td>Count of 4 estimates in [4,6] / 4, per participant per phase</td><td>Proportion per participant</td><td>Boxplot + strip dots by phase</td><td>Friedman</td></tr>
+<tr><td>8.2</td><td>Range by Item Role</td><td>Q6</td><td>Which roles converge to [4,6]? (correct for dom/med, overshooting for rare)</td><td>Binary: estimate in [4,6] per role per phase</td><td>% of participants in [4,6] by role</td><td>Grouped bar (3 roles x 4 phases)</td><td>Cochran's Q per role</td></tr>
+<tr><td>8.3</td><td>Category Flow (Alluvial)</td><td>Q5</td><td>How do individual participants' dominant item estimates transition?</td><td><code>gen_est_item4</code> binned into 5 categories per phase</td><td>Per-participant category at each phase; Bezier ribbons for transitions</td><td>Alluvial/Sankey with colored ribbons + stacked bars at each phase</td><td>Visual (transition patterns)</td></tr>
+</table>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- FIGURE 9 -->
+<!-- ================================================================ -->
+<details>
+<summary>11. Figure 9: Distribution Space (2x2) <span class="badge new">v22</span></summary>
+<div class="content">
+<p class="fig-purpose">Visualizes the complete space of 34 possible sorted distributions, tracks exact distribution counts, shows classification-colored null SAD histogram, and compares observed vs null classification proportions. All simulation data reused from the classification significance analysis (no duplicate simulation). Controlled by <code>N_SIMULATIONS</code> global constant.</p>
+<table>
+<tr><th>Panel</th><th>Title</th><th>RQ</th><th>Specific Question</th><th>DV / Variables</th><th>Method</th><th>Display</th><th>Test</th></tr>
+<tr><td>9.1</td><td>Distribution Probabilities</td><td>Q1</td><td>What is the probability of each possible distribution under multinomial noise?</td><td>All 34 sorted distributions of 12 across 4 items</td><td>Multinomial(12, uniform) probability per distribution, colored by 5-category classification</td><td>Bar chart: 34 bars sorted by probability (descending), colored by classification category. Top 3 annotated.</td><td>Descriptive (exhaustive enumeration)</td></tr>
+<tr><td>9.2</td><td>Exact Distribution Counts</td><td>Q1, Q5</td><td>Do specific exact distributions appear more often than chance?</td><td>Count of participants producing each key distribution per phase</td><td>Binomial test: P(X >= observed | Multinomial probability of that distribution)</td><td>Grouped bars (4 key distributions x 4 phases). Dotted lines = expected counts under null.</td><td>Binomial test per distribution per phase</td></tr>
+<tr><td>9.3</td><td>Null SAD by Category</td><td>Q1</td><td>Under multinomial noise, which classification categories produce which SAD values?</td><td>N_SIMULATIONS individual simulated responses (reused from classification significance simulation)</td><td>Each response classified using 5-reference SAD system, SAD computed from [3,3,3,3]</td><td>Stacked histogram: SAD on x-axis (always even), colored by classification. Red line = observed mean SAD. Yellow box = % Uniform under null.</td><td>Descriptive</td></tr>
+<tr><td>9.4</td><td>Observed vs Null Proportions</td><td>Q1</td><td>Which categories are over/under-represented compared to null?</td><td>Observed classification counts vs null expected proportions (from same simulation)</td><td>Side-by-side bars: lighter = null (with SD error bars), solid = observed. Significance stars from per-category Monte Carlo test.</td><td>Paired bars per category. Stars (*, **, ***) for significant deviations. Count annotations on observed bars.</td><td>Monte Carlo simulation (two-tailed, per category)</td></tr>
+</table>
+<div class="note"><strong>34-distribution space (v22):</strong> There are exactly 34 distinct ways to distribute 12 counts across 4 items when order doesn't matter (sorted ascending). This is the complete universe of possible participant responses. Enumeration: a <= b <= c <= d, a+b+c+d=12, a,b,c,d >= 0. Breakdown by smallest value: a=0 (19 distributions), a=1 (10), a=2 (4), a=3 (1). The 5-category classification maps these 34 into groups, but only 3 classify as Uniform (8.8% unweighted, 29.5% probability-weighted under multinomial).</div>
+
+<div class="note"><strong>How Panel 9.1 is constructed and how to read it (v23):</strong>
+<br><br><strong>Construction.</strong>
+Panel 9.1 displays one bar for each of the 34 possible sorted distributions. The bars are ordered left-to-right by descending multinomial probability under uniform sampling (Multinomial(12, [.25,.25,.25,.25])). Each bar's height is P(sorted draw = that distribution), computed as:
+<br><code>P(sorted) = (number of distinct permutations) &times; (12! / (a!b!c!d!)) &times; (0.25)^12</code>
+<br>The number of distinct permutations of [a,b,c,d] depends on how many values are identical: [3,3,3,3] has only 1 permutation, [1,2,3,6] has 4!=24 (all distinct), and [1,1,4,6] has 4!/2!=12 (two identical values). Each bar is colored by its 5-category classification (same color scheme as Panels 2.3 and 9.4).
+<br><br><strong>What the ranking reveals.</strong>
+The top 12 distributions by probability:
+<br>
+<table style="font-size: 0.85em; margin: 8px 0;">
+<tr><th>Rank</th><th>Distribution</th><th>P(sorted)</th><th>Cumulative</th><th>Classification</th></tr>
+<tr style="font-weight:bold; background:#e8f5e9;"><td>1</td><td>[2, 3, 3, 4]</td><td>19.8%</td><td>19.8%</td><td>Uniform</td></tr>
+<tr><td>2</td><td>[1, 2, 4, 5]</td><td>11.9%</td><td>31.7%</td><td>Unimodal-mild</td></tr>
+<tr><td>3</td><td>[2, 2, 3, 5]</td><td>11.9%</td><td>43.6%</td><td>Unimodal-mild</td></tr>
+<tr><td>4</td><td>[1, 3, 4, 4]</td><td>9.9%</td><td>53.5%</td><td>Unimodal-mild</td></tr>
+<tr><td>5</td><td>[1, 2, 3, 6]</td><td>7.9%</td><td>61.5%</td><td>Unimodal-mild</td></tr>
+<tr><td>6</td><td>[1, 3, 3, 5]</td><td>7.9%</td><td>69.4%</td><td>Unimodal-mild</td></tr>
+<tr style="font-weight:bold; background:#e8f5e9;"><td>7</td><td>[2, 2, 4, 4]</td><td>7.4%</td><td>76.8%</td><td>Uniform</td></tr>
+<tr><td>8</td><td>[0, 3, 4, 5]</td><td>4.0%</td><td>80.8%</td><td>Unimodal-mild</td></tr>
+<tr style="font-weight:bold; background:#e8f5e9;"><td>9</td><td>[3, 3, 3, 3]</td><td>2.2%</td><td>83.0%</td><td>Uniform</td></tr>
+<tr><td>10</td><td>[0, 2, 4, 6]</td><td>2.0%</td><td>85.0%</td><td>Unimodal-mild</td></tr>
+<tr style="background:#fff3e0;"><td>11</td><td>[1, 1, 4, 6]</td><td>2.0%</td><td>87.0%</td><td>J-shaped (True)</td></tr>
+<tr><td>12</td><td>[2, 2, 2, 6]</td><td>2.0%</td><td>89.0%</td><td>Unimodal-mild</td></tr>
+</table>
+<br><strong>Key observations from the panel:</strong>
+<br>(1) <strong>The probability landscape is steep.</strong> The top 7 distributions account for 77% of all probability mass. The remaining 27 distributions share only 23%. Most of the "34 possible responses" are extremely unlikely under random allocation.
+<br>(2) <strong>The most likely response is NOT [3,3,3,3].</strong> It is [2,3,3,4] (P=19.8%), which has 12 distinct permutations compared to [3,3,3,3]'s single permutation. The exact uniform [3,3,3,3] ranks only 9th (P=2.2%). This is because high multinomial coefficient (12!/(3!3!3!3!) is maximal for equal counts) is outweighed by low permutation count.
+<br>(3) <strong>Uniform-colored bars are sparse but heavy.</strong> Only 3 of 34 distributions classify as Uniform (highlighted green above): [2,3,3,4], [2,2,4,4], and [3,3,3,3]. Their combined probability = 29.5%. This is the null expectation used in Panel 9.4.
+<br>(4) <strong>The true distribution [1,1,4,6] has low null probability.</strong> At rank 11 (P=2.0%), it classifies as J-shaped (highlighted orange). Under random guessing, only ~2% of participants would land on this exact shape. This provides the baseline for evaluating whether post-exposure responses shift toward this distribution.
+<br>(5) <strong>Unimodal-mild dominates the space.</strong> Most bars are Unimodal-mild colored, reflecting that the majority of possible distributions (especially the high-probability ones) have a single mild peak. This is why the null already expects ~60% Unimodal-mild classification in Panel 9.4.
+</div>
+<div class="note"><strong>Exact distribution binomial test (v22):</strong> For a specific distribution (e.g., [3,3,3,3]), compute its multinomial probability under uniform (P=0.022 for exact uniform). Under H0, the number of N participants producing this exact distribution follows Binomial(N, P). One-tailed test: P(X >= observed). For [3,3,3,3] with N=30: expected count = 0.66. If 3+ participants produce it, p < .05. No classification or simulation needed.</div>
+
+<div class="note"><strong>How to interpret the classification proportion test and Panel 9.4 (v23):</strong>
+<br><br>This walkthrough explains the logic behind the P4 statistic ("Is the observed Uniform proportion surprising?") in four layers, from participant-level to figure-level.
+<br><br><strong>Layer 1: Classification (per participant).</strong>
+Each participant's blind-phase response is a vector of 4 counts summing to 12, e.g., [2, 4, 3, 3]. Since blind-phase stimuli are gray squares with no item identity, position is meaningless. The vector is sorted ascending: [2, 3, 3, 4]. This sorted vector is compared via SAD to 5 sorted reference distributions (Uniform [3,3,3,3], Unimodal-mild [1,2,3,6], Unimodal-extreme [0,1,2,9], Bimodal-symmetric [1,1,5,5], J-shaped [1,1,4,6]). The participant is classified as the reference with the minimum SAD. Ties are broken by chi-square distance. Result for N=30: 19 participants (63%) classified as Uniform.
+<br><br><strong>Layer 2: The 34-distribution space (what responses are possible).</strong>
+There are exactly 34 distinct sorted ways to distribute 12 counts across 4 bins (a &le; b &le; c &le; d, a+b+c+d=12). Each has a known multinomial probability under uniform sampling [.25, .25, .25, .25]. Of these 34 distributions, only 3 classify as Uniform via the SAD system (those closest to [3,3,3,3]). Unweighted: 3/34 = 8.8%. But [3,3,3,3] and near-uniform distributions have high multinomial probability (many permutations), so when weighted by probability, ~29.5% of random draws would classify as Uniform. This 29.5% is the null expectation.
+<br><br><strong>Layer 3: Monte Carlo simulation (the test).</strong>
+The question: "Is 63% Uniform surprising given that chance already predicts 29.5%?" There is no closed-form formula for the null distribution of "proportion classified as Uniform in a sample of N" because the classification pipeline (sort, compute SAD, apply tiebreaker) is non-linear. So we simulate: (1) draw N=30 random Multinomial(12, [.25,.25,.25,.25]) vectors, (2) sort each, (3) classify each using the same 5-reference system, (4) record the proportion classified as Uniform. Repeat 100,000 times. The p-value (two-tailed) is the proportion of simulations where |sim_proportion - null_mean| &ge; |observed_proportion - null_mean|. With 63% observed vs 29.5% null, fewer than 0.1% of simulations reach that deviation. Hence p &lt; .001.
+<br><br><strong>Layer 4: Reading Panel 9.4.</strong>
+Panel 9.4 shows paired bars for each of the 5 classification categories. The lighter bar (with SD error bars from the simulation) represents the null expected proportion. The solid colored bar represents the observed proportion from the data. Significance stars above indicate the two-tailed Monte Carlo p-value. For the Uniform category: a short null bar (~29.5%) next to a tall observed bar (~63%) with *** stars. The visual gap between those two bars is the effect. Other categories (e.g., Unimodal-mild) may show smaller or non-significant gaps because the null already expects high proportions for those categories.
+</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- STATISTICAL FRAMEWORK -->
+<!-- ================================================================ -->
+<details>
+<summary>12. Statistical Framework</summary>
+<div class="content">
+<p>All non-parametric. Fixed seed (<code>rng=42</code>) for reproducibility. Significance: * p<.05, ** p<.01, *** p<.001.</p>
+
+<h3>Multinomial Log-Probability Analysis <span class="badge new">v19</span></h3>
+<p>Computes the exact multinomial probability of each participant's sorted response under two models:</p>
+<table>
+<tr><th>Model</th><th>Probabilities</th><th>Interpretation</th></tr>
+<tr><td>Uniform</td><td>[.25, .25, .25, .25]</td><td>No knowledge of distribution</td></tr>
+<tr><td>True</td><td>[1/12, 1/12, 4/12, 6/12] sorted</td><td>Perfect knowledge of distribution</td></tr>
+</table>
+<p><strong>Log-likelihood ratio</strong> = log P(response|true) - log P(response|uniform). Positive = response more likely under true model. Tested across phases with Friedman + pairwise Wilcoxon (Bonferroni). An increase from Blind to T2 indicates learning without relying on SAD.</p>
+<p><strong>Key advantage:</strong> No classification, no arbitrary reference distributions, no tiebreaker. Uses sorted responses to avoid blind-phase position assignment. The probability itself is the test statistic.</p>
+<p><strong>Comparisons:</strong> Blind vs T2 (total learning), Icon vs T1 (one-shot learning), Icon vs T2 (learning from icon baseline), plus Friedman omnibus.</p>
+
+<h3>Monte Carlo Simulation and Exact Tests in This Pipeline <span class="badge changed">v22</span></h3>
+<p>This pipeline uses two approaches to test null hypotheses about participant responses: <strong>Monte Carlo simulation</strong> (when analytical solutions don't exist) and <strong>exact computation</strong> (when they do). Understanding when each is used clarifies the statistical logic.</p>
+
+<h4>The 34-Distribution Space</h4>
+<p>There are exactly <strong>34 distinct sorted distributions</strong> of 12 counts across 4 items. This is the complete universe of possible participant responses (when sorted ascending to remove position identity). Enumeration: a &le; b &le; c &le; d, a+b+c+d=12. Breakdown: a=0 (19 distributions), a=1 (10), a=2 (4), a=3 (1, only [3,3,3,3]).</p>
+<p>Each of these 34 has an exact multinomial probability under any model. For example, under uniform [.25,.25,.25,.25], [3,3,3,3] has P = 12!/(3!)^4 &times; (1/4)^12 = 0.022 (2.2%). This is computed analytically using the multinomial probability formula, not by simulation.</p>
+
+<h4>When Exact Computation Works (No Simulation Needed)</h4>
+<table>
+<tr><th>Test</th><th>What it computes</th><th>Why exact</th><th>Panel</th></tr>
+<tr><td>Exact distribution binomial</td><td>P(k or more participants produce exactly [3,3,3,3]) given P_null=0.022</td><td>Binomial CDF has a closed form</td><td>9.2</td></tr>
+<tr><td>Distribution space enumeration</td><td>Probability of each of 34 distributions under any multinomial model</td><td>Finite set, multinomial formula applies directly</td><td>9.1</td></tr>
+<tr><td>Multinomial log-probability</td><td>Log P(sorted response | model) for each participant</td><td>Direct computation per response</td><td>Report</td></tr>
+</table>
+
+<h4>When Monte Carlo Simulation Is Needed</h4>
+<p>Monte Carlo is needed when the question involves a <strong>derived statistic</strong> whose null distribution has no closed form. The classification system (sort, compute SAD to 5 references, apply chi-square tiebreaker, count proportions) is such a case. There is no formula for "what proportion of multinomial draws classify as Uniform." The only way to find out is to generate many draws and count.</p>
+
+<p><strong>The chain of logic (same for all Monte Carlo tests):</strong></p>
+<ol>
+<li><strong>Define H0:</strong> participants draw from Multinomial(12, [.25, .25, .25, .25])</li>
+<li><strong>Define the question:</strong> e.g., "what proportion get classified as Uniform?"</li>
+<li><strong>Simulate:</strong> generate 100,000 fake experiments under H0. Each = N simulated participants, each drawing from multinomial, sorted, classified using the same system</li>
+<li><strong>For each fake experiment:</strong> compute the answer to the question (e.g., "47% were Uniform")</li>
+<li><strong>Compare:</strong> place the real observed answer against the 100,000 fake answers</li>
+<li><strong>p-value:</strong> proportion of fake experiments at least as extreme as the real observation (two-tailed: deviation in either direction)</li>
+</ol>
+
+<p><strong>Concrete example (classification proportion test):</strong></p>
+<pre>
+One simulation run (one "fake experiment"):
+  Fake participant 1: Multinomial(12,[.25,.25,.25,.25]) -> [4,2,3,3]
+    Sort: [2,3,3,4] -> SAD to Uniform=2, SAD to Unimodal=6, ... -> "Uniform"
+  Fake participant 2: Multinomial -> [1,5,3,3]
+    Sort: [1,3,3,5] -> SAD to Uniform=4, SAD to Unimodal=2, ... -> "Unimodal-mild"
+  ... repeat for all N participants
+  Result: 14/30 = 47% classified as Uniform
+
+After 100,000 runs: null distribution of "% Uniform" values.
+Observed = 63%. p = proportion of simulations with deviation >= observed deviation.
+</pre>
+
+<p><strong>Why Multinomial is the correct null:</strong> It models exactly what "no knowledge" means. A participant with no distributional knowledge has no reason to favor any item. Each of their 12 counts goes to each of 4 items with probability 1/4. The multinomial enforces the sum-to-12 constraint, unlike independent draws from 0-12. Under this null, only 2.2% of draws produce exactly [3,3,3,3], and the expected mean SAD from uniform is ~4.65 (not 0).</p>
+
+<p><strong>All tests using Monte Carlo:</strong></p>
+<table>
+<tr><th>Test</th><th>Question</th><th>Why no formula exists</th><th>Panel</th></tr>
+<tr><td>Prior SAD test</td><td>Is mean SAD different from null (~4.65)?</td><td>SAD is always even; sampling distribution of mean depends on N</td><td>2.1, 2.6</td></tr>
+<tr><td>Classification proportion</td><td>Is observed % Uniform (63%) surprising?</td><td>Classification involves 5-reference SAD + tiebreaker</td><td>2.3</td></tr>
+<tr><td>Binary split</td><td>Is Uniform vs Non-uniform split different?</td><td>Same as above, binary collapse</td><td>2.3</td></tr>
+<tr><td>Top-2 test</td><td>Is Uniform + Unimodal-mild proportion surprising?</td><td>Combined classification proportions</td><td>2.3</td></tr>
+<tr><td>Model comparison</td><td>Does reducing from 5 to k categories lose information?</td><td>Chi-square with collapsed categories under simulation null</td><td>2.3</td></tr>
+</table>
+
+<p><strong>Precision:</strong> With N_SIMULATIONS = 100,000, the smallest non-zero p-value is 0.00001. Report as: "Monte Carlo simulation test (100,000 draws), p = X.XXXX."</p>
+
+<h3>All Statistical Tests</h3>
+<table>
+<tr><th>Test</th><th>DV Type</th><th>Use</th><th>Reference</th></tr>
+<tr><td>Friedman</td><td>Continuous, k repeated measures</td><td>Omnibus (SAD, RT, Completion, alternative errors, chi-sq GoF, proportions)</td><td>Friedman (1937)</td></tr>
+<tr><td>Wilcoxon signed-rank</td><td>Continuous, 2 paired conditions</td><td>Post-hoc pairwise (Bonferroni); <span class="badge new">v12</span> per-item Blind vs Icon (4 tests, Bonf.)</td><td>Wilcoxon (1945)</td></tr>
+<tr><td>Multinomial simulation</td><td>Continuous, 1 sample vs distributional null</td><td><span class="badge new">v15</span> Prior SAD, classification proportions, model comparison</td><td>Custom (this study)</td></tr>
+<tr><td>Binomial exact test</td><td>Count vs expected proportion</td><td><span class="badge new">v22</span> Exact [3,3,3,3] or [1,1,4,6] count per phase vs multinomial P</td><td>Standard binomial CDF</td></tr>
+<tr><td>Multinomial log-probability</td><td>Continuous, per participant per phase</td><td><span class="badge new">v19</span> Log P(response|true model) and log-likelihood ratio across phases</td><td>Exact multinomial formula</td></tr>
+<tr><td>Permutation (paired)</td><td>Continuous, 2 paired conditions</td><td>Q2-Q5 pairwise phase comparisons (10,000 permutations)</td><td>Good (2005); Ernst (2004)</td></tr>
+<tr><td>Permutation (one-sample)</td><td>Continuous, 1 sample vs reference</td><td>Q1: sorted prior SAD vs uniform</td><td>Ernst (2004)</td></tr>
+<tr><td>Page's L</td><td>Continuous, k ordered conditions</td><td>Monotonic trend test (Blind <= Icon <= T1 <= T2)</td><td>Page (1963)</td></tr>
+<tr><td>Mann-Whitney U</td><td>Continuous, 2 independent groups</td><td>Q6: dominant vs rare item errors</td><td>Mann & Whitney (1947)</td></tr>
+<tr><td>Cochran's Q</td><td>Binary, k repeated measures</td><td>Exact match, near-miss, range convergence, joint hits</td><td>Cochran (1950)</td></tr>
+<tr><td>Spearman rho</td><td>Ordinal/continuous, 2 variables</td><td>Q5b, timing-accuracy, T1-T2 feedback, cross-exponent</td><td>Spearman (1904)</td></tr>
+<tr><td>Chi-square GoF</td><td>Categorical, observed vs expected</td><td>Distribution fit per participant per phase</td><td>Cochran (1954)</td></tr>
+<tr><td>Bootstrap 95% CI</td><td>Any mean estimate</td><td>Confidence intervals (10,000 resamples)</td><td>Efron (1979)</td></tr>
+<tr><td>Cliff's delta</td><td>Effect size, 2 groups</td><td>Standardized effect size (vectorized)</td><td>Cliff (1993); Romano et al. (2006)</td></tr>
+<tr><td>Cohen's h</td><td>Effect size, 2 proportions</td><td>h = 2*arcsin(sqrt(p1)) - 2*arcsin(sqrt(p2)). Benchmarks: 0.2=small, 0.5=medium, 0.8=large. Used for P4 (Uniform proportion) and P6c (Unimodal-mild proportion) classification significance tests (v24).</td><td>Cohen (1988). Statistical Power Analysis for the Behavioral Sciences (2nd ed.)</td></tr>
+</table>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- METHODOLOGICAL NOTES -->
+<!-- ================================================================ -->
+<details>
+<summary>13. Methodological Notes</summary>
+<div class="content">
+
+<h3>Prior uniform test correction (v15)</h3>
+<p>The original sign-flipping permutation test (v1-v14) tested H0: "mean SAD from uniform = 0." This is wrong because SAD is always >= 0, and even a truly uniform Multinomial(12, [.25,.25,.25,.25]) prior produces mean SAD ~4.65 due to sampling noise. Only ~2% of multinomial draws give exactly [3,3,3,3].</p>
+<p>The corrected test (v15) simulates 10,000 datasets of N participants drawing from Multinomial(12, [.25,.25,.25,.25]), computes mean SAD for each, and asks: "Is the observed mean SAD significantly HIGHER than this null?" If p > 0.05, participants are no more non-uniform than multinomial noise predicts. If the observed mean SAD is LOWER than the null expectation, participants are actively choosing uniform allocations.</p>
+<p>The old sign-flip test is retained in the report as "[Deprecated]" for comparison.</p>
+
+<h3>Shape classification tie-breaking (v12)</h3>
+<p>3-tier system: (1) Primary: minimum SAD to 5 sorted references. (2) If SAD tied: chi-square distance <code>Sum((O-E)^2/max(E,0.5))</code> as secondary tiebreaker. (3) If still tied: composite "Mixed" category (e.g., "Uniform + Bimodal-symmetric"). All ties are logged with: response vector, tied references, SAD value, resolution method, winner, chi-square scores. Tie rate is reported in the text output. With N=29, empirically ~3-5 participants have SAD ties; most are resolved by chi-square.</p>
+
+<h3>Why mean rather than median for prior comparison (Figure 2.5)</h3>
+<p>(1) Means preserve the sum-to-12 constraint across items. (2) With integer estimates, medians collapse to the same whole number across conditions, hiding real differences. (3) SAD is a mean-based distance metric. Both are shown (bars = mean, red dashes = median); divergence signals skewness.</p>
+
+<h3>Item identity across trials</h3>
+<p>Item numbers (1-4) are shape identities, not screen positions. <code>gen_est_item4</code> always records the estimate for the dominant shape (true=6) regardless of screen position. In the blind phase, shapes are replaced by gray squares, so item-specific comparisons are chance-level baselines. Shape classification handles this by sorting.</p>
+
+<h3>Boxplot collapse on discrete data</h3>
+<p>When many participants give the same integer estimate, Q1=median=Q3 and the box has zero height. This indicates consensus, not a plotting error. Common for rare items (most participants assign ~3).</p>
+
+<h3>Regression to the mean in feedback analysis</h3>
+<p>The T1 SAD vs improvement correlation (7.8) is confounded by RTM: extreme T1 values regress toward the mean on T2 regardless of learning. The T1 vs T2 correlation (7.7) is cleaner. Both reported with explicit caveat.</p>
+
+<h3>SAD is always even for N=12</h3>
+<p>When 4 estimates sum to 12 and the true distribution also sums to 12, the SAD = Sum|est_i - true_i| is always even. This constrains the distribution of SAD values and means feedback bands should use even intervals.</p>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- OUTPUT FILES -->
+<!-- ================================================================ -->
+<details>
+<summary>14. Output Files</summary>
+<div class="content">
+<p>Each run of <code>run_analysis()</code> produces the following files in the output directory:</p>
+
+<h3>Figures (8 PNG files)</h3>
+<table>
+<tr><th>File</th><th>Content</th><th>Panels</th></tr>
+<tr><td><code>Fig1_Descriptives</code></td><td>Descriptive overview: stats table, SAD violins, heatmap, diversity</td><td>1.1-1.4 (2x2)</td></tr>
+<tr><td><code>Fig2_Prior</code></td><td>Prior characterization: boxplot, blind bars, classification, Blind vs Icon, shift, null distribution, + rare-mean companions (2.4m, 2.5m)</td><td>2.1-2.6 + 2.4m/2.5m (3x3)</td></tr>
+<tr><td><code>Fig3_Learning</code></td><td>Learning trajectory: SAD curve, Q5 paired dots, mean responses, individual/stratified trajectories, prior-test correlation</td><td>3.1-3.6 (2x3)</td></tr>
+<tr><td><code>Fig4_Items</code></td><td>Item estimation &amp; match analysis: estimates vs true, error by phase/role, count match, exact match by phase/role, bias, alternative errors, distribution fit, + rare-mean companions (4.1m, 4.2m, 4.7m)</td><td>4.1-4.9 + 4.1m/4.2m/4.7m (4x3)</td></tr>
+<tr><td><code>Fig5_Timing</code></td><td>Timing: decomposition, RT/completion rainclouds, RT table, histogram, timing-accuracy correlation</td><td>5.1-5.6 (2x3)</td></tr>
+<tr><td><code>Fig6_SelfReport</code></td><td>Self-report: 5 questionnaire items + summary table (Hebrew bidi)</td><td>6.1-6.6 (2x3)</td></tr>
+<tr><td><code>Fig7_EstTrends</code></td><td>Estimation trends + feedback: slope charts, bins, CDF, near-miss, joint hits, T1 vs T2, error-correction, band improvement</td><td>7.1-7.9 (3x3)</td></tr>
+<tr><td><code>Fig8_RangeFlow</code></td><td>Range convergence: proportion in [4,6], by role, alluvial category flow</td><td>8.1-8.3 (1x3)</td></tr>
+</table>
+
+<h3>Data Tables (3 CSV files)</h3>
+<table>
+<tr><th>File</th><th>Content</th></tr>
+<tr><td><code>Summary.csv</code></td><td>One row per participant, all phases. SAD, entropy, RT, item estimates, self-report.</td></tr>
+<tr><td><code>Descriptives.csv</code></td><td>Descriptive statistics table (M, SD, Mdn, MAD, etc.) per phase.</td></tr>
+<tr><td><code>Statistics.csv</code></td><td>All statistical test results (test name, statistic, p-value).</td></tr>
+</table>
+
+<h3>Report Files (4 files) <span class="badge new">v15</span></h3>
+<table>
+<tr><th>File</th><th>Format</th><th>Content</th><th>Use</th></tr>
+<tr><td><code>ResultsSummary.csv</code></td><td>CSV</td><td>One row per key finding. 10 columns: Category, Question, Test, Statistic, p_value, Significance, Effect_Size, Direction, Values, Comment. ~30 rows covering Prior, Learning, Items, Exact Match, Timing, Trends, Feedback.</td><td>Open in Excel; copy into email table or slide deck</td></tr>
+<tr><td><code>EmailReport.txt</code></td><td>Plain text</td><td>5-section formatted report: Executive Summary, Prior, Learning, Items, T1-T2 + Feedback, Key Numbers. All numbers auto-populated from results.</td><td>Copy-paste into email body</td></tr>
+<tr><td><code>Report.md</code></td><td>Markdown</td><td>Same sections as EmailReport but with markdown formatting and <code>![](path)</code> figure references.</td><td>View in any markdown editor; share on GitHub; convert externally</td></tr>
+<tr><td><code>Report.pdf</code></td><td>PDF</td><td>Multi-page report with text sections + embedded figure PNGs. Generated using matplotlib PdfPages (no external dependencies).</td><td>Attach to email; print; share directly</td></tr>
+</table>
+
+<h3>Text Report</h3>
+<table>
+<tr><th>File</th><th>Content</th></tr>
+<tr><td><code>Report.txt</code></td><td>Full console output log: all analysis steps, test results, warnings, and progress messages.</td></tr>
+</table>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- PPTX REPORT STRUCTURE -->
+<!-- ================================================================ -->
+<details>
+<summary>14b. PPTX Report Structure (report_4.pptx) <span class="badge new">v24</span></summary>
+<div class="content">
+<p>The PPTX report presents the N=30 interim results in a question-driven format. Each research question maps to specific slides with figure panels and statistics.</p>
+
+<h3>Slide Structure</h3>
+<table>
+<tr><th>Slide</th><th>Title</th><th>Content</th><th>Figure Panels</th></tr>
+<tr><td>1</td><td>Cover</td><td>OneShot N=30, Paz Lab, Weizmann Institute</td><td>-</td></tr>
+<tr><td>2</td><td>Experiment Design</td><td>4 phases (Blind, Icon, T1, T2), DV=SAD, target [1,1,4,6], N=12 items</td><td>Schematic</td></tr>
+<tr><td>3</td><td>Research Questions</td><td>Prior (P1-P6) and Learning (L1-L3) questions listed</td><td>-</td></tr>
+<tr><td>4</td><td>Prior Q-A Table</td><td>9-column table: #, Question, Test, Figure, Metric, Significance, Effect, Answer, Slide. Rows: P1-P6</td><td>-</td></tr>
+<tr><td>5</td><td>Icon Q-A Table</td><td>Same format. Rows: P7 (icon descriptive), P2a (icon vs null), P2b (blind vs icon paired)</td><td>-</td></tr>
+<tr><td>6</td><td>Learning Q-A Table</td><td>Same format. Rows: L1 (Icon-T1), L2 (direction), L3 (T1-T2), S1 (Blind-T2 overall), S2 (Page's trend)</td><td>-</td></tr>
+<tr><td>7</td><td>P1+P2: Blind Prior</td><td>Descriptive + hypothesis test. Mean blind estimates near uniform. Simulation test: obs SAD=2.73 vs null=4.65, p&lt;.001</td><td>Fig 2.2 (left), Fig 2.6 (right, blind + icon lines)</td></tr>
+<tr><td>8</td><td>P3+P4+P5+P6: Classification</td><td>5-reference nearest-neighbor classification. 63% Uniform (p&lt;.001, h=0.69), 33% Unimodal-mild deficit (p=.002, h=-0.58). Combined 97% n.s.</td><td>Fig 2.3 (left), Fig 9.4 (right)</td></tr>
+<tr><td>9</td><td>P7+P2a+P2b: Icon Prior</td><td>Icon SAD M=7.9. P2a: icon also uniform vs chance (p=.0002). P2b: Blind vs Icon significant (diff=1.13, p=.040, d=0.201 small)</td><td>Fig 2.4, Fig 2.5, stats table</td></tr>
+<tr><td>10</td><td>L1-L2: Exposure Effect</td><td>Icon-to-T1: diff=-0.20, p=.696 n.s. Direction: 9 improved, 12 worsened</td><td>Fig 3.1</td></tr>
+<tr><td>11</td><td>L3+S1+S2: T1-T2 + Overall</td><td>T1-T2: p=.791 n.s. Overall: p=.275, d=0.04 negl. Page's trend: Z=-3.79, p&lt;.001 (worsening direction)</td><td>Fig 3.2, Fig 3.4</td></tr>
+<tr><td>12</td><td>Summary</td><td>Key findings table: uniform prior (p&lt;.001), classification significance, icon shift (p=.040), no learning (p=.275)</td><td>-</td></tr>
+<tr><td>13</td><td>Next Steps</td><td>Target N=50, planned analyses (fingerprint persistence, Bayesian model, prior predicts learning)</td><td>-</td></tr>
+</table>
+
+<h3>Key v24 Results in the Report</h3>
+<table>
+<tr><th>Finding</th><th>Statistic</th><th>Conclusion</th></tr>
+<tr style="background:#e8f5e9;"><td>Blind prior is uniform</td><td>SAD obs=2.73 vs null=4.65, p&lt;.001</td><td>Strong uniform prior, not chance artifact</td></tr>
+<tr style="background:#e8f5e9;"><td>63% classified Uniform</td><td>63% vs 29.5% null, p&lt;.001, h=0.69</td><td>Active equi-distribution tendency</td></tr>
+<tr style="background:#e8f5e9;"><td>Unimodal-mild deficit</td><td>33% vs 61.7% null, p=.002, h=-0.58</td><td>Uniform excess at expense of unimodal-mild</td></tr>
+<tr style="background:#e8f5e9;"><td>Icon prior also uniform</td><td>Icon SAD=3.20 vs null=4.65, p=.0002</td><td>Still uniform after seeing shapes</td></tr>
+<tr style="background:#fff3e0;"><td>Blind vs Icon significant</td><td>diff=1.13, p=.040, d=0.201 (small)</td><td>Seeing shapes slightly reduces SAD</td></tr>
+<tr><td>No significant learning</td><td>Blind-to-T2: p=.275, d=0.04 (negl.)</td><td>Two exposures + SAD feedback insufficient at N=30</td></tr>
+<tr style="background:#ffebee;"><td>Significant worsening trend</td><td>Page Z=-3.79, p&lt;.001 (SAD increasing)</td><td>Likely regression from low blind prior</td></tr>
+</table>
+
+<div class="note"><strong>Figure-to-question mapping:</strong> Each content slide (7-11) shows 1-2 figure panels from the analysis pipeline alongside the corresponding statistics. The Q-A table slides (4-6) provide the complete mapping between all questions, tests, figures, statistics, and slide numbers. This two-layer structure allows both quick reference (Q-A tables) and detailed inspection (content slides).</div>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- POSITION vs ROLE DISTINCTION (v_2_0) -->
+<!-- ================================================================ -->
+<details>
+<summary>15. Position vs Item vs Role (v_2_0 Breaking Change)</summary>
+<div class="content">
+
+<h3>The Problem</h3>
+<p>The experiment CSV columns <code>gen_est_item1</code> through <code>gen_est_item4</code> are <strong>positional</strong>: they record the estimate for screen position 1 (leftmost) through 4 (rightmost). Screen positions are shuffled randomly each non-blind trial via <code>shuffleRandom()</code>, so <code>gen_est_item1</code> in Trial 1 and Trial 2 can correspond to <em>different items</em>. All v1.x analyses (v7-v30) incorrectly treated these as item-specific, corrupting all item-level results.</p>
+
+<h3>Three Levels of Identity</h3>
+<table>
+<tr><th>Level</th><th>Definition</th><th>Columns</th><th>Stable across trials?</th></tr>
+<tr><td><strong>Position</strong></td><td>Screen position 1-4 (left to right)</td><td><code>gen_est_item1-4</code></td><td>No (shuffled each trial)</td></tr>
+<tr><td><strong>Item</strong></td><td>Specific stimulus ID (e.g., item 17, 18, 19, 20)</td><td><code>gen_pos{i}_item</code> maps position to item</td><td>Yes (fixed per participant)</td></tr>
+<tr><td><strong>Role</strong></td><td>Distributional role: dominant (6), medium (4), rare (1)</td><td><code>count_mapping</code> maps item to true count</td><td>Yes (fixed per participant)</td></tr>
+</table>
+
+<h3>The Fix: Role-Based Remapping</h3>
+<p>For each non-blind trial, the pipeline now:</p>
+<ol>
+<li>Reads <code>gen_pos{i}_item</code> to determine which item was at each screen position</li>
+<li>Reads <code>count_mapping</code> (e.g., "17:1 18:6 19:1 20:4") to determine each item's true count</li>
+<li>Maps each positional estimate to its role: <code>role_est_dominant</code> (true=6), <code>role_est_medium</code> (true=4), <code>role_est_rare_min/max</code> (true=1)</li>
+</ol>
+<p>Two items share true_count=1. These are tracked as <code>rare_min</code> (lower estimate), <code>rare_max</code> (higher estimate), <code>rare_mean</code>, and <code>rare_spread</code> (|max - min|).</p>
+<div class="note"><strong>rare_min/rare_max is an order statistic (see v_2_2):</strong> Because <code>rare_min</code>/<code>rare_max</code> are the min/max of two estimates, they are systematically deflated/inflated (<code>E[max] &ge; E[mean] &ge; E[min]</code>) even under pure noise. v_2_2 therefore adds rare-mean companion panels (2.4m, 2.5m, 3.3m, 4.1m, 4.2m, 4.7m) that plot <code>rare_mean</code> as a single slot. Full explanation and a numeric example are in the <a href="#rare-artifact">order-statistic note</a> (Figure 2). The blind-phase analog <code>sorted_est_rare_mean = mean(sorted_est_pos1, sorted_est_pos2)</code> was added in <code>remap_to_roles()</code> for these companions.</div>
+
+<h3>Blind Phase: Shape Alignment (Not Item Knowledge)</h3>
+<div class="note">
+<strong>Critical distinction:</strong> The blind phase uses abstract labels (W, X, Y, Z), not real items. There is no item identity to recover. The sorted blind comparison ranks the participant's four estimates in ascending order and aligns them to the sorted true distribution [1, 1, 4, 6]. This measures <strong>distributional shape similarity</strong> — whether the participant's response has the right rank structure (two low, one medium, one high) — not item-level knowledge.
+</div>
+<p>A participant who gives [2, 3, 3, 4] has a distribution shape close to [1, 1, 4, 6]. Whether they assigned "2" to position W or Z is irrelevant for the shape question. The smallest estimate aligns to the smallest true count by rank, not by identity.</p>
+
+<h3>SAD Computation Fix</h3>
+<table>
+<tr><th>Phase</th><th>v1.x (wrong)</th><th>v_2_0 (correct)</th></tr>
+<tr><td>Non-blind (Icon, T1, T2)</td><td>Python recomputation using positional columns against fixed [1,1,4,6]</td><td>Uses <code>gen_sad</code> from experiment code (position-aware, computed at runtime)</td></tr>
+<tr><td>Blind</td><td>Positional comparison (arbitrary mapping)</td><td>Sorted comparison: sort([estimates]) vs sort([1,1,4,6]) = shape alignment</td></tr>
+</table>
+<div class="caveat"><strong>Breaking change:</strong> Blind SAD values differ from v1.x. All SAD-based analyses (Q1-Q5, learning curves, descriptives) are affected because <code>distance_from_true</code> previously read from the incorrect Python-computed value.</div>
+
+<h3>What Does NOT Change</h3>
+<ul>
+<li><code>gen_sad</code> column from CSV (correct; now used as source for non-blind distance_from_true)</li>
+<li><code>distance_from_uniform</code> (position-invariant: uniform = [3,3,3,3])</li>
+<li>Sorted distribution analyses (already position-free)</li>
+<li>Shape classification (uses sorted response)</li>
+<li>Multinomial log-probability (uses sorted response)</li>
+<li>34-distribution space enumeration</li>
+<li>All timing and self-report analyses</li>
+<li>Panels 2.1 and 2.2 (already neutral gray position labels)</li>
+</ul>
+
+<h3>Updated Panels</h3>
+<table>
+<tr><th>Panel</th><th>v1.x</th><th>v_2_0</th></tr>
+<tr><td>2.4</td><td>Blind vs Icon per positional item</td><td>Sorted Blind vs Role-based Icon (shape alignment). X-axis: Rare (min), Rare (max), Medium, Dominant.</td></tr>
+<tr><td>2.5</td><td>Prior shift per positional item</td><td>Role-based shift: Icon_role - Blind_sorted per role slot.</td></tr>
+<tr><td>4.5 (was 2.7)</td><td>Exact match by Item 1-4</td><td>Exact match by role: Dominant (=6), Medium (=4), Rare (=1). Moved to Fig 4 in v_2_1.</td></tr>
+<tr><td>3.3</td><td>Mean response per positional item</td><td>Mean response per role (Rare min/max, Medium, Dominant).</td></tr>
+<tr><td>4.1-4.3, 4.7</td><td>Item estimation using gen_est_item1-4</td><td>Role-based estimation using role_est_* for non-blind, sorted_est_pos* for blind. (4.4-4.6 renumbered to 4.7-4.9 in v_2_1.)</td></tr>
+<tr style="background:#f0fdf4;"><td>2.4m, 2.5m, 3.3m, 4.1m, 4.2m, 4.7m <span class="badge new">v_2_2</span></td><td>(did not exist)</td><td>Rare-mean companions: collapse rare_min/rare_max into one rare_mean slot (3 role slots). Originals kept unchanged. Uses role_est_rare_mean (non-blind) and the new sorted_est_rare_mean (blind). 4.3 has no companion (already aggregates rare).</td></tr>
+</table>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- VERSION HISTORY -->
+<!-- ================================================================ -->
+<details>
+<summary>16. Version History</summary>
+<div class="content">
+<table>
+<tr><th>Version</th><th>Key Changes</th></tr>
+<tr><td>1-6</td><td>Initial pipeline through 5 figures. Hebrew bidi. Vectorized Cliff's delta. Gini-Simpson. Timing decomposition.</td></tr>
+<tr><td>7</td><td>6 figures reorganized. Exact match analysis. Alternative errors (p=1/1.72/2). Distribution fit. RT distribution (skewness, kurtosis, 2.5 SD outliers). Descriptive table reordered (+ RT_MAD, - GS_M).</td></tr>
+<tr><td>10</td><td>Discrete heatmap colorbar. Exact-match highlighting (green). Figure 2.2 narrow bar fix. Figure 5 expanded to 2x3 (raincloud, histogram, standalone RT table). Rationale -> HTML.</td></tr>
+<tr><td>11</td><td>Estimation trend analysis (Figures 7-8). Page's trend test. Cochran's Q. Slope charts, stacked bins, CDF, near-miss, conditional probability, alluvial. Feedback utilization (T1-T2 error-correction, bands, item-level direction). Figure 2 expanded to 2x3 (Blind vs Icon bars, prior shift). Mean vs median rationale.</td></tr>
+<tr><td>12</td><td>Shape classification 3-tier tie-breaking (SAD -> chi-square -> Mixed). Tie logging. Rationale restructured: figure-by-figure panel tables. Item-level Wilcoxon (Blind vs Icon, Bonferroni). Per-item Friedman (4 phases). Interaction Friedman (shift x item). Position-free count match (Has 6/4/1, full sorted). Feedback utilization.</td></tr>
+<tr><td>14</td><td><strong>ResultsSummary.csv</strong>: auto-generated executive summary table (10 columns, ~30 rows). Raw counts on exact match bars (now panels 4.5, 4.6).</td></tr>
+<tr><td>15</td><td><strong>Prior uniform test corrected:</strong> replaced sign-flipping permutation (H0: mean SAD=0) with Multinomial(12, [.25,.25,.25,.25]) simulation (10,000 draws). Expected null SAD ~4.65. Old test deprecated. <strong>Figure 2 expanded to 3x3 (9 panels):</strong> added panel 2.2 (Blind bars), position-free count match, null distribution histogram. <strong>Auto-generated reports:</strong> EmailReport.txt, Report.md, Report.pdf. No external dependencies. <em>(v_2_1: Figure 2 later restructured to 2x3; count match and exact match panels moved to Figure 4.)</em></td></tr>
+<tr><td>19</td><td><strong>Classification significance tests (Monte Carlo):</strong> per-category, binary (Uniform vs Non-uniform), top-2 combined, model comparison (stepwise k=5 to k=2). N_SIMULATIONS=100,000. All simulation data reused across tests.</td></tr>
+<tr><td>22</td><td><strong>Two-tailed prior test.</strong> Removed interpretive language ("actively impose", "genuine distributional priors"). <strong>34-distribution space (Figure 9):</strong> exhaustive enumeration of all sorted distributions. 4 panels: 9.1 (probabilities by category), 9.2 (exact distribution counts), 9.3 (null SAD by category), 9.4 (observed vs null proportions). <strong>Multinomial log-probability analysis.</strong></td></tr>
+<tr><td>23</td><td><strong>Bug fixes:</strong> Q6 key mismatch (u_stat to statistic), Page's trend two-tailed (2*sf(|Z|)), pct_improvement mislabel (now direction counts). <strong>New analyses:</strong> Prior Fingerprint Persistence (Version B), Bayesian Cognitive Model (Version C), Prior Type Predicts Learning (Version D). <strong>Classification walkthrough:</strong> why [2,3,3,4] classifies as Uniform, Panel 9.1 construction guide, P4 proportion test 4-layer explanation.</td></tr>
+<tr><td>24</td><td><strong>Icon Prior Simulation Test (P2a):</strong> same Multinomial(12, uniform) null applied to icon phase. Icon SAD=3.20 vs null=4.65, p=.0002. Uses seed=43 (blind uses 42). <strong>Panel 2.6 (was 2.9) updated:</strong> now shows both blind (red, 2.73) and icon (orange, 3.20) observed lines against same null distribution. Title: "Blind &amp; Icon vs Null". Annotation box shows both p-values. <strong>Cohen's h:</strong> added <code>cohens_h()</code> and <code>interpret_cohens_h()</code> functions. Effect size for proportion comparisons: Uniform h=0.69 (medium-large), Unimodal-mild h=-0.58 (medium-large). Stored in <code>classification_significance[cat]['cohens_h']</code>. <strong>Key finding:</strong> P2b (Blind vs Icon) significant: diff=1.13, p=.040, d=0.201 (small). <strong>PPTX report structure documented</strong> (section 14b).</td></tr>
+<tr><td><strong>v_2_0</strong></td><td><strong>BREAKING CHANGE: Role-based remapping replaces positional item analysis.</strong> All v1.x results (v7-v30) that involved item-level analyses (Figure 4, Q6, per-item Wilcoxon, exact match by role) should be considered superseded. <strong>Core fix:</strong> <code>gen_est_item1-4</code> are positional (screen position left-to-right), not item-based. Positions shuffle each non-blind trial via <code>shuffleRandom()</code>. Previous versions incorrectly treated positional estimates as item-specific. <strong>Role-based columns:</strong> <code>role_est_dominant</code> (true=6), <code>role_est_medium</code> (true=4), <code>role_est_rare_min/max/mean/spread</code> (true=1, two items). Remapped using <code>count_mapping</code> and <code>gen_pos{i}_item</code> from CSV. <strong>SAD fix:</strong> <code>distance_from_true</code> now uses <code>gen_sad</code> from experiment code for non-blind phases (was recomputed incorrectly in Python). Blind phase uses sorted comparison (shape alignment). <strong>Blind phase:</strong> sorted estimates rank-aligned to sorted true distribution [1,1,4,6]; measures distributional shape similarity, not item-level knowledge. <strong>New analysis:</strong> <code>analyze_rare_items()</code> with within-rare differentiation, trajectory, and spread convergence. <strong>Updated panels:</strong> 2.4 (Sorted Blind vs Icon, shape alignment), 2.5 (role-based shift), 2.7 (role labels), 3.3 (role-based mean response), all Figure 4 panels. <strong>Updated reports:</strong> email, markdown, ResultsSummary CSV all use role-based labels.</td></tr>
+<tr><td><strong>v_2_1</strong></td><td><strong>Figure restructuring for thematic coherence.</strong> <strong>Figure 2</strong> reduced from 3x3 to 2x3 "Prior Characterization" (6 panels: 2.1-2.6). Panels 2.6 (Position-Free Count Match), 2.7 (Exact Match by Phase), 2.8 (Exact Match by Role) removed; old 2.9 (Prior Null) renumbered to 2.6. <strong>Figure 4</strong> expanded from 2x3 to 3x3 "Item Estimation &amp; Match Analysis" (9 panels: 4.1-4.9). Three logical groups: Row A (estimation vs truth, 4.1-4.3), Row B (exact match, 4.4-4.6, transplanted from Fig 2), Row C (error analysis, 4.7-4.9, renumbered from old 4.4-4.6). <strong>Feedback utilization fix documented:</strong> <code>analyze_feedback_utilization()</code> item-level correction changed from positional <code>gen_est_item</code> to role-based columns (applied locally in v_2_0).</td></tr>
+<tr><td><strong>v_2_2</strong></td><td><strong>Rare-mean companion panels.</strong> Added six companion panels that collapse the <code>rare_min</code>/<code>rare_max</code> split into a single <code>rare_mean</code> slot, removing the <strong>order-statistic artifact</strong> (max of two noisy rare estimates is systematically inflated, min deflated; <code>E[max] &ge; E[mean] &ge; E[min]</code>). Originals are unchanged. <strong>New panels:</strong> 2.4m, 2.5m (Figure 2, now 3&times;3); 3.3m (Figure 3, fills previously-empty slot [3,1]); 4.1m, 4.2m, 4.7m (Figure 4, now 4&times;3). Panel 4.3 needs no companion (already aggregates the two rare items into one bar). <strong>New data column:</strong> <code>sorted_est_rare_mean = mean(sorted_est_pos1, sorted_est_pos2)</code> added in the blind branch of <code>remap_to_roles()</code>; non-blind companions reuse existing <code>role_est_rare_mean</code>. Companions reuse identical styling to their source panels; min/max-specific Wilcoxon stars are omitted. Runnable via <code>_run_v2_2_smoke.py</code>.</td></tr>
+</table>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- REFERENCES -->
+<!-- ================================================================ -->
+<details>
+<summary>17. References (29)</summary>
+<div class="content">
+<ul class="ref">
+<li>Cashaback et al. (2017). <em>PLoS Comp Bio</em>, 13, e1005623.</li>
+<li>Cliff, N. (1993). <em>Psych Bull</em>, 114, 494-509.</li>
+<li>Cohen, J. (1988). <em>Statistical Power Analysis for the Behavioral Sciences</em> (2nd ed.). Lawrence Erlbaum.</li>
+<li>Cochran, W.G. (1950). <em>Biometrika</em>, 37, 256-266.</li>
+<li>Cochran, W.G. (1954). <em>Biometrics</em>, 10, 417-451.</li>
+<li>Conover, W.J. (1999). <em>Practical Nonparametric Statistics</em>, 3rd ed. Wiley.</li>
+<li>Dunn, O.J. (1961). <em>JASA</em>, 56, 52-64.</li>
+<li>Efron, B. (1979). <em>Ann Stat</em>, 7, 1-26.</li>
+<li>Ernst, M.D. (2004). <em>Stat Sci</em>, 19, 676-685.</li>
+<li>Friedman, M. (1937). <em>JASA</em>, 32, 675-701.</li>
+<li>Good, P.I. (2005). <em>Permutation Tests</em>, 3rd ed. Springer.</li>
+<li>Griffiths & Tenenbaum (2006). <em>Psych Rev</em>, 113, 228-257.</li>
+<li>Hill, M.O. (1973). <em>Ecology</em>, 54, 427-432.</li>
+<li>Hurlbert, S.H. (1971). <em>Ecology</em>, 52, 577-586.</li>
+<li>Jost, L. (2006). <em>Oikos</em>, 113, 363-375.</li>
+<li>Kording & Wolpert (2004). <em>PNAS</em>, 101, 9839-9842.</li>
+<li>Leys et al. (2013). <em>J Exp Soc Psych</em>, 49, 764-766.</li>
+<li>Luce, R.D. (1986). <em>Response Times</em>. Oxford University Press.</li>
+<li>Mann & Whitney (1947). <em>Ann Math Stat</em>, 18, 50-60.</li>
+<li>Page, E.B. (1963). <em>JASA</em>, 58, 216-230.</li>
+<li>Pessiglione et al. (2006). <em>Nature</em>, 442, 1042-1045.</li>
+<li>Ratcliff, R. (1993). <em>Psychon Bull Rev</em>, 1, 510-532.</li>
+<li>Romano et al. (2006). <em>Behav Res Methods</em>, 38, 56-70.</li>
+<li>Shannon, C.E. (1948). <em>Bell Sys Tech J</em>, 27, 379-423.</li>
+<li>Simpson, E.H. (1949). <em>Nature</em>, 163, 688.</li>
+<li>Spearman, C. (1904). <em>Am J Psych</em>, 15, 72-101.</li>
+<li>Whelan, R. (2008). <em>Behav Res Methods</em>, 40, 913-924.</li>
+<li>Wilcoxon, F. (1945). <em>Biometrics Bull</em>, 1, 80-83.</li>
+</ul>
+</div>
+</details>
+
+<!-- ================================================================ -->
+<!-- USAGE -->
+<!-- ================================================================ -->
+<details>
+<summary>18. Usage</summary>
+<div class="content">
+<pre>
+import os, glob
+os.chdir(r"J:\My Drive\...\Analysis")
+from oneshot_analysis_v_2_2 import run_analysis
+csv_files = glob.glob(r"..\Subjects\SBJ_ALL\oneshot_subject_*.csv")
+df, summary_df, results, figures = run_analysis(source=csv_files, output_dir=r"results")
+</pre>
+</div>
+</details>
+
+</body>
+</html>
